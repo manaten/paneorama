@@ -1,0 +1,19 @@
+{
+  "Component": {
+    "scope": "javascriptreact,typescriptreact",
+    "description": "Component",
+    "prefix": ["react"],
+    "body": [
+      "import { FC, PropsWithChildren } from \"react\";",
+      "import classNames from \"classnames\";",
+      "",
+      "type Props = PropsWithChildren<{",
+      "  className?: string;",
+      "}>;",
+      "",
+      "export const ${TM_DIRECTORY/^.+[\\/\\\\]+(.*)$/$1/}: FC<Props> = ({ className, children }) => {",
+      "  return <div className={classNames(className)}>{children}</div>;",
+      "};",
+    ],
+  },
+}

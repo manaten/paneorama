@@ -18,6 +18,9 @@ module.exports = {
     "plugin:import/recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:react-server-components/recommended",
+    "plugin:jsx-a11y/recommended",
+    "plugin:tailwindcss/recommended",
     "prettier",
   ],
   parser: "@typescript-eslint/parser",
@@ -25,11 +28,7 @@ module.exports = {
     "import/order": [
       "error",
       {
-        groups: [
-          ["builtin", "external"],
-          "internal",
-          ["parent", "index", "sibling", "object"],
-        ],
+        groups: [["builtin", "external"], "internal", ["parent", "index", "sibling", "object"]],
         pathGroups: [
           {
             pattern: "*.css",
@@ -50,5 +49,11 @@ module.exports = {
     "no-unused-vars": 0,
     "no-var": 2,
     "compat/compat": 0,
+    "tailwindcss/classnames-order": [
+      "error",
+      {
+        callees: ["classNames", "classnames"],
+      },
+    ],
   },
 };
