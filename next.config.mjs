@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: "export",
+
   webpack(config) {
     // see https://react-svgr.com/docs/next/
     const fileLoaderRule = config.module.rules.find((rule) => rule.test?.test?.(".svg"));
