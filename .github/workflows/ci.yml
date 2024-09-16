@@ -1,0 +1,43 @@
+name: ci
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: Kesin11/actions-timeline@v1
+
+      - name: 🛎 Checkout
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup node env
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: ".node-version"
+          check-latest: true
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: 👨🏻‍💻 Install dependencies
+        run: npm ci
+
+      - name: 👀 Run linter
+        run: npm run lint
+
+      - name: 🐷 Run Typecheck
+        run: npm run typecheck
+
+      # - name: 🧪 Run tests
+      #   run: npm test
