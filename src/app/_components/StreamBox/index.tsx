@@ -37,7 +37,7 @@ export const StreamBox: FC<Props> = ({ id, media, onClickClose }) => {
           <Button className="pointer-events-auto" iconType="close" onClick={closeHandler} />
         </div>
 
-        <video className="size-auto max-h-full max-w-full" ref={videoRef} autoPlay muted />
+        <video className="size-full" ref={videoRef} autoPlay muted />
       </div>
     </Rnd>
   );
