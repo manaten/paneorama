@@ -30,7 +30,8 @@
     ],
     "paths": {
       "@/*": ["./src/*"]
-    }
+    },
+    "types": ["vitest/importMeta"]
   },
   "include": [
     "next-env.d.ts",

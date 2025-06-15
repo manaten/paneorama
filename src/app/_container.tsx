@@ -4,6 +4,7 @@ import { FC, useCallback, useState } from "react";
 
 import { MainCanvas } from "./_components/MainCanvas";
 import { StreamBox } from "./_components/StreamBox";
+import { swap } from "./util/array";
 
 const displayMediaOptions = {
   video: {
@@ -47,10 +48,30 @@ export const Container: FC = () => {
     });
   }, []);
 
+  const clickMoveUpHandler = useCallback((id: string) => {
+    setMediaItems((prev) => {
+      const currentIndex = prev.findIndex((item) => item.id === id);
+      return swap(prev, currentIndex, currentIndex + 1);
+    });
+  }, []);
+
+  const clickMoveDownHandler = useCallback((id: string) => {
+    setMediaItems((prev) => {
+      const currentIndex = prev.findIndex((item) => item.id === id);
+      return swap(prev, currentIndex, currentIndex - 1);
+    });
+  }, []);
+
   return (
     <MainCanvas onClickAdd={clickAddHandler}>
       {mediaItems.map((item) => (
-        <StreamBox key={item.id} {...item} onClickClose={clickCloseHandler} />
+        <StreamBox
+          key={item.id}
+          {...item}
+          onClickClose={clickCloseHandler}
+          onClickMoveUp={clickMoveUpHandler}
+          onClickMoveDown={clickMoveDownHandler}
+        />
       ))}
     </MainCanvas>
   );

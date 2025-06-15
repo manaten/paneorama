@@ -4,7 +4,10 @@
       "Bash(npm run lint)",
       "Bash(git add:*)",
       "Bash(git checkout:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(git commit:*)",
+      "Bash(npm test)"
     ],
     "deny": []
   }
