@@ -5,6 +5,7 @@ import { FC, useCallback, useState } from "react";
 import { MainCanvas } from "./_components/MainCanvas";
 import { StreamBox } from "./_components/StreamBox";
 import { swap } from "./util/array";
+import { getPastelColor } from "./util/colors";
 
 const displayMediaOptions = {
   video: {
@@ -16,6 +17,7 @@ const displayMediaOptions = {
 type MediaItem = {
   id: string;
   media: MediaStream;
+  color: string;
 };
 
 export const Container: FC = () => {
@@ -32,6 +34,7 @@ export const Container: FC = () => {
         {
           id: crypto.randomUUID(),
           media: captureStream,
+          color: getPastelColor(prev.length),
         },
       ]);
     } catch (err) {

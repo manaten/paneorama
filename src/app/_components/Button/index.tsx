@@ -8,6 +8,7 @@ import { ComponentPropsWithoutRef, FC } from "react";
 interface Props extends ComponentPropsWithoutRef<"button"> {
   className?: string;
   iconType: "add" | "close" | "move_up" | "move_down";
+  iconColor?: string;
 }
 
 function getIcon(iconType: Props["iconType"]) {
@@ -23,20 +24,26 @@ function getIcon(iconType: Props["iconType"]) {
   }
 }
 
-export const Button: FC<Props> = ({ className, iconType, ...props }) => {
+export const Button: FC<Props> = ({
+  className,
+  iconType,
+  iconColor,
+  ...props
+}) => {
   const Icon = getIcon(iconType);
 
   return (
     <button
       className={classNames(
         className,
-        "block rounded-full bg-slate-950 bg-opacity-30 p-1 hover:opacity-60",
+        "block rounded-full bg-slate-950 bg-opacity-50 p-1 hover:bg-opacity-30",
         "transition-opacity duration-200 ease-in-out",
       )}
       {...props}
     >
       <Icon
-        className='block size-5 fill-white object-contain'
+        className='block size-5 object-contain'
+        style={{ fill: iconColor || "white" }}
         viewBox='0 0 24 24'
       />
     </button>
