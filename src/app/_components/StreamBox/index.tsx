@@ -13,6 +13,7 @@ interface Props {
   onClickClose?: (id: string) => void;
   onClickMoveUp?: (id: string) => void;
   onClickMoveDown?: (id: string) => void;
+  onClickSwitchVideo?: (id: string) => void;
 }
 
 export const StreamBox: FC<Props> = ({
@@ -22,6 +23,7 @@ export const StreamBox: FC<Props> = ({
   onClickClose,
   onClickMoveUp,
   onClickMoveDown,
+  onClickSwitchVideo,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
 
@@ -44,6 +46,10 @@ export const StreamBox: FC<Props> = ({
     onClickMoveDown?.(id);
   }, [id, onClickMoveDown]);
 
+  const switchVideoHandler = useCallback(() => {
+    onClickSwitchVideo?.(id);
+  }, [id, onClickSwitchVideo]);
+
   return (
     <Rnd>
       <div
@@ -65,6 +71,12 @@ export const StreamBox: FC<Props> = ({
             "opacity-0 group-hover/video-box:opacity-100",
           )}
         >
+          <Button
+            className='pointer-events-auto'
+            iconType='switch_video'
+            iconColor={color}
+            onClick={switchVideoHandler}
+          />
           <Button
             className='pointer-events-auto'
             iconType='move_up'

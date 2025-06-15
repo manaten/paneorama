@@ -2,12 +2,13 @@ import Add from "@material-design-icons/svg/filled/add.svg";
 import Close from "@material-design-icons/svg/filled/close.svg";
 import KeyboardArrowDown from "@material-design-icons/svg/filled/keyboard_arrow_down.svg";
 import KeyboardArrowUp from "@material-design-icons/svg/filled/keyboard_arrow_up.svg";
+import SwitchVideo from "@material-design-icons/svg/filled/switch_video.svg";
 import classNames from "classnames";
-import { ComponentPropsWithoutRef, FC } from "react";
+import { ComponentPropsWithoutRef, FC, memo } from "react";
 
 interface Props extends ComponentPropsWithoutRef<"button"> {
   className?: string;
-  iconType: "add" | "close" | "move_up" | "move_down";
+  iconType: "add" | "close" | "move_up" | "move_down" | "switch_video";
   iconColor?: string;
 }
 
@@ -21,15 +22,17 @@ function getIcon(iconType: Props["iconType"]) {
       return KeyboardArrowUp;
     case "move_down":
       return KeyboardArrowDown;
+    case "switch_video":
+      return SwitchVideo;
   }
 }
 
-export const Button: FC<Props> = ({
+export const Button: FC<Props> = memo(function Button({
   className,
   iconType,
   iconColor,
   ...props
-}) => {
+}) {
   const Icon = getIcon(iconType);
 
   return (
@@ -48,4 +51,4 @@ export const Button: FC<Props> = ({
       />
     </button>
   );
-};
+});
