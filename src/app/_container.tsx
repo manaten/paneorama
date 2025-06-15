@@ -65,6 +65,28 @@ export const Container: FC = () => {
     });
   }, []);
 
+  const clickSwitchVideoHandler = useCallback(async (id: string) => {
+    try {
+      // 新しいストリームを取得
+      const newCaptureStream =
+        await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+
+      setMediaItems((prev) =>
+        prev.map((item) => {
+          if (item.id === id) {
+            // 古いストリームを停止
+            item.media.getTracks().forEach((track) => track.stop());
+            // 新しいストリームに置き換え
+            return { ...item, media: newCaptureStream };
+          }
+          return item;
+        }),
+      );
+    } catch (_) {
+      // noop
+    }
+  }, []);
+
   return (
     <MainCanvas onClickAdd={clickAddHandler}>
       {mediaItems.map((item) => (
@@ -74,6 +96,7 @@ export const Container: FC = () => {
           onClickClose={clickCloseHandler}
           onClickMoveUp={clickMoveUpHandler}
           onClickMoveDown={clickMoveDownHandler}
+          onClickSwitchVideo={clickSwitchVideoHandler}
         />
       ))}
     </MainCanvas>
