@@ -37,8 +37,8 @@ export const Container: FC = () => {
           color: getPastelColor(prev.length),
         },
       ]);
-    } catch (err) {
-      console.error(`Error: ${err}`);
+    } catch (_) {
+      // noop
     }
   }, []);
 
