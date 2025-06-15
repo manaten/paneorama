@@ -4,6 +4,7 @@ import { FC, useCallback, useState } from "react";
 
 import { MainCanvas } from "./_components/MainCanvas";
 import { StreamBox } from "./_components/StreamBox";
+import { swap } from "./util/array";
 
 const displayMediaOptions = {
   video: {
@@ -50,36 +51,14 @@ export const Container: FC = () => {
   const clickMoveUpHandler = useCallback((id: string) => {
     setMediaItems((prev) => {
       const currentIndex = prev.findIndex((item) => item.id === id);
-      if (currentIndex === -1 || currentIndex === prev.length - 1) return prev;
-
-      const currentItem = prev[currentIndex];
-      const nextItem = prev[currentIndex + 1];
-
-      if (!currentItem || !nextItem) return prev;
-
-      return prev.map((item, index) => {
-        if (index === currentIndex) return nextItem;
-        if (index === currentIndex + 1) return currentItem;
-        return item;
-      });
+      return swap(prev, currentIndex, currentIndex + 1);
     });
   }, []);
 
   const clickMoveDownHandler = useCallback((id: string) => {
     setMediaItems((prev) => {
       const currentIndex = prev.findIndex((item) => item.id === id);
-      if (currentIndex === -1 || currentIndex === 0) return prev;
-
-      const currentItem = prev[currentIndex];
-      const prevItem = prev[currentIndex - 1];
-
-      if (!currentItem || !prevItem) return prev;
-
-      return prev.map((item, index) => {
-        if (index === currentIndex - 1) return currentItem;
-        if (index === currentIndex) return prevItem;
-        return item;
-      });
+      return swap(prev, currentIndex, currentIndex - 1);
     });
   }, []);
 
