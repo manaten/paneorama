@@ -1,11 +1,13 @@
 import Add from "@material-design-icons/svg/filled/add.svg";
 import Close from "@material-design-icons/svg/filled/close.svg";
+import KeyboardArrowDown from "@material-design-icons/svg/filled/keyboard_arrow_down.svg";
+import KeyboardArrowUp from "@material-design-icons/svg/filled/keyboard_arrow_up.svg";
 import classNames from "classnames";
 import { ComponentPropsWithoutRef, FC } from "react";
 
 interface Props extends ComponentPropsWithoutRef<"button"> {
   className?: string;
-  iconType: "add" | "close";
+  iconType: "add" | "close" | "move_up" | "move_down";
 }
 
 function getIcon(iconType: Props["iconType"]) {
@@ -14,6 +16,10 @@ function getIcon(iconType: Props["iconType"]) {
       return Add;
     case "close":
       return Close;
+    case "move_up":
+      return KeyboardArrowUp;
+    case "move_down":
+      return KeyboardArrowDown;
   }
 }
 
