@@ -24,7 +24,7 @@ jobs:
       - uses: Kesin11/actions-timeline@v1
 
       - name: 🛎 Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: 🏗 Setup node env
         uses: actions/setup-node@v4
@@ -42,3 +42,6 @@ jobs:
 
       - name: 🐷 Run Typecheck
         run: npm run typecheck
+
+      # - name: 🧪 Run tests
+      #   run: npm test

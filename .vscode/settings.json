@@ -1,5 +1,11 @@
 {
-  "cSpell.words": ["lintstagedrc", "typecheck"],
+  "cSpell.words": [
+    "callees",
+    "lintstagedrc",
+    "Paneorama",
+    "tailwindcss",
+    "typecheck"
+  ],
   "files.watcherExclude": {
     "**/target": true
   },
@@ -12,5 +18,6 @@
   },
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
-  }
+  },
+  "autoSnippet.snippets": [{ "pattern": "**/*.tsx", "snippet": "Component" }]
 }

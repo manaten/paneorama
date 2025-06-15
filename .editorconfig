@@ -13,5 +13,4 @@ trim_trailing_whitespace = true
 insert_final_newline = true
 
 [*.md]
-# 末尾スペースで改行となるため
 trim_trailing_whitespace = false
