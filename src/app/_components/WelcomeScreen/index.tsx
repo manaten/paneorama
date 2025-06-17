@@ -1,0 +1,71 @@
+"use client";
+
+import classNames from "classnames";
+import { FC } from "react";
+
+interface Props {
+  className?: string;
+}
+
+export const WelcomeOverlay: FC<Props> = ({ className }) => {
+  return (
+    <div
+      className={classNames(
+        "pointer-events-none absolute inset-0 z-30 flex flex-col items-center justify-center",
+        className,
+      )}
+    >
+      {/* Main content */}
+      <div className='mx-auto max-w-xl px-8 text-center'>
+        {/* Logo/Title */}
+        <div className='mb-8'>
+          <h1 className='mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-5xl font-bold text-transparent'>
+            Paneorama
+          </h1>
+          <p className='text-lg font-medium text-slate-700'>
+            Screen pane manager for streaming
+          </p>
+        </div>
+
+        {/* Tutorial Steps */}
+        <div className='mb-8 space-y-4'>
+          <div className='flex items-center justify-center space-x-3 text-slate-600'>
+            <div className='flex size-6 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-xs font-bold text-white'>
+              1
+            </div>
+            <span className='text-base'>
+              Capture multiple screens or windows
+            </span>
+          </div>
+
+          <div className='flex items-center justify-center space-x-3 text-slate-600'>
+            <div className='flex size-6 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-xs font-bold text-white'>
+              2
+            </div>
+            <span className='text-base'>Drag and resize freely</span>
+          </div>
+
+          <div className='flex items-center justify-center space-x-3 text-slate-600'>
+            <div className='flex size-6 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-xs font-bold text-white'>
+              3
+            </div>
+            <span className='text-base'>Control layers and switch sources</span>
+          </div>
+        </div>
+
+        {/* Arrow pointing to add button */}
+        <div className='flex items-center justify-center'>
+          <div className='flex flex-col items-center'>
+            <p className='mb-2 text-sm font-medium text-slate-600'>
+              click the + button to start
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Subtle decorative elements */}
+      <div className='absolute left-1/4 top-1/4 size-20 animate-pulse rounded-full bg-gradient-to-r from-pink-200 to-purple-200 opacity-30 blur-xl delay-700' />
+      <div className='absolute bottom-1/4 right-1/4 size-24 animate-pulse rounded-full bg-gradient-to-r from-blue-200 to-cyan-200 opacity-30 blur-xl delay-1000' />
+    </div>
+  );
+};

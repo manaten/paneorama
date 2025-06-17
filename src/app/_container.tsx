@@ -88,7 +88,7 @@ export const Container: FC = () => {
   }, []);
 
   return (
-    <MainCanvas onClickAdd={clickAddHandler}>
+    <MainCanvas onClickAdd={clickAddHandler} isEmpty={mediaItems.length === 0}>
       {mediaItems.map((item) => (
         <StreamBox
           key={item.id}
