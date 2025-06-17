@@ -4,13 +4,20 @@ import classNames from "classnames";
 import { FC, PropsWithChildren } from "react";
 
 import { Button } from "../Button";
+import { WelcomeOverlay } from "../WelcomeScreen";
 
 type Props = PropsWithChildren<{
   className?: string;
   onClickAdd?: () => void;
+  isEmpty?: boolean;
 }>;
 
-export const MainCanvas: FC<Props> = ({ className, children, onClickAdd }) => {
+export const MainCanvas: FC<Props> = ({
+  className,
+  children,
+  onClickAdd,
+  isEmpty = false,
+}) => {
   return (
     <div
       className={classNames(
@@ -18,11 +25,13 @@ export const MainCanvas: FC<Props> = ({ className, children, onClickAdd }) => {
         className,
       )}
     >
+      {isEmpty && <WelcomeOverlay />}
+
       <div
         className={classNames(
           "pointer-events-none fixed right-0 top-0 z-50 flex-row gap-4 p-4",
           "transition-opacity duration-200 ease-in-out",
-          "opacity-0 group-hover/main:opacity-100",
+          isEmpty ? "opacity-100" : "opacity-0 group-hover/main:opacity-100",
         )}
       >
         <Button
