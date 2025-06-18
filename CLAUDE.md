@@ -6,18 +6,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Paneorama is a web-based screen capture management tool for presenters using the Screen Capture API. It allows users to capture multiple screens/windows simultaneously and manage them in a drag-and-drop interface.
 
+Built with Vite + React for fast development and optimized production builds.
+
 ## Development Commands
 
 ### Core Commands
 
-- `npm run dev` - Start development server (Next.js)
+- `npm run dev` - Start development server (Vite)
 - `npm run build` - Build for production
-- `npm run start` - Start production server
+- `npm run preview` - Preview production build locally
 
 ### Quality Assurance
 
 - `npm run typecheck` - Run TypeScript type checking
-- `npm run lint` - Run all linting (ESLint + Next.js)
+- `npm run lint` - Run all linting (ESLint)
 - `npm run test` - Run tests with Vitest
 - `npm run fix` - Auto-fix linting and formatting issues
 
@@ -31,8 +33,8 @@ Paneorama is a web-based screen capture management tool for presenters using the
 
 ### Technology Stack
 
-- **Framework**: Next.js 15 (App Router)
-- **UI Library**: React 18 with TypeScript
+- **Build Tool**: Vite 5
+- **Framework**: React 18 with TypeScript
 - **Styling**: Tailwind CSS
 - **Drag & Drop**: react-rnd for resizable/draggable components
 - **Icons**: Material Design Icons SVG
@@ -42,18 +44,18 @@ Paneorama is a web-based screen capture management tool for presenters using the
 
 #### Main Application Flow
 
-1. **Container** (`src/app/_container.tsx`) - Main state management
+1. **Container** (`src/Container.tsx`) - Main state management
 
    - Manages MediaStream collection using Screen Capture API
    - Handles CRUD operations for media items
    - Provides pastel color theming for each stream
 
-2. **MainCanvas** (`src/app/_components/MainCanvas/index.tsx`) - Layout wrapper
+2. **MainCanvas** (`src/components/MainCanvas/index.tsx`) - Layout wrapper
 
    - Provides the main canvas area with hover-based add button
    - Full-screen container for all stream boxes
 
-3. **StreamBox** (`src/app/_components/StreamBox/index.tsx`) - Individual stream display
+3. **StreamBox** (`src/components/StreamBox/index.tsx`) - Individual stream display
    - Uses react-rnd for drag/resize functionality
    - Displays video streams with hover controls
    - Controls: close, layer ordering (up/down), stream switching
@@ -67,8 +69,8 @@ Paneorama is a web-based screen capture management tool for presenters using the
 
 ### File Organization
 
-- `src/app/_components/` - Reusable UI components
-- `src/app/util/` - Utility functions (array manipulation, color generation)
+- `src/components/` - Reusable UI components
+- `src/utils/` - Utility functions (array manipulation, color generation)
 - Components use index.tsx pattern for clean imports
 
 ### Styling Patterns
@@ -89,6 +91,7 @@ Paneorama is a web-based screen capture management tool for presenters using the
 
 - Requires modern browsers with Screen Capture API support
 - Primarily tested on Chrome, Edge, Firefox
+- Built with Vite for optimal bundling and fast HMR
 
 ### MediaStream Handling
 
