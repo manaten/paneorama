@@ -10,6 +10,7 @@ import functionalPlugin from "eslint-plugin-functional";
 import importPlugin from "eslint-plugin-import";
 // @ts-expect-error 型定義がないため
 import jsxA11y from "eslint-plugin-jsx-a11y";
+import storybook from "eslint-plugin-storybook";
 // @ts-expect-error 型定義がないため
 import tailwind from "eslint-plugin-tailwindcss";
 import globals from "globals";
@@ -19,7 +20,6 @@ export default tsEslint.config(
   {
     ignores: ["dist", "node_modules", "/out", "/.next"],
   },
-
   js.configs.recommended,
   nextFlatConfig.coreWebVitals,
   importPlugin.flatConfigs.recommended,
@@ -28,8 +28,8 @@ export default tsEslint.config(
   functionalPlugin.configs.noMutations,
   tailwind.configs["flat/recommended"],
   jsxA11y.flatConfigs.recommended,
+  storybook.configs["flat/recommended"],
   eslintConfigPrettier,
-
   {
     languageOptions: {
       globals: {

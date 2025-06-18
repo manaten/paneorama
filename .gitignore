@@ -106,3 +106,6 @@ dist
 # next.js
 /.next/
 /out/
+
+*storybook.log
+storybook-static

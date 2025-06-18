@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { FC, PropsWithChildren } from "react";
 
 import { Button } from "../Button";
-import { WelcomeOverlay } from "../WelcomeScreen";
+import { WelcomeOverlay } from "../WelcomeOverlay";
 
 type Props = PropsWithChildren<{
   className?: string;
