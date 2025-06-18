@@ -14,7 +14,7 @@
     "forceConsistentCasingInFileNames": true,
 
     "resolveJsonModule": true,
-    "jsx": "preserve",
+    "jsx": "react-jsx",
     "incremental": true,
 
     "strict": true,
@@ -23,27 +23,20 @@
     "noFallthroughCasesInSwitch": true,
     "allowUnusedLabels": true,
     "allowUnreachableCode": true,
-    "plugins": [
-      {
-        "name": "next"
-      }
-    ],
     "paths": {
       "@/*": ["./src/*"]
     },
     "types": ["vitest/importMeta"]
   },
   "include": [
-    "next-env.d.ts",
+    "src",
     "**/*.ts",
     "**/*.tsx",
     ".storybook/*.ts",
-    ".next/types/**/*.ts",
     "tailwind.config.ts",
-    "next.config.mjs",
+    "vite.config.ts",
     "lint-staged.config.mjs",
-    "eslint.config.mjs",
-    "postcss.config.mjs"
+    "eslint.config.mjs"
   ],
   "exclude": ["node_modules"]
 }

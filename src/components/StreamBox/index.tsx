@@ -1,7 +1,5 @@
-"use client";
-
 import classNames from "classnames";
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { Rnd } from "react-rnd";
 
 import { Button } from "../Button";
@@ -26,13 +24,22 @@ export const StreamBox: FC<Props> = ({
   onClickSwitchVideo,
 }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
-  const videoRef = (videoElem: HTMLVideoElement) => {
-    videoElem.srcObject = media; // eslint-disable-line functional/immutable-data
+  useEffect(() => {
+    const videoElement = videoRef.current;
+    if (videoElement && media) {
+      // eslint-disable-next-line functional/immutable-data
+      videoElement.srcObject = media;
+    }
+
     return () => {
-      videoElem.srcObject = null; // eslint-disable-line functional/immutable-data
+      if (videoElement) {
+        // eslint-disable-next-line functional/immutable-data
+        videoElement.srcObject = null; // Clean up the media stream
+      }
     };
-  };
+  }, [media]);
 
   const closeHandler = useCallback(() => {
     onClickClose?.(id);
@@ -57,12 +64,10 @@ export const StreamBox: FC<Props> = ({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {isHovered && (
-          <div
-            className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
-            style={{ borderColor: color }}
-          />
-        )}
+        <div
+          className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
+          style={{ borderColor: color, opacity: isHovered ? 1 : 0 }}
+        />
 
         <div
           className={classNames(

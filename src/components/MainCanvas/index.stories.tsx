@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from "@storybook/nextjs";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { MainCanvas } from "./index";
 import { StreamBox } from "../StreamBox";

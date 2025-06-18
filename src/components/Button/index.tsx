@@ -1,8 +1,8 @@
-import Add from "@material-design-icons/svg/filled/add.svg";
-import Close from "@material-design-icons/svg/filled/close.svg";
-import KeyboardArrowDown from "@material-design-icons/svg/filled/keyboard_arrow_down.svg";
-import KeyboardArrowUp from "@material-design-icons/svg/filled/keyboard_arrow_up.svg";
-import SwitchVideo from "@material-design-icons/svg/filled/switch_video.svg";
+import Add from "@material-design-icons/svg/filled/add.svg?react";
+import Close from "@material-design-icons/svg/filled/close.svg?react";
+import KeyboardArrowDown from "@material-design-icons/svg/filled/keyboard_arrow_down.svg?react";
+import KeyboardArrowUp from "@material-design-icons/svg/filled/keyboard_arrow_up.svg?react";
+import SwitchVideo from "@material-design-icons/svg/filled/switch_video.svg?react";
 import classNames from "classnames";
 import { ComponentPropsWithoutRef, FC, memo } from "react";
 
@@ -39,8 +39,8 @@ export const Button: FC<Props> = memo(function Button({
     <button
       className={classNames(
         className,
-        "block rounded-full bg-slate-950 bg-opacity-50 p-1 hover:bg-opacity-30",
-        "transition-opacity duration-200 ease-in-out",
+        "block rounded-full bg-slate-950/50 p-1 hover:bg-slate-950/30",
+        "transition-bg duration-200 ease-in-out cursor-pointer",
       )}
       {...props}
     >
