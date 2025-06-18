@@ -53,12 +53,16 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
           </div>
         </div>
 
-        {/* Arrow pointing to add button */}
+        {/* Call to action */}
         <div className='flex items-center justify-center'>
           <div className='flex flex-col items-center'>
-            <p className='mb-2 text-sm font-medium text-slate-600'>
-              click the + button to start
+            <p className='mb-2 text-base font-medium text-slate-700'>
+              Click the + button to start capturing
             </p>
+            <div className='flex items-center space-x-1 text-xs text-slate-500'>
+              <span>Look for the button in the top-right corner</span>
+              <span className='text-blue-500'>↗</span>
+            </div>
           </div>
         </div>
       </div>

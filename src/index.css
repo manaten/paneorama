@@ -2,6 +2,21 @@
 
 @tailwind utilities;
 
+/* カスタムアニメーション - Pingスタイル */
+@keyframes soft-glow {
+  0% {
+    box-shadow: 0 0 0 0 theme("colors.blue.500");
+  }
+  75%,
+  100% {
+    box-shadow: 0 0 0 10px theme("colors.purple.500/0");
+  }
+}
+
+.animate-soft-glow {
+  animation: soft-glow 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
