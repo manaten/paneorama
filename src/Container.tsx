@@ -1,11 +1,9 @@
-"use client";
-
 import { FC, useCallback, useState } from "react";
 
-import { MainCanvas } from "./_components/MainCanvas";
-import { StreamBox } from "./_components/StreamBox";
-import { swap } from "./util/array";
-import { getPastelColor } from "./util/colors";
+import { MainCanvas } from "./components/MainCanvas";
+import { StreamBox } from "./components/StreamBox";
+import { swap } from "./utils/array";
+import { getPastelColor } from "./utils/colors";
 
 const displayMediaOptions = {
   video: {
