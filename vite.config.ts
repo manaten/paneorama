@@ -10,6 +10,10 @@ export default defineConfig({
   root: "./src",
   publicDir: "../public",
   plugins: [react(), svgr(), tailwindcss()],
+  build: {
+    outDir: "../dist",
+    emptyOutDir: true,
+  },
   resolve: {
     alias: {
       "@": resolve(__dirname, "./src"),
