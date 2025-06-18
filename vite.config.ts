@@ -6,6 +6,7 @@ import svgr from "vite-plugin-svgr";
 
 // https://vitejs.dev/config/
 export default defineConfig({
+  base: "/paneorama/",
   root: "./src",
   publicDir: "../public",
   plugins: [react(), svgr(), tailwindcss()],
