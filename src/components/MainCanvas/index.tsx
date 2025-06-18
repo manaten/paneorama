@@ -33,7 +33,10 @@ export const MainCanvas: FC<Props> = ({
         )}
       >
         <Button
-          className='pointer-events-auto'
+          className={classNames(
+            "pointer-events-auto",
+            isEmpty && "animate-soft-glow",
+          )}
           iconType='add'
           onClick={onClickAdd}
         />
