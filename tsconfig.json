@@ -37,6 +37,7 @@
     "next-env.d.ts",
     "**/*.ts",
     "**/*.tsx",
+    ".storybook/*.ts",
     ".next/types/**/*.ts",
     "tailwind.config.ts",
     "next.config.mjs",
