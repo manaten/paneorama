@@ -39,6 +39,7 @@ export const MainCanvas: FC<Props> = ({
           )}
           iconType='add'
           onClick={onClickAdd}
+          title='Start screen capture'
         />
       </div>
 

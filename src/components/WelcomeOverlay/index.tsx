@@ -84,6 +84,7 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
                 <button
                   onClick={handleInstallClick}
                   className='pointer-events-auto px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700 border border-slate-300 hover:border-slate-400 rounded-md bg-transparent transition-colors cursor-pointer'
+                  title='Install Paneorama as a Progressive Web App'
                 >
                   Install App
                 </button>
