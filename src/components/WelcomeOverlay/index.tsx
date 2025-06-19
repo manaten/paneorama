@@ -3,11 +3,22 @@
 import classNames from "classnames";
 import { FC } from "react";
 
+import { useInstallPrompt } from "../../hooks/useInstallPrompt";
+
 interface Props {
   className?: string;
 }
 
 export const WelcomeOverlay: FC<Props> = ({ className }) => {
+  const { isInstallable, promptInstall } = useInstallPrompt();
+
+  const handleInstallClick = async () => {
+    const installed = await promptInstall();
+    if (installed) {
+      console.log("App installed successfully");
+    }
+  };
+
   return (
     <div
       className={classNames(
@@ -63,6 +74,21 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
               <span>Look for the button in the top-right corner</span>
               <span className='text-blue-500'>↗</span>
             </div>
+
+            {/* PWA Install Tip */}
+            {isInstallable && (
+              <div className='mt-4 flex flex-col items-center'>
+                <p className='mb-2 text-sm font-medium text-slate-700'>
+                  Install the app for a better experience
+                </p>
+                <button
+                  onClick={handleInstallClick}
+                  className='pointer-events-auto px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700 border border-slate-300 hover:border-slate-400 rounded-md bg-transparent transition-colors cursor-pointer'
+                >
+                  Install App
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

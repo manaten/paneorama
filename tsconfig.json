@@ -33,6 +33,7 @@
     "**/*.ts",
     "**/*.tsx",
     ".storybook/*.ts",
+    "public/sw.js",
     "tailwind.config.ts",
     "vite.config.ts",
     "lint-staged.config.mjs",
