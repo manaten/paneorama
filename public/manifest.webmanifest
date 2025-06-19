@@ -1,14 +1,28 @@
 {
   "name": "Paneorama",
   "short_name": "Paneorama",
-  "description": "Paneorama is screen pane manager for streaming.",
-  "start_url": "/",
+  "description": "Screen pane manager for streaming and presentations",
+  "start_url": "/paneorama/",
   "display": "standalone",
-  "background_color": "#fff",
-  "theme_color": "#fff",
+  "background_color": "#ffffff",
+  "theme_color": "#4f46e5",
+  "orientation": "landscape-primary",
+  "categories": ["productivity", "utilities"],
   "icons": [
     {
-      "src": "/favicon.ico",
+      "src": "/paneorama/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/paneorama/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/paneorama/favicon.ico",
       "sizes": "any",
       "type": "image/x-icon",
       "purpose": "any"
