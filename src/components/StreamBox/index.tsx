@@ -81,24 +81,28 @@ export const StreamBox: FC<Props> = ({
             iconType='switch_video'
             iconColor={color}
             onClick={switchVideoHandler}
+            title='Switch to different screen/window'
           />
           <Button
             className='pointer-events-auto'
             iconType='move_up'
             iconColor={color}
             onClick={moveUpHandler}
+            title='Bring to front'
           />
           <Button
             className='pointer-events-auto'
             iconType='move_down'
             iconColor={color}
             onClick={moveDownHandler}
+            title='Send to back'
           />
           <Button
             className='pointer-events-auto'
             iconType='close'
             iconColor={color}
             onClick={closeHandler}
+            title='Close stream'
           />
         </div>
 
