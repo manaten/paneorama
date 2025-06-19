@@ -8,6 +8,9 @@ import { getPastelColor } from "./utils/colors";
 const displayMediaOptions = {
   video: {
     displaySurface: "window",
+    width: { ideal: 2000 },
+    height: { ideal: 2000 },
+    frameRate: { ideal: 30 },
   },
   audio: false,
 } as const satisfies DisplayMediaStreamOptions;
@@ -26,6 +29,9 @@ export const Container: FC = () => {
       // @see https://developer.mozilla.org/en-US/docs/Web/API/Screen_Capture_API/Using_Screen_Capture
       const captureStream =
         await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+
+      const settings = captureStream.getVideoTracks()[0]?.getSettings();
+      console.log(settings?.width, settings?.height, settings?.frameRate);
 
       setMediaItems((prev) => [
         ...prev,
