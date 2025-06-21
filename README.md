@@ -1,3 +1,5 @@
+<img src="public/assets/icon-192.png" style="width: 48px; height: auto;" >
+
 # Paneorama
 
 > A screen pane manager for streaming
