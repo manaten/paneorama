@@ -3,6 +3,7 @@
 import classNames from "classnames";
 import { FC } from "react";
 
+import Icon from "../../../public/assets/icon.svg?react";
 import { useInstallPrompt } from "../../hooks/useInstallPrompt";
 
 interface Props {
@@ -30,8 +31,9 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
       <div className='mx-auto max-w-xl px-8 text-center'>
         {/* Logo/Title */}
         <div className='mb-8'>
-          <h1 className='mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-5xl font-bold text-transparent'>
-            Paneorama
+          <h1 className='mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-5xl font-bold text-transparent flex items-center gap-2'>
+            <Icon className='w-14 h-14' />
+            <span>Paneorama</span>
           </h1>
           <p className='text-lg font-medium text-slate-700'>
             Screen pane manager for streaming

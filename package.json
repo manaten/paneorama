@@ -19,7 +19,8 @@
     "fix:prettier": "prettier --write --ignore-unknown .",
     "test": "vitest run",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "gen:icons": "npx icon-gen -i ./public/assets/icon.svg -o ./public -r --ico --ico-name=favicon --ico-sizes=48 --favicon --favicon-name=assets/icon- --favicon-png-sizes=192,512"
   },
   "dependencies": {
     "@material-design-icons/svg": "^0.14.13",
