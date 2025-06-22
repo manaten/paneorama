@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 
-import { useDragResize } from "../../hooks/useDragResize";
 import { Mode, StreamBoxData } from "../../types/streamBox";
 import { createDefaultStreamBoxData } from "../../utils/streamBoxDisplay";
 import { Button } from "../Button";
@@ -80,20 +79,21 @@ export const StreamBox: FC<Props> = ({
   const [isHovered, setIsHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
-  // 新しいデータモデル（仮の初期値）
-  const [streamBoxData, _setStreamBoxData] = useState<StreamBoxData>(
+  // データモデル状態
+  const [streamBoxData, setStreamBoxData] = useState<StreamBoxData>(
     createDefaultStreamBoxData(),
   );
   const [mode, setMode] = useState<Mode>("resize");
 
-  // 既存のドラッグ&リサイズロジック（後で修正予定）
-  const {
-    state,
-    handleMouseDown,
-    handleResizeStart,
-    addEventListeners,
-    removeEventListeners,
-  } = useDragResize();
+  // ドラッグ状態
+  const [isDragging, setIsDragging] = useState(false);
+  const [isResizing, setIsResizing] = useState(false);
+  const [activeHandle, setActiveHandle] = useState<string | null>(null);
+  const dragStartRef = useRef<{
+    x: number;
+    y: number;
+    data: StreamBoxData;
+  } | null>(null);
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -110,18 +110,208 @@ export const StreamBox: FC<Props> = ({
     };
   }, [media]);
 
+  // マウスイベントハンドラー
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      if (!dragStartRef.current) return;
+
+      const deltaX = e.clientX - dragStartRef.current.x;
+      const deltaY = e.clientY - dragStartRef.current.y;
+      const initialData = dragStartRef.current.data;
+
+      if (isDragging) {
+        if (mode === "resize") {
+          // コンテナの移動
+          setStreamBoxData((prev) => ({
+            ...prev,
+            containerPosition: {
+              x: initialData.containerPosition.x + deltaX,
+              y: initialData.containerPosition.y + deltaY,
+            },
+          }));
+        } else {
+          // クロップモード：cropRectの位置を変更（パン）
+          setStreamBoxData((prev) => ({
+            ...prev,
+            cropRect: {
+              ...prev.cropRect,
+              x: initialData.cropRect.x - deltaX,
+              y: initialData.cropRect.y - deltaY,
+            },
+          }));
+        }
+      } else if (isResizing && activeHandle) {
+        if (mode === "resize") {
+          // コンテナのリサイズ
+          const getNewContainerData = () => {
+            const minSize = 100;
+            switch (activeHandle) {
+              case "se": // 右下
+                return {
+                  containerSize: {
+                    width: Math.max(
+                      minSize,
+                      initialData.containerSize.width + deltaX,
+                    ),
+                    height: Math.max(
+                      minSize,
+                      initialData.containerSize.height + deltaY,
+                    ),
+                  },
+                  containerPosition: initialData.containerPosition,
+                };
+              case "sw": // 左下
+                return {
+                  containerSize: {
+                    width: Math.max(
+                      minSize,
+                      initialData.containerSize.width - deltaX,
+                    ),
+                    height: Math.max(
+                      minSize,
+                      initialData.containerSize.height + deltaY,
+                    ),
+                  },
+                  containerPosition: {
+                    ...initialData.containerPosition,
+                    x: initialData.containerPosition.x + deltaX,
+                  },
+                };
+              case "ne": // 右上
+                return {
+                  containerSize: {
+                    width: Math.max(
+                      minSize,
+                      initialData.containerSize.width + deltaX,
+                    ),
+                    height: Math.max(
+                      minSize,
+                      initialData.containerSize.height - deltaY,
+                    ),
+                  },
+                  containerPosition: {
+                    ...initialData.containerPosition,
+                    y: initialData.containerPosition.y + deltaY,
+                  },
+                };
+              case "nw": // 左上
+                return {
+                  containerSize: {
+                    width: Math.max(
+                      minSize,
+                      initialData.containerSize.width - deltaX,
+                    ),
+                    height: Math.max(
+                      minSize,
+                      initialData.containerSize.height - deltaY,
+                    ),
+                  },
+                  containerPosition: {
+                    x: initialData.containerPosition.x + deltaX,
+                    y: initialData.containerPosition.y + deltaY,
+                  },
+                };
+              default:
+                return {
+                  containerSize: initialData.containerSize,
+                  containerPosition: initialData.containerPosition,
+                };
+            }
+          };
+
+          const { containerSize, containerPosition } = getNewContainerData();
+          setStreamBoxData((prev) => ({
+            ...prev,
+            containerSize,
+            containerPosition,
+          }));
+        } else {
+          // クロップモード：cropRectのサイズを変更（ズーム）
+          const scaleFactor = 1 + (deltaX + deltaY) / 200;
+          const newWidth = Math.max(
+            50,
+            Math.min(800, initialData.cropRect.width / scaleFactor),
+          );
+          const newHeight = Math.max(
+            50,
+            Math.min(600, initialData.cropRect.height / scaleFactor),
+          );
+
+          // 中心を維持しながらリサイズ
+          const centerX =
+            initialData.cropRect.x + initialData.cropRect.width / 2;
+          const centerY =
+            initialData.cropRect.y + initialData.cropRect.height / 2;
+
+          setStreamBoxData((prev) => ({
+            ...prev,
+            cropRect: {
+              x: centerX - newWidth / 2,
+              y: centerY - newHeight / 2,
+              width: newWidth,
+              height: newHeight,
+            },
+          }));
+        }
+      }
+    },
+    [isDragging, isResizing, activeHandle, mode],
+  );
+
+  const handleMouseUp = useCallback(() => {
+    setIsDragging(false);
+    setIsResizing(false);
+    setActiveHandle(null);
+    // eslint-disable-next-line functional/immutable-data
+    dragStartRef.current = null;
+  }, []);
+
+  const handleMouseDown = useCallback(
+    (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // eslint-disable-next-line functional/immutable-data
+      dragStartRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        data: streamBoxData,
+      };
+      setIsDragging(true);
+    },
+    [streamBoxData],
+  );
+
+  const handleResizeStart = useCallback(
+    (handle: string, e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      // eslint-disable-next-line functional/immutable-data
+      dragStartRef.current = {
+        x: e.clientX,
+        y: e.clientY,
+        data: streamBoxData,
+      };
+      setIsResizing(true);
+      setActiveHandle(handle);
+    },
+    [streamBoxData],
+  );
+
+  // イベントリスナーの管理
   useEffect(() => {
-    if (state.isDragging || state.isResizing) {
-      addEventListeners();
-      return removeEventListeners;
+    if (isDragging || isResizing) {
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+
+      return () => {
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+      };
     }
     return undefined;
-  }, [
-    state.isDragging,
-    state.isResizing,
-    addEventListeners,
-    removeEventListeners,
-  ]);
+  }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
 
   const closeHandler = useCallback(() => {
     onClickClose?.(id);
