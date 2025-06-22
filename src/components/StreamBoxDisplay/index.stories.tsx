@@ -31,10 +31,6 @@ const meta: Meta<typeof StreamBoxDisplay> = {
       control: "color",
       description: "ボーダーの色",
     },
-    interactive: {
-      control: "boolean",
-      description: "操作を有効にするか",
-    },
   },
 };
 
@@ -155,7 +151,6 @@ export const Default: Story = {
   args: {
     data: baseData,
     borderColor: "#3b82f6",
-    interactive: false,
     children: <TestGrid />,
   },
 };
@@ -165,7 +160,6 @@ export const Interactive: Story = {
     data: baseData,
     mode: "resize",
     borderColor: "#3b82f6",
-    interactive: true,
     children: <TestGrid />,
   },
   parameters: {
@@ -183,7 +177,6 @@ export const InteractiveCrop: Story = {
     data: baseData,
     mode: "crop",
     borderColor: "#10b981",
-    interactive: true,
     children: <TestGrid />,
   },
   parameters: {
@@ -203,7 +196,6 @@ export const CroppedCenter: Story = {
     },
     children: <TestGrid />,
     borderColor: "#10b981",
-    interactive: false,
   },
   parameters: {
     docs: {
@@ -223,7 +215,6 @@ export const CroppedTopLeft: Story = {
     },
     children: <TestGrid />,
     borderColor: "#f59e0b",
-    interactive: false,
   },
   parameters: {
     docs: {
@@ -243,7 +234,6 @@ export const CroppedBottomRight: Story = {
     },
     children: <TestGrid />,
     borderColor: "#ef4444",
-    interactive: false,
   },
   parameters: {
     docs: {
@@ -265,7 +255,6 @@ export const ZoomedIn: Story = {
     },
     children: <TestGrid />,
     borderColor: "#8b5cf6",
-    interactive: false,
   },
   parameters: {
     docs: {
@@ -285,7 +274,6 @@ export const ZoomedOut: Story = {
     },
     children: <TestGrid />,
     borderColor: "#06b6d4",
-    interactive: false,
   },
   parameters: {
     docs: {
@@ -307,7 +295,6 @@ export const PannedLeft: Story = {
     },
     children: <TestGrid />,
     borderColor: "#f97316",
-    interactive: false,
   },
   parameters: {
     docs: {
@@ -327,7 +314,6 @@ export const PannedUp: Story = {
     },
     children: <TestGrid />,
     borderColor: "#84cc16",
-    interactive: false,
   },
   parameters: {
     docs: {
@@ -350,7 +336,6 @@ export const SmallContainer: Story = {
     },
     children: <TestGrid />,
     borderColor: "#ec4899",
-    interactive: false,
   },
   parameters: {
     docs: {
@@ -370,7 +355,6 @@ export const LargeContainer: Story = {
     },
     children: <TestGrid />,
     borderColor: "#6366f1",
-    interactive: false,
   },
   parameters: {
     docs: {
@@ -392,7 +376,6 @@ export const ComplexTransform: Story = {
     },
     children: <TestGrid />,
     borderColor: "#be185d",
-    interactive: false,
   },
   parameters: {
     docs: {

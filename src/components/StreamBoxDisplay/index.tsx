@@ -56,6 +56,7 @@ const ResizeHandle: FC<ResizeHandleProps> = ({ handle, onMouseDown, mode }) => {
 };
 
 interface Props {
+  className?: string;
   /**
    * StreamBoxの初期データモデル
    */
@@ -77,19 +78,9 @@ interface Props {
   borderColor?: string;
 
   /**
-   * 操作を有効にするか（オプション）
-   */
-  interactive?: boolean;
-
-  /**
    * データ変更時のコールバック（オプション）
    */
   onDataChange?: (data: StreamBoxData) => void;
-
-  /**
-   * モード変更時のコールバック（オプション）
-   */
-  onModeChange?: (mode: Mode) => void;
 }
 
 /**
@@ -99,19 +90,15 @@ interface Props {
  * interactive=trueの場合、ユーザー操作も可能です。
  */
 export const TransformDisplay: FC<Props> = ({
+  className,
   data: initialData,
   children,
-  mode: externalMode,
+  mode = "resize",
   borderColor = "#3b82f6",
-  interactive = false,
   onDataChange,
-  onModeChange: _onModeChange,
 }) => {
   // 内部状態
   const [internalData, setInternalData] = useState<StreamBoxData>(initialData);
-  const [internalMode, _setInternalMode] = useState<Mode>(
-    externalMode || "resize",
-  );
   const [isHovered, setIsHovered] = useState(false);
 
   // ドラッグ状態
@@ -126,7 +113,7 @@ export const TransformDisplay: FC<Props> = ({
 
   // 使用するデータとモード
   const currentData = internalData;
-  const currentMode = internalMode;
+  const currentMode = mode;
 
   // 表示用プロパティを計算
   const displayProps = calculateDisplayProperties(currentData);
@@ -140,19 +127,10 @@ export const TransformDisplay: FC<Props> = ({
     [onDataChange],
   );
 
-  // モード変更ハンドラー（将来の拡張用）
-  // const updateMode = useCallback(
-  //   (newMode: Mode) => {
-  //     setInternalMode(newMode);
-  //     onModeChange?.(newMode);
-  //   },
-  //   [onModeChange],
-  // );
-
   // マウスイベントハンドラー（interactiveの場合のみ）
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      if (!interactive || !dragStartRef.current) return;
+      if (!dragStartRef.current) return;
 
       const deltaX = e.clientX - dragStartRef.current.x;
       const deltaY = e.clientY - dragStartRef.current.y;
@@ -295,7 +273,6 @@ export const TransformDisplay: FC<Props> = ({
       }
     },
     [
-      interactive,
       isDragging,
       isResizing,
       activeHandle,
@@ -306,17 +283,15 @@ export const TransformDisplay: FC<Props> = ({
   );
 
   const handleMouseUp = useCallback(() => {
-    if (!interactive) return;
     setIsDragging(false);
     setIsResizing(false);
     setActiveHandle(null);
     // eslint-disable-next-line functional/immutable-data
     dragStartRef.current = null;
-  }, [interactive]);
+  }, []);
 
   const handleMouseDown = useCallback(
     (e: React.MouseEvent) => {
-      if (!interactive) return;
       e.preventDefault();
       e.stopPropagation();
 
@@ -328,12 +303,11 @@ export const TransformDisplay: FC<Props> = ({
       };
       setIsDragging(true);
     },
-    [interactive, currentData],
+    [currentData],
   );
 
   const handleResizeStart = useCallback(
     (handle: string, e: React.MouseEvent) => {
-      if (!interactive) return;
       e.preventDefault();
       e.stopPropagation();
 
@@ -346,12 +320,12 @@ export const TransformDisplay: FC<Props> = ({
       setIsResizing(true);
       setActiveHandle(handle);
     },
-    [interactive, currentData],
+    [currentData],
   );
 
   // イベントリスナーの管理
   useEffect(() => {
-    if (!interactive || (!isDragging && !isResizing)) return undefined;
+    if (!isDragging && !isResizing) return undefined;
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
@@ -360,10 +334,10 @@ export const TransformDisplay: FC<Props> = ({
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [interactive, isDragging, isResizing, handleMouseMove, handleMouseUp]);
+  }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
 
   return (
-    <div className='relative'>
+    <div className={classNames(className, "relative")}>
       {/* 表示コンポーネント */}
       <div className='absolute select-none' style={displayProps.containerStyle}>
         <div className='relative flex size-full items-center justify-center bg-black overflow-hidden'>
@@ -396,61 +370,59 @@ export const TransformDisplay: FC<Props> = ({
       </div>
 
       {/* 操作レイヤー（interactiveの場合のみ） */}
-      {interactive && (
-        <div
-          className='absolute select-none cursor-move'
-          style={{
-            left: currentData.containerPosition.x,
-            top: currentData.containerPosition.y,
-            width: currentData.containerSize.width,
-            height: currentData.containerSize.height,
-          }}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-          onMouseDown={handleMouseDown}
-          role='button'
-          tabIndex={0}
-          aria-label={`${currentMode === "resize" ? "Move" : "Pan content"}`}
-          onKeyDown={(e) => {
-            if (e.key === "Enter" || e.key === " ") {
-              e.preventDefault();
-            }
-          }}
-        >
-          <div className='group/transform-display size-full'>
-            {/* リサイズハンドル */}
-            {isHovered && (
-              <>
-                <ResizeHandle
-                  handle='nw'
-                  onMouseDown={handleResizeStart}
-                  mode={currentMode}
-                />
-                <ResizeHandle
-                  handle='ne'
-                  onMouseDown={handleResizeStart}
-                  mode={currentMode}
-                />
-                <ResizeHandle
-                  handle='sw'
-                  onMouseDown={handleResizeStart}
-                  mode={currentMode}
-                />
-                <ResizeHandle
-                  handle='se'
-                  onMouseDown={handleResizeStart}
-                  mode={currentMode}
-                />
-              </>
-            )}
+      <div
+        className='absolute select-none cursor-move'
+        style={{
+          left: currentData.containerPosition.x,
+          top: currentData.containerPosition.y,
+          width: currentData.containerSize.width,
+          height: currentData.containerSize.height,
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onMouseDown={handleMouseDown}
+        role='button'
+        tabIndex={0}
+        aria-label={`${currentMode === "resize" ? "Move" : "Pan content"}`}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+          }
+        }}
+      >
+        <div className='group/transform-display size-full'>
+          {/* リサイズハンドル */}
+          {isHovered && (
+            <>
+              <ResizeHandle
+                handle='nw'
+                onMouseDown={handleResizeStart}
+                mode={currentMode}
+              />
+              <ResizeHandle
+                handle='ne'
+                onMouseDown={handleResizeStart}
+                mode={currentMode}
+              />
+              <ResizeHandle
+                handle='sw'
+                onMouseDown={handleResizeStart}
+                mode={currentMode}
+              />
+              <ResizeHandle
+                handle='se'
+                onMouseDown={handleResizeStart}
+                mode={currentMode}
+              />
+            </>
+          )}
 
-            {/* クロップモード表示 */}
-            {currentMode === "crop" && isHovered && (
-              <div className='absolute inset-0 pointer-events-none border-2 border-dashed border-yellow-400 opacity-50' />
-            )}
-          </div>
+          {/* クロップモード表示 */}
+          {currentMode === "crop" && isHovered && (
+            <div className='absolute inset-0 pointer-events-none border-2 border-dashed border-yellow-400 opacity-50' />
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 };

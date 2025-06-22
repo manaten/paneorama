@@ -53,11 +53,6 @@ export const StreamBox: FC<Props> = ({
     setStreamBoxData(newData);
   }, []);
 
-  // モード変更ハンドラー
-  const handleModeChange = useCallback((newMode: Mode) => {
-    setMode(newMode);
-  }, []);
-
   const closeHandler = useCallback(() => {
     onClickClose?.(id);
   }, [id, onClickClose]);
@@ -79,85 +74,66 @@ export const StreamBox: FC<Props> = ({
   }, []);
 
   return (
-    <div className='relative'>
-      {/* リサイズ・クロップ操作コンポーネント */}
-      <StreamBoxDisplay
-        data={streamBoxData}
-        mode={mode}
-        borderColor={color}
-        interactive={true}
-        onDataChange={handleDataChange}
-        onModeChange={handleModeChange}
-      >
-        <video
-          ref={videoRef}
-          className='size-full pointer-events-none'
-          autoPlay
-          muted
-        />
-      </StreamBoxDisplay>
+    <StreamBoxDisplay
+      className='group/video-box relative'
+      data={streamBoxData}
+      mode={mode}
+      borderColor={color}
+      onDataChange={handleDataChange}
+    >
+      <video
+        ref={videoRef}
+        className='size-full pointer-events-none'
+        autoPlay
+        muted
+      />
 
-      {/* コントロールボタンレイヤー */}
+      {/* コントロールボタン */}
       <div
-        className='absolute pointer-events-none'
-        style={{
-          left: streamBoxData.containerPosition.x,
-          top: streamBoxData.containerPosition.y,
-          width: streamBoxData.containerSize.width,
-          height: streamBoxData.containerSize.height,
-        }}
+        className={classNames(
+          "pointer-events-none absolute right-0 top-0 z-50 flex flex-row gap-1 p-2",
+          "transition-opacity duration-200 ease-in-out",
+          "opacity-0 group-hover/transform-display:opacity-100",
+        )}
       >
-        <div className='group/video-box size-full'>
-          {/* コントロールボタン */}
-          <div
-            className={classNames(
-              "pointer-events-none absolute right-0 top-0 z-50 flex flex-row gap-1 p-2",
-              "transition-opacity duration-200 ease-in-out",
-              "opacity-0 group-hover/video-box:opacity-100",
-            )}
-          >
-            <Button
-              className='pointer-events-auto'
-              iconType={mode === "resize" ? "crop" : "fullscreen_exit"}
-              iconColor={color}
-              onClick={toggleMode}
-              title={
-                mode === "resize"
-                  ? "Switch to crop mode"
-                  : "Switch to resize mode"
-              }
-            />
-            <Button
-              className='pointer-events-auto'
-              iconType='switch_video'
-              iconColor={color}
-              onClick={switchVideoHandler}
-              title='Switch to different screen/window'
-            />
-            <Button
-              className='pointer-events-auto'
-              iconType='move_up'
-              iconColor={color}
-              onClick={moveUpHandler}
-              title='Bring to front'
-            />
-            <Button
-              className='pointer-events-auto'
-              iconType='move_down'
-              iconColor={color}
-              onClick={moveDownHandler}
-              title='Send to back'
-            />
-            <Button
-              className='pointer-events-auto'
-              iconType='close'
-              iconColor={color}
-              onClick={closeHandler}
-              title='Close stream'
-            />
-          </div>
-        </div>
+        <Button
+          className='pointer-events-auto'
+          iconType={mode === "resize" ? "crop" : "fullscreen_exit"}
+          iconColor={color}
+          onClick={toggleMode}
+          title={
+            mode === "resize" ? "Switch to crop mode" : "Switch to resize mode"
+          }
+        />
+        <Button
+          className='pointer-events-auto'
+          iconType='switch_video'
+          iconColor={color}
+          onClick={switchVideoHandler}
+          title='Switch to different screen/window'
+        />
+        <Button
+          className='pointer-events-auto'
+          iconType='move_up'
+          iconColor={color}
+          onClick={moveUpHandler}
+          title='Bring to front'
+        />
+        <Button
+          className='pointer-events-auto'
+          iconType='move_down'
+          iconColor={color}
+          onClick={moveDownHandler}
+          title='Send to back'
+        />
+        <Button
+          className='pointer-events-auto'
+          iconType='close'
+          iconColor={color}
+          onClick={closeHandler}
+          title='Close stream'
+        />
       </div>
-    </div>
+    </StreamBoxDisplay>
   );
 };
