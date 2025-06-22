@@ -1,8 +1,11 @@
 import classNames from "classnames";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 
-import { useDragResize, Mode } from "../../hooks/useDragResize";
+import { useDragResize } from "../../hooks/useDragResize";
+import { Mode, StreamBoxData } from "../../types/streamBox";
+import { createDefaultStreamBoxData } from "../../utils/streamBoxDisplay";
 import { Button } from "../Button";
+import { StreamBoxDisplay } from "../StreamBoxDisplay";
 
 interface Props {
   id: string;
@@ -77,11 +80,17 @@ export const StreamBox: FC<Props> = ({
   const [isHovered, setIsHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
 
+  // 新しいデータモデル（仮の初期値）
+  const [streamBoxData, _setStreamBoxData] = useState<StreamBoxData>(
+    createDefaultStreamBoxData(),
+  );
+  const [mode, setMode] = useState<Mode>("resize");
+
+  // 既存のドラッグ&リサイズロジック（後で修正予定）
   const {
     state,
     handleMouseDown,
     handleResizeStart,
-    setMode,
     addEventListeners,
     removeEventListeners,
   } = useDragResize();
@@ -131,126 +140,128 @@ export const StreamBox: FC<Props> = ({
   }, [id, onClickSwitchVideo]);
 
   const toggleMode = useCallback(() => {
-    setMode(state.mode === "resize" ? "crop" : "resize");
-  }, [state.mode, setMode]);
+    setMode((prev) => (prev === "resize" ? "crop" : "resize"));
+  }, []);
 
   return (
-    <div
-      className='absolute select-none'
-      style={{
-        left: state.position.x,
-        top: state.position.y,
-        width: state.size.width,
-        height: state.size.height,
-      }}
-    >
+    <div className='relative'>
+      {/* 表示コンポーネント */}
+      <StreamBoxDisplay
+        data={streamBoxData}
+        borderColor={color}
+        isHovered={isHovered}
+      >
+        <video
+          ref={videoRef}
+          className='size-full pointer-events-none'
+          autoPlay
+          muted
+        />
+      </StreamBoxDisplay>
+
+      {/* 操作レイヤー */}
       <div
-        className='group/video-box relative flex size-full items-center justify-center bg-black overflow-hidden cursor-move'
+        className='absolute select-none cursor-move'
+        style={{
+          left: streamBoxData.containerPosition.x,
+          top: streamBoxData.containerPosition.y,
+          width: streamBoxData.containerSize.width,
+          height: streamBoxData.containerSize.height,
+        }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onMouseDown={handleMouseDown}
         role='button'
         tabIndex={0}
-        aria-label={`${state.mode === "resize" ? "Move" : "Pan video"} stream ${id}`}
+        aria-label={`${mode === "resize" ? "Move" : "Pan video"} stream ${id}`}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
           }
         }}
       >
-        <div
-          className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
-          style={{ borderColor: color, opacity: isHovered ? 1 : 0 }}
-        />
+        <div className='group/video-box size-full'>
+          {/* コントロールボタン */}
+          <div
+            className={classNames(
+              "pointer-events-none absolute right-0 top-0 z-50 flex flex-row gap-1 p-2",
+              "transition-opacity duration-200 ease-in-out",
+              "opacity-0 group-hover/video-box:opacity-100",
+            )}
+          >
+            <Button
+              className='pointer-events-auto'
+              iconType={mode === "resize" ? "crop" : "fullscreen_exit"}
+              iconColor={color}
+              onClick={toggleMode}
+              title={
+                mode === "resize"
+                  ? "Switch to crop mode"
+                  : "Switch to resize mode"
+              }
+            />
+            <Button
+              className='pointer-events-auto'
+              iconType='switch_video'
+              iconColor={color}
+              onClick={switchVideoHandler}
+              title='Switch to different screen/window'
+            />
+            <Button
+              className='pointer-events-auto'
+              iconType='move_up'
+              iconColor={color}
+              onClick={moveUpHandler}
+              title='Bring to front'
+            />
+            <Button
+              className='pointer-events-auto'
+              iconType='move_down'
+              iconColor={color}
+              onClick={moveDownHandler}
+              title='Send to back'
+            />
+            <Button
+              className='pointer-events-auto'
+              iconType='close'
+              iconColor={color}
+              onClick={closeHandler}
+              title='Close stream'
+            />
+          </div>
 
-        <div
-          className={classNames(
-            "pointer-events-none absolute right-0 top-0 z-50 flex flex-row gap-1 p-2",
-            "transition-opacity duration-200 ease-in-out",
-            "opacity-0 group-hover/video-box:opacity-100",
+          {/* リサイズハンドル */}
+          {isHovered && (
+            <>
+              <ResizeHandle
+                handle='nw'
+                onMouseDown={handleResizeStart}
+                mode={mode}
+              />
+              <ResizeHandle
+                handle='ne'
+                onMouseDown={handleResizeStart}
+                mode={mode}
+              />
+              <ResizeHandle
+                handle='sw'
+                onMouseDown={handleResizeStart}
+                mode={mode}
+              />
+              <ResizeHandle
+                handle='se'
+                onMouseDown={handleResizeStart}
+                mode={mode}
+              />
+            </>
           )}
-        >
-          <Button
-            className='pointer-events-auto'
-            iconType={state.mode === "resize" ? "crop" : "fullscreen_exit"}
-            iconColor={color}
-            onClick={toggleMode}
-            title={
-              state.mode === "resize"
-                ? "Switch to crop mode"
-                : "Switch to resize mode"
-            }
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='switch_video'
-            iconColor={color}
-            onClick={switchVideoHandler}
-            title='Switch to different screen/window'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='move_up'
-            iconColor={color}
-            onClick={moveUpHandler}
-            title='Bring to front'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='move_down'
-            iconColor={color}
-            onClick={moveDownHandler}
-            title='Send to back'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='close'
-            iconColor={color}
-            onClick={closeHandler}
-            title='Close stream'
-          />
+
+          {/* クロップモード表示 */}
+          {mode === "crop" && isHovered && (
+            <div className='absolute inset-0 pointer-events-none border-2 border-dashed border-yellow-400 opacity-50' />
+          )}
         </div>
-
-        <video
-          className='size-full object-cover pointer-events-none'
-          ref={videoRef}
-          autoPlay
-          muted
-          style={{
-            transform: `translate(${state.cropTransform.x}px, ${state.cropTransform.y}px) scale(${state.cropTransform.scale})`,
-            transformOrigin: "center center",
-          }}
-        />
       </div>
-
-      {isHovered && (
-        <>
-          <ResizeHandle
-            handle='nw'
-            onMouseDown={handleResizeStart}
-            mode={state.mode}
-          />
-          <ResizeHandle
-            handle='ne'
-            onMouseDown={handleResizeStart}
-            mode={state.mode}
-          />
-          <ResizeHandle
-            handle='sw'
-            onMouseDown={handleResizeStart}
-            mode={state.mode}
-          />
-          <ResizeHandle
-            handle='se'
-            onMouseDown={handleResizeStart}
-            mode={state.mode}
-          />
-        </>
-      )}
-
-      {state.mode === "crop" && isHovered && (
-        <div className='absolute inset-0 pointer-events-none border-2 border-dashed border-yellow-400 opacity-50' />
-      )}
     </div>
   );
 };
