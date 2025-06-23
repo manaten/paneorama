@@ -65,7 +65,7 @@ const TestGrid = () => (
     {/* グリッドライン */}
     <g stroke='white' strokeWidth='1' opacity='0.5'>
       {/* 縦線 */}
-      {Array.from({ length: 22 }).map((_, i) => (
+      {Array.from({ length: 17 }).map((_, i) => (
         <line key={`v-${i}`} x1={i * 25} y1='0' x2={i * 25} y2='300' />
       ))}
       {/* 横線 */}

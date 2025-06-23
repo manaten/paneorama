@@ -237,37 +237,111 @@ export const TransformDisplay: FC<Props> = ({
           };
 
           const { containerSize, containerPosition } = getNewContainerData();
+
+          // リサイズ時は、cropRectをコンテナサイズに比例して調整
+          const scaleX = containerSize.width / initialData.containerSize.width;
+          const scaleY =
+            containerSize.height / initialData.containerSize.height;
+
           updateData({
             ...currentData,
             containerSize,
             containerPosition,
+            cropRect: {
+              x: initialData.cropRect.x * scaleX,
+              y: initialData.cropRect.y * scaleY,
+              width: initialData.cropRect.width * scaleX,
+              height: initialData.cropRect.height * scaleY,
+            },
           });
         } else {
-          // クロップモード：cropRectのサイズを変更（ズーム）
-          const scaleFactor = 1 + (deltaX + deltaY) / 200;
-          const newWidth = Math.max(
-            50,
-            Math.min(800, initialData.cropRect.width / scaleFactor),
-          );
-          const newHeight = Math.max(
-            50,
-            Math.min(600, initialData.cropRect.height / scaleFactor),
-          );
+          // クロップモード：各ハンドルでcropRectの境界を調整
+          const getNewCropRect = () => {
+            const minSize = 50;
+            const maxWidth = 800;
+            const maxHeight = 600;
 
-          // 中心を維持しながらリサイズ
-          const centerX =
-            initialData.cropRect.x + initialData.cropRect.width / 2;
-          const centerY =
-            initialData.cropRect.y + initialData.cropRect.height / 2;
+            switch (activeHandle) {
+              case "se": // 右下 - 右端と下端を調整
+                return {
+                  x: initialData.cropRect.x,
+                  y: initialData.cropRect.y,
+                  width: Math.max(
+                    minSize,
+                    Math.min(maxWidth, initialData.cropRect.width + deltaX),
+                  ),
+                  height: Math.max(
+                    minSize,
+                    Math.min(maxHeight, initialData.cropRect.height + deltaY),
+                  ),
+                };
+              case "sw": // 左下 - 左端と下端を調整
+                return {
+                  x: Math.min(
+                    initialData.cropRect.x +
+                      initialData.cropRect.width -
+                      minSize,
+                    initialData.cropRect.x + deltaX,
+                  ),
+                  y: initialData.cropRect.y,
+                  width: Math.max(
+                    minSize,
+                    Math.min(maxWidth, initialData.cropRect.width - deltaX),
+                  ),
+                  height: Math.max(
+                    minSize,
+                    Math.min(maxHeight, initialData.cropRect.height + deltaY),
+                  ),
+                };
+              case "ne": // 右上 - 右端と上端を調整
+                return {
+                  x: initialData.cropRect.x,
+                  y: Math.min(
+                    initialData.cropRect.y +
+                      initialData.cropRect.height -
+                      minSize,
+                    initialData.cropRect.y + deltaY,
+                  ),
+                  width: Math.max(
+                    minSize,
+                    Math.min(maxWidth, initialData.cropRect.width + deltaX),
+                  ),
+                  height: Math.max(
+                    minSize,
+                    Math.min(maxHeight, initialData.cropRect.height - deltaY),
+                  ),
+                };
+              case "nw": // 左上 - 左端と上端を調整
+                return {
+                  x: Math.min(
+                    initialData.cropRect.x +
+                      initialData.cropRect.width -
+                      minSize,
+                    initialData.cropRect.x + deltaX,
+                  ),
+                  y: Math.min(
+                    initialData.cropRect.y +
+                      initialData.cropRect.height -
+                      minSize,
+                    initialData.cropRect.y + deltaY,
+                  ),
+                  width: Math.max(
+                    minSize,
+                    Math.min(maxWidth, initialData.cropRect.width - deltaX),
+                  ),
+                  height: Math.max(
+                    minSize,
+                    Math.min(maxHeight, initialData.cropRect.height - deltaY),
+                  ),
+                };
+              default:
+                return initialData.cropRect;
+            }
+          };
 
           updateData({
             ...currentData,
-            cropRect: {
-              x: centerX - newWidth / 2,
-              y: centerY - newHeight / 2,
-              width: newWidth,
-              height: newHeight,
-            },
+            cropRect: getNewCropRect(),
           });
         }
       }
