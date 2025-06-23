@@ -339,9 +339,16 @@ export const TransformDisplay: FC<Props> = ({
             }
           };
 
+          const newCropRect = getNewCropRect();
+
+          // クロップモードでは、コンテナサイズもcropRectに合わせて調整
           updateData({
             ...currentData,
-            cropRect: getNewCropRect(),
+            containerSize: {
+              width: newCropRect.width,
+              height: newCropRect.height,
+            },
+            cropRect: newCropRect,
           });
         }
       }
