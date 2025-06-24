@@ -336,29 +336,99 @@ export const TransformDisplay: FC<Props> = ({
 
           const { containerSize, containerPosition } = getNewContainerData();
 
-          // 基準サイズからの倍率を計算
-          const newScaleX = containerSize.width / baseSize.width;
-          const newScaleY = containerSize.height / baseSize.height;
+          // 現在の表示倍率を計算
+          const currentScaleX =
+            initialData.containerSize.width / baseSize.width;
+          const currentScaleY =
+            initialData.containerSize.height / baseSize.height;
 
-          // cropRectは基準サイズを倍率で割り戻す（見かけ上同じサイズを維持）
-          const baseCropSize = baseSize.width; // 基準cropRectサイズ
+          // マウス移動量を基準座標系に変換（クロッピング調整量）
+          const baseDeltaX = -deltaX / currentScaleX;
+          const baseDeltaY = -deltaY / currentScaleY;
+
+          // 新しいcropRect（基準座標系で）
+          const getNewCropRect = () => {
+            const minCropSize = 10;
+            switch (activeHandle) {
+              case "se": // 右下 - cropRectの右端・下端を調整
+                return {
+                  x: initialData.cropRect.x,
+                  y: initialData.cropRect.y,
+                  width: Math.max(
+                    minCropSize,
+                    initialData.cropRect.width + baseDeltaX,
+                  ),
+                  height: Math.max(
+                    minCropSize,
+                    initialData.cropRect.height + baseDeltaY,
+                  ),
+                };
+              case "sw": {
+                // 左下 - cropRectの左端・下端を調整
+                const newWidth = Math.max(
+                  minCropSize,
+                  initialData.cropRect.width + baseDeltaX,
+                );
+                return {
+                  x:
+                    initialData.cropRect.x +
+                    initialData.cropRect.width -
+                    newWidth,
+                  y: initialData.cropRect.y,
+                  width: newWidth,
+                  height: Math.max(
+                    minCropSize,
+                    initialData.cropRect.height + baseDeltaY,
+                  ),
+                };
+              }
+              case "ne": {
+                // 右上 - cropRectの右端・上端を調整
+                const newHeight = Math.max(
+                  minCropSize,
+                  initialData.cropRect.height + baseDeltaY,
+                );
+                return {
+                  x: initialData.cropRect.x,
+                  y:
+                    initialData.cropRect.y +
+                    initialData.cropRect.height -
+                    newHeight,
+                  width: Math.max(
+                    minCropSize,
+                    initialData.cropRect.width + baseDeltaX,
+                  ),
+                  height: newHeight,
+                };
+              }
+              case "nw": {
+                // 左上 - cropRectの左端・上端を調整
+                const newW = Math.max(
+                  minCropSize,
+                  initialData.cropRect.width + baseDeltaX,
+                );
+                const newH = Math.max(
+                  minCropSize,
+                  initialData.cropRect.height + baseDeltaY,
+                );
+                return {
+                  x: initialData.cropRect.x + initialData.cropRect.width - newW,
+                  y:
+                    initialData.cropRect.y + initialData.cropRect.height - newH,
+                  width: newW,
+                  height: newH,
+                };
+              }
+              default:
+                return initialData.cropRect;
+            }
+          };
 
           updateData({
             ...currentData,
             containerSize,
             containerPosition,
-            scale: { x: newScaleX, y: newScaleY },
-            cropRect: {
-              x:
-                (initialData.cropRect.x / newScaleX) *
-                (initialData.scale?.x || 1),
-              y:
-                (initialData.cropRect.y / newScaleY) *
-                (initialData.scale?.y || 1),
-              width: baseCropSize / newScaleX,
-              height:
-                (baseCropSize * baseSize.height) / baseSize.width / newScaleY,
-            },
+            cropRect: getNewCropRect(),
           });
         }
       }
