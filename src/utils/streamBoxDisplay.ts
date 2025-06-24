@@ -58,9 +58,12 @@ export function calculateDisplayProperties(
  * デフォルトのStreamBoxデータを生成
  */
 export function createDefaultStreamBoxData(): StreamBoxData {
+  const baseSize = { width: 400, height: 300 };
   return {
     containerPosition: { x: 100, y: 100 },
-    containerSize: { width: 400, height: 300 },
+    containerSize: baseSize,
     cropRect: { x: 0, y: 0, width: 400, height: 300 },
+    baseSize,
+    scale: { x: 1, y: 1 },
   };
 }

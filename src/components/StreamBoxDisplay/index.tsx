@@ -255,100 +255,110 @@ export const TransformDisplay: FC<Props> = ({
             },
           });
         } else {
-          // クロップモード：各ハンドルでcropRectの境界を調整
-          const getNewCropRect = () => {
-            const minSize = 50;
-            const maxWidth = 800;
-            const maxHeight = 600;
+          // クロップモード：倍率ベースの計算
+          const baseSize = initialData.baseSize || initialData.containerSize;
 
+          const getNewContainerData = () => {
+            const minContainerSize = 100;
             switch (activeHandle) {
-              case "se": // 右下 - 右端と下端を調整
+              case "se": // 右下
                 return {
-                  x: initialData.cropRect.x,
-                  y: initialData.cropRect.y,
-                  width: Math.max(
-                    minSize,
-                    Math.min(maxWidth, initialData.cropRect.width + deltaX),
-                  ),
-                  height: Math.max(
-                    minSize,
-                    Math.min(maxHeight, initialData.cropRect.height + deltaY),
-                  ),
+                  containerSize: {
+                    width: Math.max(
+                      minContainerSize,
+                      initialData.containerSize.width + deltaX,
+                    ),
+                    height: Math.max(
+                      minContainerSize,
+                      initialData.containerSize.height + deltaY,
+                    ),
+                  },
+                  containerPosition: initialData.containerPosition,
                 };
-              case "sw": // 左下 - 左端と下端を調整
+              case "sw": // 左下
                 return {
-                  x: Math.min(
-                    initialData.cropRect.x +
-                      initialData.cropRect.width -
-                      minSize,
-                    initialData.cropRect.x + deltaX,
-                  ),
-                  y: initialData.cropRect.y,
-                  width: Math.max(
-                    minSize,
-                    Math.min(maxWidth, initialData.cropRect.width - deltaX),
-                  ),
-                  height: Math.max(
-                    minSize,
-                    Math.min(maxHeight, initialData.cropRect.height + deltaY),
-                  ),
+                  containerSize: {
+                    width: Math.max(
+                      minContainerSize,
+                      initialData.containerSize.width - deltaX,
+                    ),
+                    height: Math.max(
+                      minContainerSize,
+                      initialData.containerSize.height + deltaY,
+                    ),
+                  },
+                  containerPosition: {
+                    ...initialData.containerPosition,
+                    x: initialData.containerPosition.x + deltaX,
+                  },
                 };
-              case "ne": // 右上 - 右端と上端を調整
+              case "ne": // 右上
                 return {
-                  x: initialData.cropRect.x,
-                  y: Math.min(
-                    initialData.cropRect.y +
-                      initialData.cropRect.height -
-                      minSize,
-                    initialData.cropRect.y + deltaY,
-                  ),
-                  width: Math.max(
-                    minSize,
-                    Math.min(maxWidth, initialData.cropRect.width + deltaX),
-                  ),
-                  height: Math.max(
-                    minSize,
-                    Math.min(maxHeight, initialData.cropRect.height - deltaY),
-                  ),
+                  containerSize: {
+                    width: Math.max(
+                      minContainerSize,
+                      initialData.containerSize.width + deltaX,
+                    ),
+                    height: Math.max(
+                      minContainerSize,
+                      initialData.containerSize.height - deltaY,
+                    ),
+                  },
+                  containerPosition: {
+                    ...initialData.containerPosition,
+                    y: initialData.containerPosition.y + deltaY,
+                  },
                 };
-              case "nw": // 左上 - 左端と上端を調整
+              case "nw": // 左上
                 return {
-                  x: Math.min(
-                    initialData.cropRect.x +
-                      initialData.cropRect.width -
-                      minSize,
-                    initialData.cropRect.x + deltaX,
-                  ),
-                  y: Math.min(
-                    initialData.cropRect.y +
-                      initialData.cropRect.height -
-                      minSize,
-                    initialData.cropRect.y + deltaY,
-                  ),
-                  width: Math.max(
-                    minSize,
-                    Math.min(maxWidth, initialData.cropRect.width - deltaX),
-                  ),
-                  height: Math.max(
-                    minSize,
-                    Math.min(maxHeight, initialData.cropRect.height - deltaY),
-                  ),
+                  containerSize: {
+                    width: Math.max(
+                      minContainerSize,
+                      initialData.containerSize.width - deltaX,
+                    ),
+                    height: Math.max(
+                      minContainerSize,
+                      initialData.containerSize.height - deltaY,
+                    ),
+                  },
+                  containerPosition: {
+                    x: initialData.containerPosition.x + deltaX,
+                    y: initialData.containerPosition.y + deltaY,
+                  },
                 };
               default:
-                return initialData.cropRect;
+                return {
+                  containerSize: initialData.containerSize,
+                  containerPosition: initialData.containerPosition,
+                };
             }
           };
 
-          const newCropRect = getNewCropRect();
+          const { containerSize, containerPosition } = getNewContainerData();
 
-          // クロップモードでは、コンテナサイズもcropRectに合わせて調整
+          // 基準サイズからの倍率を計算
+          const newScaleX = containerSize.width / baseSize.width;
+          const newScaleY = containerSize.height / baseSize.height;
+
+          // cropRectは基準サイズを倍率で割り戻す（見かけ上同じサイズを維持）
+          const baseCropSize = baseSize.width; // 基準cropRectサイズ
+
           updateData({
             ...currentData,
-            containerSize: {
-              width: newCropRect.width,
-              height: newCropRect.height,
+            containerSize,
+            containerPosition,
+            scale: { x: newScaleX, y: newScaleY },
+            cropRect: {
+              x:
+                (initialData.cropRect.x / newScaleX) *
+                (initialData.scale?.x || 1),
+              y:
+                (initialData.cropRect.y / newScaleY) *
+                (initialData.scale?.y || 1),
+              width: baseCropSize / newScaleX,
+              height:
+                (baseCropSize * baseSize.height) / baseSize.width / newScaleY,
             },
-            cropRect: newCropRect,
           });
         }
       }

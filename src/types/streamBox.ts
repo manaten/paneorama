@@ -24,6 +24,12 @@ export interface StreamBoxData {
 
   // クロッピング設定（ソースビデオ上の切り取り範囲）
   cropRect: CropRect;
+
+  // 基準サイズ（初期サイズ）
+  baseSize?: Size;
+
+  // 現在の倍率（基準サイズからの変化倍率）
+  scale?: { x: number; y: number };
 }
 
 export type Mode = "resize" | "crop";
