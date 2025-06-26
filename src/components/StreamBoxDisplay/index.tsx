@@ -4,9 +4,11 @@ import { FC, ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { Mode, StreamBoxData } from "../../types/streamBox";
 import { calculateDisplayProperties } from "../../utils/streamBoxDisplay";
 
+type HandleType = "nw" | "ne" | "sw" | "se";
+
 interface ResizeHandleProps {
-  handle: string;
-  onMouseDown: (handle: string, e: React.MouseEvent) => void;
+  handle: HandleType;
+  onMouseDown: (handle: HandleType, e: React.MouseEvent) => void;
   mode: Mode;
 }
 
@@ -104,7 +106,7 @@ export const TransformDisplay: FC<Props> = ({
   // ドラッグ状態
   const [isDragging, setIsDragging] = useState(false);
   const [isResizing, setIsResizing] = useState(false);
-  const [activeHandle, setActiveHandle] = useState<string | null>(null);
+  const [activeHandle, setActiveHandle] = useState<HandleType | null>(null);
   const dragStartRef = useRef<{
     x: number;
     y: number;
@@ -141,296 +143,144 @@ export const TransformDisplay: FC<Props> = ({
           // コンテナの移動
           updateData({
             ...currentData,
-            containerPosition: {
-              x: initialData.containerPosition.x + deltaX,
-              y: initialData.containerPosition.y + deltaY,
+            screenPosition: {
+              x: initialData.screenPosition.x + deltaX,
+              y: initialData.screenPosition.y + deltaY,
             },
           });
+          return;
         } else {
           // クロップモード：cropRectの位置を変更（パン）
           updateData({
             ...currentData,
-            cropRect: {
-              ...currentData.cropRect,
-              x: initialData.cropRect.x - deltaX,
-              y: initialData.cropRect.y - deltaY,
+            crop: {
+              ...currentData.crop,
+              x: initialData.crop.x - deltaX,
+              y: initialData.crop.y - deltaY,
             },
           });
+          return;
         }
-      } else if (isResizing && activeHandle) {
+      }
+
+      if (isResizing && activeHandle) {
+        const minSize = 100;
+
+        const displayProps = calculateDisplayProperties(initialData);
+
+        const containerSize = {
+          width: Math.max(
+            minSize,
+            displayProps.containerStyle.width +
+              deltaX *
+                (activeHandle === "sw" || activeHandle === "nw" ? -1 : 1),
+          ),
+          height: Math.max(
+            minSize,
+            displayProps.containerStyle.height +
+              deltaY *
+                (activeHandle === "nw" || activeHandle === "ne" ? -1 : 1),
+          ),
+        };
+
+        const screenPosition = (() => {
+          switch (activeHandle) {
+            case "se": // 右下
+              return initialData.screenPosition;
+            case "sw": // 左下
+              return {
+                ...initialData.screenPosition,
+                x: initialData.screenPosition.x + deltaX,
+              };
+            case "ne": // 右上
+              return {
+                ...initialData.screenPosition,
+                y: initialData.screenPosition.y + deltaY,
+              };
+            case "nw": // 左上
+              return {
+                x: initialData.screenPosition.x + deltaX,
+                y: initialData.screenPosition.y + deltaY,
+              };
+          }
+        })();
+
+        const scaleX = containerSize.width / initialData.originalSize.width;
+        const scaleY = containerSize.height / initialData.originalSize.height;
+
         if (currentMode === "resize") {
-          // コンテナのリサイズ
-          const getNewContainerData = () => {
-            const minSize = 100;
-            switch (activeHandle) {
-              case "se": // 右下
-                return {
-                  containerSize: {
-                    width: Math.max(
-                      minSize,
-                      initialData.containerSize.width + deltaX,
-                    ),
-                    height: Math.max(
-                      minSize,
-                      initialData.containerSize.height + deltaY,
-                    ),
-                  },
-                  containerPosition: initialData.containerPosition,
-                };
-              case "sw": // 左下
-                return {
-                  containerSize: {
-                    width: Math.max(
-                      minSize,
-                      initialData.containerSize.width - deltaX,
-                    ),
-                    height: Math.max(
-                      minSize,
-                      initialData.containerSize.height + deltaY,
-                    ),
-                  },
-                  containerPosition: {
-                    ...initialData.containerPosition,
-                    x: initialData.containerPosition.x + deltaX,
-                  },
-                };
-              case "ne": // 右上
-                return {
-                  containerSize: {
-                    width: Math.max(
-                      minSize,
-                      initialData.containerSize.width + deltaX,
-                    ),
-                    height: Math.max(
-                      minSize,
-                      initialData.containerSize.height - deltaY,
-                    ),
-                  },
-                  containerPosition: {
-                    ...initialData.containerPosition,
-                    y: initialData.containerPosition.y + deltaY,
-                  },
-                };
-              case "nw": // 左上
-                return {
-                  containerSize: {
-                    width: Math.max(
-                      minSize,
-                      initialData.containerSize.width - deltaX,
-                    ),
-                    height: Math.max(
-                      minSize,
-                      initialData.containerSize.height - deltaY,
-                    ),
-                  },
-                  containerPosition: {
-                    x: initialData.containerPosition.x + deltaX,
-                    y: initialData.containerPosition.y + deltaY,
-                  },
-                };
-              default:
-                return {
-                  containerSize: initialData.containerSize,
-                  containerPosition: initialData.containerPosition,
-                };
-            }
-          };
-
-          const { containerSize, containerPosition } = getNewContainerData();
-
           // リサイズ時は、cropRectをコンテナサイズに比例して調整
-          const scaleX = containerSize.width / initialData.containerSize.width;
-          const scaleY =
-            containerSize.height / initialData.containerSize.height;
-
           updateData({
             ...currentData,
-            containerSize,
-            containerPosition,
-            cropRect: {
-              x: initialData.cropRect.x * scaleX,
-              y: initialData.cropRect.y * scaleY,
-              width: initialData.cropRect.width * scaleX,
-              height: initialData.cropRect.height * scaleY,
-            },
+            scale: Math.min(scaleX, scaleY),
+            screenPosition,
           });
-        } else {
-          // クロップモード：倍率ベースの計算
-          const baseSize = initialData.baseSize || initialData.containerSize;
-
-          const getNewContainerData = () => {
-            const minContainerSize = 100;
-            switch (activeHandle) {
-              case "se": // 右下
-                return {
-                  containerSize: {
-                    width: Math.max(
-                      minContainerSize,
-                      initialData.containerSize.width + deltaX,
-                    ),
-                    height: Math.max(
-                      minContainerSize,
-                      initialData.containerSize.height + deltaY,
-                    ),
-                  },
-                  containerPosition: initialData.containerPosition,
-                };
-              case "sw": // 左下
-                return {
-                  containerSize: {
-                    width: Math.max(
-                      minContainerSize,
-                      initialData.containerSize.width - deltaX,
-                    ),
-                    height: Math.max(
-                      minContainerSize,
-                      initialData.containerSize.height + deltaY,
-                    ),
-                  },
-                  containerPosition: {
-                    ...initialData.containerPosition,
-                    x: initialData.containerPosition.x + deltaX,
-                  },
-                };
-              case "ne": // 右上
-                return {
-                  containerSize: {
-                    width: Math.max(
-                      minContainerSize,
-                      initialData.containerSize.width + deltaX,
-                    ),
-                    height: Math.max(
-                      minContainerSize,
-                      initialData.containerSize.height - deltaY,
-                    ),
-                  },
-                  containerPosition: {
-                    ...initialData.containerPosition,
-                    y: initialData.containerPosition.y + deltaY,
-                  },
-                };
-              case "nw": // 左上
-                return {
-                  containerSize: {
-                    width: Math.max(
-                      minContainerSize,
-                      initialData.containerSize.width - deltaX,
-                    ),
-                    height: Math.max(
-                      minContainerSize,
-                      initialData.containerSize.height - deltaY,
-                    ),
-                  },
-                  containerPosition: {
-                    x: initialData.containerPosition.x + deltaX,
-                    y: initialData.containerPosition.y + deltaY,
-                  },
-                };
-              default:
-                return {
-                  containerSize: initialData.containerSize,
-                  containerPosition: initialData.containerPosition,
-                };
-            }
-          };
-
-          const { containerSize, containerPosition } = getNewContainerData();
-
-          // 現在の表示倍率を計算
-          const currentScaleX =
-            initialData.containerSize.width / baseSize.width;
-          const currentScaleY =
-            initialData.containerSize.height / baseSize.height;
-
-          // マウス移動量を基準座標系に変換（クロッピング調整量）
-          const baseDeltaX = -deltaX / currentScaleX;
-          const baseDeltaY = -deltaY / currentScaleY;
-
-          // 新しいcropRect（基準座標系で）
-          const getNewCropRect = () => {
-            const minCropSize = 10;
-            switch (activeHandle) {
-              case "se": // 右下 - cropRectの右端・下端を調整
-                return {
-                  x: initialData.cropRect.x,
-                  y: initialData.cropRect.y,
-                  width: Math.max(
-                    minCropSize,
-                    initialData.cropRect.width + baseDeltaX,
-                  ),
-                  height: Math.max(
-                    minCropSize,
-                    initialData.cropRect.height + baseDeltaY,
-                  ),
-                };
-              case "sw": {
-                // 左下 - cropRectの左端・下端を調整
-                const newWidth = Math.max(
-                  minCropSize,
-                  initialData.cropRect.width + baseDeltaX,
-                );
-                return {
-                  x:
-                    initialData.cropRect.x +
-                    initialData.cropRect.width -
-                    newWidth,
-                  y: initialData.cropRect.y,
-                  width: newWidth,
-                  height: Math.max(
-                    minCropSize,
-                    initialData.cropRect.height + baseDeltaY,
-                  ),
-                };
-              }
-              case "ne": {
-                // 右上 - cropRectの右端・上端を調整
-                const newHeight = Math.max(
-                  minCropSize,
-                  initialData.cropRect.height + baseDeltaY,
-                );
-                return {
-                  x: initialData.cropRect.x,
-                  y:
-                    initialData.cropRect.y +
-                    initialData.cropRect.height -
-                    newHeight,
-                  width: Math.max(
-                    minCropSize,
-                    initialData.cropRect.width + baseDeltaX,
-                  ),
-                  height: newHeight,
-                };
-              }
-              case "nw": {
-                // 左上 - cropRectの左端・上端を調整
-                const newW = Math.max(
-                  minCropSize,
-                  initialData.cropRect.width + baseDeltaX,
-                );
-                const newH = Math.max(
-                  minCropSize,
-                  initialData.cropRect.height + baseDeltaY,
-                );
-                return {
-                  x: initialData.cropRect.x + initialData.cropRect.width - newW,
-                  y:
-                    initialData.cropRect.y + initialData.cropRect.height - newH,
-                  width: newW,
-                  height: newH,
-                };
-              }
-              default:
-                return initialData.cropRect;
-            }
-          };
-
-          updateData({
-            ...currentData,
-            containerSize,
-            containerPosition,
-            cropRect: getNewCropRect(),
-          });
+          return;
         }
+
+        // 新しいcropRect（基準座標系で）
+        const getNewCropRect = () => {
+          const minCropSize = 10;
+          switch (activeHandle) {
+            case "se": // 右下 - cropRectの右端・下端を調整
+              return {
+                x: initialData.crop.x,
+                y: initialData.crop.y,
+                width: initialData.crop.width + deltaX,
+                height: initialData.crop.height + deltaY,
+              };
+            case "sw": {
+              // 左下 - cropRectの左端・下端を調整
+              const newWidth = Math.max(
+                minCropSize,
+                initialData.crop.width + deltaX,
+              );
+              return {
+                x: initialData.crop.x + initialData.crop.width - newWidth,
+                y: initialData.crop.y,
+                width: newWidth,
+                height: Math.max(minCropSize, initialData.crop.height + deltaY),
+              };
+            }
+            case "ne": {
+              // 右上 - cropRectの右端・上端を調整
+              const newHeight = Math.max(
+                minCropSize,
+                initialData.crop.height + deltaY,
+              );
+              return {
+                x: initialData.crop.x,
+                y: initialData.crop.y + initialData.crop.height - newHeight,
+                width: Math.max(minCropSize, initialData.crop.width + deltaX),
+                height: newHeight,
+              };
+            }
+            case "nw": {
+              // 左上 - cropRectの左端・上端を調整
+              const newW = Math.max(
+                minCropSize,
+                initialData.crop.width + deltaX,
+              );
+              const newH = Math.max(
+                minCropSize,
+                initialData.crop.height + deltaY,
+              );
+              return {
+                x: initialData.crop.x + initialData.crop.width - newW,
+                y: initialData.crop.y + initialData.crop.height - newH,
+                width: newW,
+                height: newH,
+              };
+            }
+          }
+        };
+
+        updateData({
+          ...currentData,
+          screenPosition,
+          crop: getNewCropRect(),
+        });
+        return;
       }
     },
     [
@@ -468,7 +318,7 @@ export const TransformDisplay: FC<Props> = ({
   );
 
   const handleResizeStart = useCallback(
-    (handle: string, e: React.MouseEvent) => {
+    (handle: HandleType, e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
@@ -504,8 +354,8 @@ export const TransformDisplay: FC<Props> = ({
         <div className='relative flex size-full items-center justify-center bg-black overflow-hidden'>
           {/* コンテンツ */}
           <div
-            className='size-full pointer-events-none'
-            style={displayProps.videoStyle}
+            className='size-full pointer-events-none absolute'
+            style={displayProps.contentStyle}
           >
             {children}
           </div>
@@ -518,38 +368,18 @@ export const TransformDisplay: FC<Props> = ({
               opacity: isHovered ? 1 : 0.3,
             }}
           />
-
-          {/* データ情報表示（デバッグ用） */}
-          <div className='absolute bottom-1 left-1 text-xs text-white/70 bg-black/50 px-1 rounded'>
-            Container: {currentData.containerSize.width}×
-            {currentData.containerSize.height}
-            <br />
-            Crop: {currentData.cropRect.x},{currentData.cropRect.y}{" "}
-            {currentData.cropRect.width}×{currentData.cropRect.height}
-          </div>
         </div>
       </div>
 
-      {/* 操作レイヤー（interactiveの場合のみ） */}
       <div
         className='absolute select-none cursor-move'
-        style={{
-          left: currentData.containerPosition.x,
-          top: currentData.containerPosition.y,
-          width: currentData.containerSize.width,
-          height: currentData.containerSize.height,
-        }}
+        style={displayProps.containerStyle}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
         onMouseDown={handleMouseDown}
         role='button'
         tabIndex={0}
         aria-label={`${currentMode === "resize" ? "Move" : "Pan content"}`}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-          }
-        }}
       >
         <div className='group/transform-display size-full'>
           {/* リサイズハンドル */}

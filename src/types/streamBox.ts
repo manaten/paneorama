@@ -1,35 +1,26 @@
-export interface Position {
-  x: number;
-  y: number;
-}
-
-export interface Size {
-  width: number;
-  height: number;
-}
-
-export interface CropRect {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
-
 export interface StreamBoxData {
-  // コンテナ（表示枠）の絶対位置
-  containerPosition: Position;
+  // 実際のコンテンツサイズ（画像など）
+  originalSize: {
+    width: number; // 元の幅
+    height: number; // 元の高さ
+  };
 
-  // コンテナのサイズ
-  containerSize: Size;
+  // ボックスの表示位置とサイズ（クロップ後）
+  crop: {
+    x: number; // content内の左上のx（クロップ開始）
+    y: number; // content内の上端y
+    width: number; // 表示する幅
+    height: number; // 表示する高さ
+  };
 
-  // クロッピング設定（ソースビデオ上の切り取り範囲）
-  cropRect: CropRect;
+  // 表示上のスケーリング倍率（リサイズ）
+  scale: number;
 
-  // 基準サイズ（初期サイズ）
-  baseSize?: Size;
-
-  // 現在の倍率（基準サイズからの変化倍率）
-  scale?: { x: number; y: number };
+  // 表示上の位置（画面上の位置）
+  screenPosition: {
+    x: number;
+    y: number;
+  };
 }
 
 export type Mode = "resize" | "crop";

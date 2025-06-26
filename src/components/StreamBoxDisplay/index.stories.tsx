@@ -39,9 +39,10 @@ type Story = StoryObj<typeof meta>;
 
 // ベースとなるデータ
 const baseData: StreamBoxData = {
-  containerPosition: { x: 50, y: 50 },
-  containerSize: { width: 400, height: 300 },
-  cropRect: { x: 0, y: 0, width: 400, height: 300 },
+  screenPosition: { x: 50, y: 50 },
+  originalSize: { width: 400, height: 300 },
+  crop: { x: 0, y: 0, width: 400, height: 300 },
+  scale: 1,
 };
 
 // クロッピングパターン
@@ -150,41 +151,18 @@ const TestGrid = () => (
 export const Default: Story = {
   args: {
     data: baseData,
-    borderColor: "#3b82f6",
-    children: <TestGrid />,
-  },
-};
-
-export const Interactive: Story = {
-  args: {
-    data: baseData,
     mode: "resize",
     borderColor: "#3b82f6",
     children: <TestGrid />,
   },
-  parameters: {
-    docs: {
-      description: {
-        story:
-          "インタラクティブモード。ドラッグで移動、ハンドルでリサイズが可能。",
-      },
-    },
-  },
 };
 
-export const InteractiveCrop: Story = {
+export const Crop: Story = {
   args: {
     data: baseData,
     mode: "crop",
     borderColor: "#10b981",
     children: <TestGrid />,
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "クロップモード。ドラッグでパン、ハンドルでズームが可能。",
-      },
-    },
   },
 };
 
@@ -192,7 +170,7 @@ export const CroppedCenter: Story = {
   args: {
     data: {
       ...baseData,
-      cropRect: { x: 100, y: 75, width: 200, height: 150 }, // 中央部分をクロップ
+      crop: { x: 100, y: 75, width: 200, height: 150 }, // 中央部分をクロップ
     },
     children: <TestGrid />,
     borderColor: "#10b981",
@@ -211,7 +189,7 @@ export const CroppedTopLeft: Story = {
   args: {
     data: {
       ...baseData,
-      cropRect: { x: 0, y: 0, width: 200, height: 150 }, // 左上をクロップ
+      crop: { x: 0, y: 0, width: 200, height: 150 }, // 左上をクロップ
     },
     children: <TestGrid />,
     borderColor: "#f59e0b",
@@ -230,7 +208,7 @@ export const CroppedBottomRight: Story = {
   args: {
     data: {
       ...baseData,
-      cropRect: { x: 200, y: 150, width: 200, height: 150 }, // 右下をクロップ
+      crop: { x: 200, y: 150, width: 200, height: 150 }, // 右下をクロップ
     },
     children: <TestGrid />,
     borderColor: "#ef4444",
@@ -251,7 +229,7 @@ export const ZoomedIn: Story = {
   args: {
     data: {
       ...baseData,
-      cropRect: { x: 150, y: 112.5, width: 100, height: 75 }, // 中央付近の小さい範囲
+      crop: { x: 150, y: 112.5, width: 100, height: 75 }, // 中央付近の小さい範囲
     },
     children: <TestGrid />,
     borderColor: "#8b5cf6",
@@ -270,7 +248,7 @@ export const ZoomedOut: Story = {
   args: {
     data: {
       ...baseData,
-      cropRect: { x: -100, y: -75, width: 600, height: 450 }, // 大きい範囲 = ズームアウト
+      crop: { x: -100, y: -75, width: 600, height: 450 }, // 大きい範囲 = ズームアウト
     },
     children: <TestGrid />,
     borderColor: "#06b6d4",
@@ -291,7 +269,7 @@ export const PannedLeft: Story = {
   args: {
     data: {
       ...baseData,
-      cropRect: { x: -50, y: 0, width: 400, height: 300 }, // 左にパン
+      crop: { x: -50, y: 0, width: 400, height: 300 }, // 左にパン
     },
     children: <TestGrid />,
     borderColor: "#f97316",
@@ -310,7 +288,7 @@ export const PannedUp: Story = {
   args: {
     data: {
       ...baseData,
-      cropRect: { x: 0, y: -50, width: 400, height: 300 }, // 上にパン
+      crop: { x: 0, y: -50, width: 400, height: 300 }, // 上にパン
     },
     children: <TestGrid />,
     borderColor: "#84cc16",
@@ -330,9 +308,10 @@ export const PannedUp: Story = {
 export const SmallContainer: Story = {
   args: {
     data: {
-      containerPosition: { x: 50, y: 50 },
-      containerSize: { width: 200, height: 150 },
-      cropRect: { x: 0, y: 0, width: 400, height: 300 },
+      screenPosition: { x: 50, y: 50 },
+      originalSize: { width: 200, height: 150 },
+      crop: { x: 0, y: 0, width: 400, height: 300 },
+      scale: 1,
     },
     children: <TestGrid />,
     borderColor: "#ec4899",
@@ -349,9 +328,10 @@ export const SmallContainer: Story = {
 export const LargeContainer: Story = {
   args: {
     data: {
-      containerPosition: { x: 50, y: 50 },
-      containerSize: { width: 600, height: 450 },
-      cropRect: { x: 0, y: 0, width: 400, height: 300 },
+      screenPosition: { x: 50, y: 50 },
+      originalSize: { width: 600, height: 450 },
+      crop: { x: 0, y: 0, width: 400, height: 300 },
+      scale: 1,
     },
     children: <TestGrid />,
     borderColor: "#6366f1",
@@ -370,9 +350,10 @@ export const LargeContainer: Story = {
 export const ComplexTransform: Story = {
   args: {
     data: {
-      containerPosition: { x: 100, y: 100 },
-      containerSize: { width: 300, height: 200 },
-      cropRect: { x: 125, y: 125, width: 150, height: 100 }, // パン + ズーム
+      screenPosition: { x: 100, y: 100 },
+      originalSize: { width: 300, height: 200 },
+      crop: { x: 125, y: 125, width: 150, height: 100 }, // パン + ズーム
+      scale: 1.5,
     },
     children: <TestGrid />,
     borderColor: "#be185d",
