@@ -155,8 +155,8 @@ export const TransformDisplay: FC<Props> = ({
             ...currentData,
             crop: {
               ...currentData.crop,
-              x: initialData.crop.x - deltaX,
-              y: initialData.crop.y - deltaY,
+              x: initialData.crop.x - deltaX / initialData.scale,
+              y: initialData.crop.y - deltaY / initialData.scale,
             },
           });
           return;
@@ -164,25 +164,6 @@ export const TransformDisplay: FC<Props> = ({
       }
 
       if (isResizing && activeHandle) {
-        const minSize = 100;
-
-        const displayProps = calculateDisplayProperties(initialData);
-
-        const containerSize = {
-          width: Math.max(
-            minSize,
-            displayProps.containerStyle.width +
-              deltaX *
-                (activeHandle === "sw" || activeHandle === "nw" ? -1 : 1),
-          ),
-          height: Math.max(
-            minSize,
-            displayProps.containerStyle.height +
-              deltaY *
-                (activeHandle === "nw" || activeHandle === "ne" ? -1 : 1),
-          ),
-        };
-
         const screenPosition = (() => {
           switch (activeHandle) {
             case "se": // 右下
@@ -205,10 +186,27 @@ export const TransformDisplay: FC<Props> = ({
           }
         })();
 
-        const scaleX = containerSize.width / initialData.originalSize.width;
-        const scaleY = containerSize.height / initialData.originalSize.height;
-
         if (currentMode === "resize") {
+          const minSize = 100;
+          const displayProps = calculateDisplayProperties(initialData);
+
+          const containerSize = {
+            width: Math.max(
+              minSize,
+              displayProps.containerStyle.width +
+                deltaX *
+                  (activeHandle === "sw" || activeHandle === "nw" ? -1 : 1),
+            ),
+            height: Math.max(
+              minSize,
+              displayProps.containerStyle.height +
+                deltaY *
+                  (activeHandle === "nw" || activeHandle === "ne" ? -1 : 1),
+            ),
+          };
+
+          const scaleX = containerSize.width / initialData.originalSize.width;
+          const scaleY = containerSize.height / initialData.originalSize.height;
           // リサイズ時は、cropRectをコンテナサイズに比例して調整
           updateData({
             ...currentData,
@@ -226,14 +224,14 @@ export const TransformDisplay: FC<Props> = ({
               return {
                 x: initialData.crop.x,
                 y: initialData.crop.y,
-                width: initialData.crop.width + deltaX,
-                height: initialData.crop.height + deltaY,
+                width: Math.max(minCropSize, initialData.crop.width + deltaX),
+                height: Math.max(minCropSize, initialData.crop.height + deltaY),
               };
             case "sw": {
               // 左下 - cropRectの左端・下端を調整
               const newWidth = Math.max(
                 minCropSize,
-                initialData.crop.width + deltaX,
+                initialData.crop.width - deltaX,
               );
               return {
                 x: initialData.crop.x + initialData.crop.width - newWidth,
@@ -246,7 +244,7 @@ export const TransformDisplay: FC<Props> = ({
               // 右上 - cropRectの右端・上端を調整
               const newHeight = Math.max(
                 minCropSize,
-                initialData.crop.height + deltaY,
+                initialData.crop.height - deltaY,
               );
               return {
                 x: initialData.crop.x,
@@ -259,11 +257,11 @@ export const TransformDisplay: FC<Props> = ({
               // 左上 - cropRectの左端・上端を調整
               const newW = Math.max(
                 minCropSize,
-                initialData.crop.width + deltaX,
+                initialData.crop.width - deltaX,
               );
               const newH = Math.max(
                 minCropSize,
-                initialData.crop.height + deltaY,
+                initialData.crop.height - deltaY,
               );
               return {
                 x: initialData.crop.x + initialData.crop.width - newW,
@@ -306,7 +304,7 @@ export const TransformDisplay: FC<Props> = ({
       e.preventDefault();
       e.stopPropagation();
 
-      // eslint-disable-next-line functional/immutable-data
+      // eslint-disable-next-line functional/immutable-data -- TODO これrefじゃなくていいのでは
       dragStartRef.current = {
         x: e.clientX,
         y: e.clientY,
