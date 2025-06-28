@@ -1,11 +1,10 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-import { StreamBoxDisplay } from "./index";
-import { StreamBoxData } from "../../types/streamBox";
+import { StreamBoxInner } from "./index";
+import { StreamBoxData } from "../../../types/streamBox";
 
-const meta: Meta<typeof StreamBoxDisplay> = {
-  title: "Components/StreamBoxDisplay",
-  component: StreamBoxDisplay,
+const meta: Meta<typeof StreamBoxInner> = {
+  component: StreamBoxInner,
   parameters: {
     layout: "fullscreen",
     docs: {
@@ -230,6 +229,7 @@ export const ZoomedIn: Story = {
     data: {
       ...baseData,
       crop: { x: 150, y: 112.5, width: 100, height: 75 }, // 中央付近の小さい範囲
+      scale: 4,
     },
     children: <TestGrid />,
     borderColor: "#8b5cf6",
@@ -249,6 +249,7 @@ export const ZoomedOut: Story = {
     data: {
       ...baseData,
       crop: { x: -100, y: -75, width: 600, height: 450 }, // 大きい範囲 = ズームアウト
+      scale: 0.75,
     },
     children: <TestGrid />,
     borderColor: "#06b6d4",
@@ -269,7 +270,7 @@ export const PannedLeft: Story = {
   args: {
     data: {
       ...baseData,
-      crop: { x: -50, y: 0, width: 400, height: 300 }, // 左にパン
+      crop: { x: 50, y: 0, width: 350, height: 300 }, // 左にパン
     },
     children: <TestGrid />,
     borderColor: "#f97316",
@@ -288,7 +289,7 @@ export const PannedUp: Story = {
   args: {
     data: {
       ...baseData,
-      crop: { x: 0, y: -50, width: 400, height: 300 }, // 上にパン
+      crop: { x: 0, y: 50, width: 400, height: 250 }, // 上にパン
     },
     children: <TestGrid />,
     borderColor: "#84cc16",
@@ -303,57 +304,15 @@ export const PannedUp: Story = {
   },
 };
 
-// サイズバリエーション
-
-export const SmallContainer: Story = {
-  args: {
-    data: {
-      screenPosition: { x: 50, y: 50 },
-      originalSize: { width: 200, height: 150 },
-      crop: { x: 0, y: 0, width: 400, height: 300 },
-      scale: 1,
-    },
-    children: <TestGrid />,
-    borderColor: "#ec4899",
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "小さいコンテナ(200x150)に通常のcropRect。内接リサイズで表示",
-      },
-    },
-  },
-};
-
-export const LargeContainer: Story = {
-  args: {
-    data: {
-      screenPosition: { x: 50, y: 50 },
-      originalSize: { width: 600, height: 450 },
-      crop: { x: 0, y: 0, width: 400, height: 300 },
-      scale: 1,
-    },
-    children: <TestGrid />,
-    borderColor: "#6366f1",
-  },
-  parameters: {
-    docs: {
-      description: {
-        story: "大きいコンテナ(600x450)に通常のcropRect。内接リサイズで表示",
-      },
-    },
-  },
-};
-
 // 複合パターン
 
 export const ComplexTransform: Story = {
   args: {
     data: {
+      ...baseData,
       screenPosition: { x: 100, y: 100 },
-      originalSize: { width: 300, height: 200 },
       crop: { x: 125, y: 125, width: 150, height: 100 }, // パン + ズーム
-      scale: 1.5,
+      scale: 4,
     },
     children: <TestGrid />,
     borderColor: "#be185d",

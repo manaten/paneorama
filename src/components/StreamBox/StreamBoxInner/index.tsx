@@ -16,7 +16,7 @@ import {
   handleDragOnCrop,
   handleDragOnResize,
 } from "./functions";
-import { Mode, StreamBoxData } from "../../types/streamBox";
+import { Mode, StreamBoxData } from "../../../types/streamBox";
 
 type HandleType = "nw" | "ne" | "sw" | "se";
 
@@ -89,6 +89,11 @@ interface Props {
    * ボーダーカラー（オプション）
    */
   borderColor?: string;
+
+  /**
+   * オプションで表示できるボタン
+   */
+  buttons?: ReactNode;
 }
 
 /**
@@ -97,12 +102,13 @@ interface Props {
  * StreamBoxDataに基づいて、コンテナサイズとクロッピング変形を適用してコンテンツを表示します。
  * interactive=trueの場合、ユーザー操作も可能です。
  */
-export const TransformDisplay: FC<Props> = ({
+export const StreamBoxInner: FC<Props> = ({
   className,
   data,
   children,
   mode = "resize",
   borderColor = "#3b82f6",
+  buttons,
 }) => {
   // 内部状態
   const [currentData, setCurrentData] = useState<StreamBoxData>(
@@ -203,65 +209,61 @@ export const TransformDisplay: FC<Props> = ({
     calculateDisplayProperties(currentData);
 
   return (
-    <div className={classNames(className, "relative")}>
-      {/* 表示コンポーネント */}
-      <div
-        className='absolute select-none cursor-move'
-        style={containerStyle}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onMouseDown={handleDragStart}
-        role='presentation'
-        aria-label={`${mode === "resize" ? "Move" : "Pan content"}`}
-      >
-        <div className='relative flex size-full items-center justify-center bg-black overflow-hidden'>
-          {/* コンテンツ */}
-          <div
-            className='size-full pointer-events-none absolute'
-            style={contentStyle}
-          >
-            {children}
-          </div>
-        </div>
-
-        {/* ボーダー */}
+    <div
+      className={classNames(className, "absolute select-none cursor-move")}
+      style={containerStyle}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseDown={handleDragStart}
+      role='presentation'
+      aria-label={`${mode === "resize" ? "Move" : "Pan content"}`}
+    >
+      <div className='relative flex size-full items-center justify-center bg-black overflow-hidden'>
+        {/* コンテンツ */}
         <div
-          className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
-          style={{
-            borderColor,
-            opacity: isHovered ? 1 : 0.3,
-          }}
-        />
-
-        {isHovered && (
-          <>
-            {/* リサイズハンドル */}
-            <ResizeHandle
-              handle='nw'
-              onMouseDown={handleResizeStart}
-              mode={mode}
-            />
-            <ResizeHandle
-              handle='ne'
-              onMouseDown={handleResizeStart}
-              mode={mode}
-            />
-            <ResizeHandle
-              handle='sw'
-              onMouseDown={handleResizeStart}
-              mode={mode}
-            />
-            <ResizeHandle
-              handle='se'
-              onMouseDown={handleResizeStart}
-              mode={mode}
-            />
-          </>
-        )}
+          className='size-full pointer-events-none absolute'
+          style={contentStyle}
+        >
+          {children}
+        </div>
       </div>
+
+      {buttons}
+
+      {/* ボーダー */}
+      <div
+        className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
+        style={{
+          borderColor,
+          opacity: isHovered ? 1 : 0.3,
+        }}
+      />
+
+      {isHovered && (
+        <>
+          {/* リサイズハンドル */}
+          <ResizeHandle
+            handle='nw'
+            onMouseDown={handleResizeStart}
+            mode={mode}
+          />
+          <ResizeHandle
+            handle='ne'
+            onMouseDown={handleResizeStart}
+            mode={mode}
+          />
+          <ResizeHandle
+            handle='sw'
+            onMouseDown={handleResizeStart}
+            mode={mode}
+          />
+          <ResizeHandle
+            handle='se'
+            onMouseDown={handleResizeStart}
+            mode={mode}
+          />
+        </>
+      )}
     </div>
   );
 };
-
-// 後方互換性のため
-export const StreamBoxDisplay = TransformDisplay;

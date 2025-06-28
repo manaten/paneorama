@@ -3,7 +3,7 @@ import { FC, useCallback, useEffect, useRef, useState } from "react";
 
 import { Mode } from "../../types/streamBox";
 import { Button } from "../Button";
-import { StreamBoxDisplay } from "../StreamBoxDisplay";
+import { StreamBoxInner } from "./StreamBoxInner";
 
 interface Props {
   id: string;
@@ -62,11 +62,60 @@ export const StreamBox: FC<Props> = ({
     setMode((prev) => (prev === "resize" ? "crop" : "resize"));
   }, []);
 
+  const buttons = (
+    <div
+      className={classNames(
+        "pointer-events-none absolute right-0 top-0 z-50 flex flex-row gap-1 p-2",
+        "transition-opacity duration-200 ease-in-out",
+        "opacity-0 group-hover/video-box:opacity-100",
+      )}
+    >
+      <Button
+        className='pointer-events-auto'
+        iconType={mode === "resize" ? "crop" : "fullscreen_exit"}
+        iconColor={color}
+        onClick={toggleMode}
+        title={
+          mode === "resize" ? "Switch to crop mode" : "Switch to resize mode"
+        }
+      />
+      <Button
+        className='pointer-events-auto'
+        iconType='switch_video'
+        iconColor={color}
+        onClick={switchVideoHandler}
+        title='Switch to different screen/window'
+      />
+      <Button
+        className='pointer-events-auto'
+        iconType='move_up'
+        iconColor={color}
+        onClick={moveUpHandler}
+        title='Bring to front'
+      />
+      <Button
+        className='pointer-events-auto'
+        iconType='move_down'
+        iconColor={color}
+        onClick={moveDownHandler}
+        title='Send to back'
+      />
+      <Button
+        className='pointer-events-auto'
+        iconType='close'
+        iconColor={color}
+        onClick={closeHandler}
+        title='Close stream'
+      />
+    </div>
+  );
+
   return (
-    <StreamBoxDisplay
+    <StreamBoxInner
       className='group/video-box relative'
       mode={mode}
       borderColor={color}
+      buttons={buttons}
     >
       <video
         ref={videoRef}
@@ -74,53 +123,6 @@ export const StreamBox: FC<Props> = ({
         autoPlay
         muted
       />
-
-      {/* コントロールボタン */}
-      <div
-        className={classNames(
-          "pointer-events-none absolute right-0 top-0 z-50 flex flex-row gap-1 p-2",
-          "transition-opacity duration-200 ease-in-out",
-          "opacity-0 group-hover/transform-display:opacity-100",
-        )}
-      >
-        <Button
-          className='pointer-events-auto'
-          iconType={mode === "resize" ? "crop" : "fullscreen_exit"}
-          iconColor={color}
-          onClick={toggleMode}
-          title={
-            mode === "resize" ? "Switch to crop mode" : "Switch to resize mode"
-          }
-        />
-        <Button
-          className='pointer-events-auto'
-          iconType='switch_video'
-          iconColor={color}
-          onClick={switchVideoHandler}
-          title='Switch to different screen/window'
-        />
-        <Button
-          className='pointer-events-auto'
-          iconType='move_up'
-          iconColor={color}
-          onClick={moveUpHandler}
-          title='Bring to front'
-        />
-        <Button
-          className='pointer-events-auto'
-          iconType='move_down'
-          iconColor={color}
-          onClick={moveDownHandler}
-          title='Send to back'
-        />
-        <Button
-          className='pointer-events-auto'
-          iconType='close'
-          iconColor={color}
-          onClick={closeHandler}
-          title='Close stream'
-        />
-      </div>
-    </StreamBoxDisplay>
+    </StreamBoxInner>
   );
 };
