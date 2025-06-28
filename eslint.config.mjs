@@ -8,6 +8,7 @@ import functionalPlugin from "eslint-plugin-functional";
 import importPlugin from "eslint-plugin-import";
 // @ts-expect-error 型定義がないため
 import jsxA11y from "eslint-plugin-jsx-a11y";
+import reactHooks from "eslint-plugin-react-hooks";
 import storybook from "eslint-plugin-storybook";
 // import tailwind from "eslint-plugin-tailwindcss";
 import globals from "globals";
@@ -25,6 +26,7 @@ export default tsEslint.config(
   // tailwind.configs["flat/recommended"],
   jsxA11y.flatConfigs.recommended,
   storybook.configs["flat/recommended"],
+  reactHooks.configs["recommended-latest"],
   eslintConfigPrettier,
   {
     languageOptions: {

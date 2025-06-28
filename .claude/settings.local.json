@@ -12,7 +12,8 @@
       "Bash(gh pr create:*)",
       "Bash(npm run build:*)",
       "Bash(npm run test:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(npm run fix:*)"
     ],
     "deny": []
   }

@@ -1,12 +1,21 @@
 import classNames from "classnames";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
-import { Rnd } from "react-rnd";
+import {
+  ComponentProps,
+  FC,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import { Button } from "../Button";
+import { StreamBoxInner } from "./StreamBoxInner";
 
 interface Props {
   id: string;
   media: MediaStream;
+  contentWidth: number;
+  contentHeight: number;
   color: string;
   onClickClose?: (id: string) => void;
   onClickMoveUp?: (id: string) => void;
@@ -17,14 +26,17 @@ interface Props {
 export const StreamBox: FC<Props> = ({
   id,
   media,
+  contentWidth,
+  contentHeight,
   color,
   onClickClose,
   onClickMoveUp,
   onClickMoveDown,
   onClickSwitchVideo,
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const [mode, setMode] =
+    useState<ComponentProps<typeof StreamBoxInner>["mode"]>("resize");
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -36,7 +48,7 @@ export const StreamBox: FC<Props> = ({
     return () => {
       if (videoElement) {
         // eslint-disable-next-line functional/immutable-data
-        videoElement.srcObject = null; // Clean up the media stream
+        videoElement.srcObject = null;
       }
     };
   }, [media]);
@@ -57,57 +69,73 @@ export const StreamBox: FC<Props> = ({
     onClickSwitchVideo?.(id);
   }, [id, onClickSwitchVideo]);
 
+  const toggleMode = useCallback(() => {
+    setMode((prev) => (prev === "resize" ? "crop" : "resize"));
+  }, []);
+
+  const buttons = (
+    <div
+      className={classNames(
+        "pointer-events-none absolute right-0 top-0 z-50 flex flex-row gap-1 p-2",
+        "transition-opacity duration-200 ease-in-out",
+        "opacity-0 group-hover/stream-box:opacity-100",
+      )}
+    >
+      <Button
+        className='pointer-events-auto'
+        iconType={mode === "resize" ? "crop" : "fullscreen_exit"}
+        iconColor={color}
+        onClick={toggleMode}
+        title={
+          mode === "resize" ? "Switch to crop mode" : "Switch to resize mode"
+        }
+      />
+      <Button
+        className='pointer-events-auto'
+        iconType='switch_video'
+        iconColor={color}
+        onClick={switchVideoHandler}
+        title='Switch to different screen/window'
+      />
+      <Button
+        className='pointer-events-auto'
+        iconType='move_up'
+        iconColor={color}
+        onClick={moveUpHandler}
+        title='Bring to front'
+      />
+      <Button
+        className='pointer-events-auto'
+        iconType='move_down'
+        iconColor={color}
+        onClick={moveDownHandler}
+        title='Send to back'
+      />
+      <Button
+        className='pointer-events-auto'
+        iconType='close'
+        iconColor={color}
+        onClick={closeHandler}
+        title='Close stream'
+      />
+    </div>
+  );
+
   return (
-    <Rnd>
-      <div
-        className='group/video-box relative flex size-full items-center justify-center bg-black'
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div
-          className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
-          style={{ borderColor: color, opacity: isHovered ? 1 : 0 }}
-        />
-
-        <div
-          className={classNames(
-            "pointer-events-none fixed right-0 top-0 z-50 flex flex-row gap-1 p-2",
-            "transition-opacity duration-200 ease-in-out",
-            "opacity-0 group-hover/video-box:opacity-100",
-          )}
-        >
-          <Button
-            className='pointer-events-auto'
-            iconType='switch_video'
-            iconColor={color}
-            onClick={switchVideoHandler}
-            title='Switch to different screen/window'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='move_up'
-            iconColor={color}
-            onClick={moveUpHandler}
-            title='Bring to front'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='move_down'
-            iconColor={color}
-            onClick={moveDownHandler}
-            title='Send to back'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='close'
-            iconColor={color}
-            onClick={closeHandler}
-            title='Close stream'
-          />
-        </div>
-
-        <video className='size-full' ref={videoRef} autoPlay muted />
-      </div>
-    </Rnd>
+    <StreamBoxInner
+      className='group/stream-box'
+      contentWidth={contentWidth}
+      contentHeight={contentHeight}
+      mode={mode}
+      borderColor={color}
+      buttons={buttons}
+    >
+      <video
+        ref={videoRef}
+        className='size-full pointer-events-none'
+        autoPlay
+        muted
+      />
+    </StreamBoxInner>
   );
 };
