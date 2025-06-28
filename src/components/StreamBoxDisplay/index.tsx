@@ -1,6 +1,20 @@
 import classNames from "classnames";
-import { FC, ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import {
+  FC,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
+import {
+  contentDragOnCrop,
+  contentDragOnResize,
+  handleDragOnCrop,
+  handleDragOnResize,
+} from "./functions";
 import { Mode, StreamBoxData } from "../../types/streamBox";
 import { calculateDisplayProperties } from "../../utils/streamBoxDisplay";
 
@@ -13,7 +27,7 @@ interface ResizeHandleProps {
 }
 
 const ResizeHandle: FC<ResizeHandleProps> = ({ handle, onMouseDown, mode }) => {
-  const getPosition = (): string => {
+  const position = useMemo(() => {
     switch (handle) {
       case "nw":
         return "top-0 left-0 -translate-x-1/2 -translate-y-1/2";
@@ -23,12 +37,10 @@ const ResizeHandle: FC<ResizeHandleProps> = ({ handle, onMouseDown, mode }) => {
         return "bottom-0 left-0 -translate-x-1/2 translate-y-1/2";
       case "se":
         return "bottom-0 right-0 translate-x-1/2 translate-y-1/2";
-      default:
-        return "";
     }
-  };
+  }, [handle]);
 
-  const getCursor = (): string => {
+  const cursor = useMemo(() => {
     switch (handle) {
       case "nw":
       case "se":
@@ -36,10 +48,8 @@ const ResizeHandle: FC<ResizeHandleProps> = ({ handle, onMouseDown, mode }) => {
       case "ne":
       case "sw":
         return "cursor-ne-resize";
-      default:
-        return "cursor-pointer";
     }
-  };
+  }, [handle]);
 
   return (
     <button
@@ -47,8 +57,8 @@ const ResizeHandle: FC<ResizeHandleProps> = ({ handle, onMouseDown, mode }) => {
       className={classNames(
         "absolute w-3 h-3 border-2 border-white bg-blue-500 rounded-full z-50",
         "hover:bg-blue-600 transition-colors",
-        getPosition(),
-        getCursor(),
+        position,
+        cursor,
       )}
       onMouseDown={(e) => onMouseDown(handle, e)}
       title={mode === "resize" ? "Resize" : "Crop"}
@@ -133,171 +143,28 @@ export const TransformDisplay: FC<Props> = ({
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!dragStartRef.current) return;
-
-      const deltaX = e.clientX - dragStartRef.current.x;
-      const deltaY = e.clientY - dragStartRef.current.y;
       const initialData = dragStartRef.current.data;
 
-      const deltaXScaled = deltaX / initialData.scale;
-      const deltaYScaled = deltaY / initialData.scale;
+      const delta = {
+        x: e.clientX - dragStartRef.current.x,
+        y: e.clientY - dragStartRef.current.y,
+        handle: activeHandle ?? undefined,
+      } as const;
 
       if (isDragging) {
         if (currentMode === "resize") {
-          // コンテナの移動
-          updateData({
-            ...currentData,
-            screenPosition: {
-              x: initialData.screenPosition.x + deltaX,
-              y: initialData.screenPosition.y + deltaY,
-            },
-          });
-          return;
+          updateData(contentDragOnResize(initialData, delta));
         } else {
-          // クロップモード：cropRectの位置を変更（パン）
-          updateData({
-            ...currentData,
-            crop: {
-              ...currentData.crop,
-              x: initialData.crop.x - deltaXScaled,
-              y: initialData.crop.y - deltaYScaled,
-            },
-          });
-          return;
+          updateData(contentDragOnCrop(initialData, delta));
         }
-      }
-      const MIN_SIZE = 50;
-
-      if (isResizing && activeHandle) {
+      } else if (isResizing) {
         if (currentMode === "resize") {
-          const scaleX =
-            initialData.scale +
-            (activeHandle === "sw" || activeHandle === "nw" ? -1 : 1) *
-              (deltaX / initialData.crop.width);
-          const scaleY =
-            initialData.scale +
-            (activeHandle === "ne" || activeHandle === "nw" ? -1 : 1) *
-              (deltaY / initialData.crop.height);
-          const scale = Math.min(
-            Math.max(scaleX, MIN_SIZE / initialData.crop.width),
-            Math.max(scaleY, MIN_SIZE / initialData.crop.height),
-          );
-
-          const screenPosition = (() => {
-            switch (activeHandle) {
-              case "se": // 右下
-                return initialData.screenPosition;
-              case "sw": // 左下
-                return {
-                  ...initialData.screenPosition,
-                  x:
-                    initialData.screenPosition.x -
-                    initialData.crop.width * (scale - initialData.scale),
-                };
-              case "ne": // 右上
-                return {
-                  ...initialData.screenPosition,
-                  y:
-                    initialData.screenPosition.y -
-                    initialData.crop.height * (scale - initialData.scale),
-                };
-              case "nw": // 左上
-                return {
-                  x:
-                    initialData.screenPosition.x -
-                    initialData.crop.width * (scale - initialData.scale),
-                  y:
-                    initialData.screenPosition.y -
-                    initialData.crop.height * (scale - initialData.scale),
-                };
-            }
-          })();
-          // リサイズ時は、cropRectをコンテナサイズに比例して調整
-          updateData({
-            ...currentData,
-            scale,
-            screenPosition,
-          });
-          return;
+          updateData(handleDragOnResize(initialData, delta));
         }
 
-        // 新しいcropRect（基準座標系で）
-        const newCrop = (() => {
-          const minCropSize = MIN_SIZE / initialData.scale; // 最小クロップサイズをスケールに基づいて計算
-          switch (activeHandle) {
-            case "se": // 右下 - cropRectの右端・下端を調整
-              return {
-                x: initialData.crop.x,
-                y: initialData.crop.y,
-                width: Math.max(
-                  minCropSize,
-                  initialData.crop.width + deltaXScaled,
-                ),
-                height: Math.max(
-                  minCropSize,
-                  initialData.crop.height + deltaYScaled,
-                ),
-              };
-            case "sw": {
-              // 左下 - cropRectの左端・下端を調整
-              const newWidth = Math.max(
-                minCropSize,
-                initialData.crop.width - deltaXScaled,
-              );
-              return {
-                x: initialData.crop.x + initialData.crop.width - newWidth,
-                y: initialData.crop.y,
-                width: newWidth,
-                height: Math.max(
-                  minCropSize,
-                  initialData.crop.height + deltaYScaled,
-                ),
-              };
-            }
-            case "ne": {
-              // 右上 - cropRectの右端・上端を調整
-              const newHeight = Math.max(
-                minCropSize,
-                initialData.crop.height - deltaYScaled,
-              );
-              return {
-                x: initialData.crop.x,
-                y: initialData.crop.y + initialData.crop.height - newHeight,
-                width: Math.max(
-                  minCropSize,
-                  initialData.crop.width + deltaXScaled,
-                ),
-                height: newHeight,
-              };
-            }
-            case "nw": {
-              // 左上 - cropRectの左端・上端を調整
-              const newW = Math.max(
-                minCropSize,
-                initialData.crop.width - deltaXScaled,
-              );
-              const newH = Math.max(
-                minCropSize,
-                initialData.crop.height - deltaYScaled,
-              );
-              return {
-                x: initialData.crop.x + initialData.crop.width - newW,
-                y: initialData.crop.y + initialData.crop.height - newH,
-                width: newW,
-                height: newH,
-              };
-            }
-          }
-        })();
-
-        updateData({
-          ...currentData,
-          screenPosition: {
-            x: initialData.screenPosition.x + newCrop.x - initialData.crop.x,
-            y: initialData.screenPosition.y + newCrop.y - initialData.crop.y,
-          },
-          crop: newCrop,
-        });
-        return;
+        if (currentMode === "crop") {
+          updateData(handleDragOnCrop(initialData, delta));
+        }
       }
     },
     [
