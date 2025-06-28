@@ -138,6 +138,9 @@ export const TransformDisplay: FC<Props> = ({
       const deltaY = e.clientY - dragStartRef.current.y;
       const initialData = dragStartRef.current.data;
 
+      const deltaXScaled = deltaX / initialData.scale;
+      const deltaYScaled = deltaY / initialData.scale;
+
       if (isDragging) {
         if (currentMode === "resize") {
           // コンテナの移動
@@ -155,39 +158,17 @@ export const TransformDisplay: FC<Props> = ({
             ...currentData,
             crop: {
               ...currentData.crop,
-              x: initialData.crop.x - deltaX / initialData.scale,
-              y: initialData.crop.y - deltaY / initialData.scale,
+              x: initialData.crop.x - deltaXScaled,
+              y: initialData.crop.y - deltaYScaled,
             },
           });
           return;
         }
       }
+      const MIN_SIZE = 50;
 
       if (isResizing && activeHandle) {
-        const screenPosition = (() => {
-          switch (activeHandle) {
-            case "se": // 右下
-              return initialData.screenPosition;
-            case "sw": // 左下
-              return {
-                ...initialData.screenPosition,
-                x: initialData.screenPosition.x + deltaX,
-              };
-            case "ne": // 右上
-              return {
-                ...initialData.screenPosition,
-                y: initialData.screenPosition.y + deltaY,
-              };
-            case "nw": // 左上
-              return {
-                x: initialData.screenPosition.x + deltaX,
-                y: initialData.screenPosition.y + deltaY,
-              };
-          }
-        })();
-
         if (currentMode === "resize") {
-          const MIN_SIZE = 50;
           const scaleX =
             initialData.scale +
             (activeHandle === "sw" || activeHandle === "nw" ? -1 : 1) *
@@ -240,39 +221,51 @@ export const TransformDisplay: FC<Props> = ({
         }
 
         // 新しいcropRect（基準座標系で）
-        const getNewCropRect = () => {
-          const minCropSize = 10;
+        const newCrop = (() => {
+          const minCropSize = MIN_SIZE / initialData.scale; // 最小クロップサイズをスケールに基づいて計算
           switch (activeHandle) {
             case "se": // 右下 - cropRectの右端・下端を調整
               return {
                 x: initialData.crop.x,
                 y: initialData.crop.y,
-                width: Math.max(minCropSize, initialData.crop.width + deltaX),
-                height: Math.max(minCropSize, initialData.crop.height + deltaY),
+                width: Math.max(
+                  minCropSize,
+                  initialData.crop.width + deltaXScaled,
+                ),
+                height: Math.max(
+                  minCropSize,
+                  initialData.crop.height + deltaYScaled,
+                ),
               };
             case "sw": {
               // 左下 - cropRectの左端・下端を調整
               const newWidth = Math.max(
                 minCropSize,
-                initialData.crop.width - deltaX,
+                initialData.crop.width - deltaXScaled,
               );
               return {
                 x: initialData.crop.x + initialData.crop.width - newWidth,
                 y: initialData.crop.y,
                 width: newWidth,
-                height: Math.max(minCropSize, initialData.crop.height + deltaY),
+                height: Math.max(
+                  minCropSize,
+                  initialData.crop.height + deltaYScaled,
+                ),
               };
             }
             case "ne": {
               // 右上 - cropRectの右端・上端を調整
               const newHeight = Math.max(
                 minCropSize,
-                initialData.crop.height - deltaY,
+                initialData.crop.height - deltaYScaled,
               );
               return {
                 x: initialData.crop.x,
                 y: initialData.crop.y + initialData.crop.height - newHeight,
-                width: Math.max(minCropSize, initialData.crop.width + deltaX),
+                width: Math.max(
+                  minCropSize,
+                  initialData.crop.width + deltaXScaled,
+                ),
                 height: newHeight,
               };
             }
@@ -280,11 +273,11 @@ export const TransformDisplay: FC<Props> = ({
               // 左上 - cropRectの左端・上端を調整
               const newW = Math.max(
                 minCropSize,
-                initialData.crop.width - deltaX,
+                initialData.crop.width - deltaXScaled,
               );
               const newH = Math.max(
                 minCropSize,
-                initialData.crop.height - deltaY,
+                initialData.crop.height - deltaYScaled,
               );
               return {
                 x: initialData.crop.x + initialData.crop.width - newW,
@@ -294,12 +287,15 @@ export const TransformDisplay: FC<Props> = ({
               };
             }
           }
-        };
+        })();
 
         updateData({
           ...currentData,
-          screenPosition,
-          crop: getNewCropRect(),
+          screenPosition: {
+            x: initialData.screenPosition.x + newCrop.x - initialData.crop.x,
+            y: initialData.screenPosition.y + newCrop.y - initialData.crop.y,
+          },
+          crop: newCrop,
         });
         return;
       }
