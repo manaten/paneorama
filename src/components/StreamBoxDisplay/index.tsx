@@ -5,18 +5,18 @@ import {
   useCallback,
   useEffect,
   useMemo,
-  useRef,
   useState,
 } from "react";
 
 import {
+  calculateDisplayProperties,
   contentDragOnCrop,
   contentDragOnResize,
+  createDefaultStreamBoxData,
   handleDragOnCrop,
   handleDragOnResize,
 } from "./functions";
 import { Mode, StreamBoxData } from "../../types/streamBox";
-import { calculateDisplayProperties } from "../../utils/streamBoxDisplay";
 
 type HandleType = "nw" | "ne" | "sw" | "se";
 
@@ -69,10 +69,11 @@ const ResizeHandle: FC<ResizeHandleProps> = ({ handle, onMouseDown, mode }) => {
 
 interface Props {
   className?: string;
+
   /**
    * StreamBoxの初期データモデル
    */
-  data: StreamBoxData;
+  data?: StreamBoxData;
 
   /**
    * 表示するコンテンツ
@@ -88,11 +89,6 @@ interface Props {
    * ボーダーカラー（オプション）
    */
   borderColor?: string;
-
-  /**
-   * データ変更時のコールバック（オプション）
-   */
-  onDataChange?: (data: StreamBoxData) => void;
 }
 
 /**
@@ -103,100 +99,72 @@ interface Props {
  */
 export const TransformDisplay: FC<Props> = ({
   className,
-  data: initialData,
+  data,
   children,
   mode = "resize",
   borderColor = "#3b82f6",
-  onDataChange,
 }) => {
   // 内部状態
-  const [internalData, setInternalData] = useState<StreamBoxData>(initialData);
+  const [currentData, setCurrentData] = useState<StreamBoxData>(
+    () => data ?? createDefaultStreamBoxData(),
+  );
   const [isHovered, setIsHovered] = useState(false);
 
-  // ドラッグ状態
-  const [isDragging, setIsDragging] = useState(false);
-  const [isResizing, setIsResizing] = useState(false);
-  const [activeHandle, setActiveHandle] = useState<HandleType | null>(null);
-  const dragStartRef = useRef<{
+  const [dragStartData, setDragStartData] = useState<{
+    initialData: StreamBoxData;
     x: number;
     y: number;
-    data: StreamBoxData;
+    dragOrResize: "drag" | "resize";
+    handle?: HandleType;
   } | null>(null);
-
-  // 使用するデータとモード
-  const currentData = internalData;
-  const currentMode = mode;
-
-  // 表示用プロパティを計算
-  const displayProps = calculateDisplayProperties(currentData);
-
-  // データ変更ハンドラー
-  const updateData = useCallback(
-    (newData: StreamBoxData) => {
-      setInternalData(newData);
-      onDataChange?.(newData);
-    },
-    [onDataChange],
-  );
 
   // マウスイベントハンドラー（interactiveの場合のみ）
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
-      if (!dragStartRef.current) return;
-      const initialData = dragStartRef.current.data;
-
+      if (!dragStartData) return;
+      const { initialData } = dragStartData;
       const delta = {
-        x: e.clientX - dragStartRef.current.x,
-        y: e.clientY - dragStartRef.current.y,
-        handle: activeHandle ?? undefined,
+        x: e.clientX - dragStartData.x,
+        y: e.clientY - dragStartData.y,
+        handle: dragStartData.handle,
       } as const;
 
-      if (isDragging) {
-        if (currentMode === "resize") {
-          updateData(contentDragOnResize(initialData, delta));
-        } else {
-          updateData(contentDragOnCrop(initialData, delta));
+      if (dragStartData.dragOrResize === "drag") {
+        if (mode === "resize") {
+          setCurrentData(contentDragOnResize(initialData, delta));
         }
-      } else if (isResizing) {
-        if (currentMode === "resize") {
-          updateData(handleDragOnResize(initialData, delta));
+        if (mode === "crop") {
+          setCurrentData(contentDragOnCrop(initialData, delta));
         }
+      }
 
-        if (currentMode === "crop") {
-          updateData(handleDragOnCrop(initialData, delta));
+      if (dragStartData.dragOrResize === "resize") {
+        if (mode === "resize") {
+          setCurrentData(handleDragOnResize(initialData, delta));
+        }
+        if (mode === "crop") {
+          setCurrentData(handleDragOnCrop(initialData, delta));
         }
       }
     },
-    [
-      isDragging,
-      isResizing,
-      activeHandle,
-      currentMode,
-      currentData,
-      updateData,
-    ],
+    [mode, dragStartData],
   );
 
   const handleMouseUp = useCallback(() => {
-    setIsDragging(false);
-    setIsResizing(false);
-    setActiveHandle(null);
-    // eslint-disable-next-line functional/immutable-data
-    dragStartRef.current = null;
+    setDragStartData(null);
   }, []);
 
-  const handleMouseDown = useCallback(
+  const handleDragStart = useCallback(
     (e: React.MouseEvent) => {
       e.preventDefault();
       e.stopPropagation();
 
-      // eslint-disable-next-line functional/immutable-data -- TODO これrefじゃなくていいのでは
-      dragStartRef.current = {
+      setDragStartData({
+        initialData: currentData,
         x: e.clientX,
         y: e.clientY,
-        data: currentData,
-      };
-      setIsDragging(true);
+        dragOrResize: "drag",
+      });
     },
     [currentData],
   );
@@ -206,21 +174,20 @@ export const TransformDisplay: FC<Props> = ({
       e.preventDefault();
       e.stopPropagation();
 
-      // eslint-disable-next-line functional/immutable-data
-      dragStartRef.current = {
+      setDragStartData({
+        initialData: currentData,
         x: e.clientX,
         y: e.clientY,
-        data: currentData,
-      };
-      setIsResizing(true);
-      setActiveHandle(handle);
+        dragOrResize: "resize",
+        handle,
+      });
     },
     [currentData],
   );
 
   // イベントリスナーの管理
   useEffect(() => {
-    if (!isDragging && !isResizing) return undefined;
+    if (!dragStartData) return undefined;
 
     document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("mouseup", handleMouseUp);
@@ -229,74 +196,68 @@ export const TransformDisplay: FC<Props> = ({
       document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("mouseup", handleMouseUp);
     };
-  }, [isDragging, isResizing, handleMouseMove, handleMouseUp]);
+  }, [dragStartData, handleMouseMove, handleMouseUp]);
+
+  // 表示用プロパティを計算
+  const { containerStyle, contentStyle } =
+    calculateDisplayProperties(currentData);
 
   return (
     <div className={classNames(className, "relative")}>
       {/* 表示コンポーネント */}
-      <div className='absolute select-none' style={displayProps.containerStyle}>
+      <div
+        className='absolute select-none cursor-move'
+        style={containerStyle}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        onMouseDown={handleDragStart}
+        role='presentation'
+        aria-label={`${mode === "resize" ? "Move" : "Pan content"}`}
+      >
         <div className='relative flex size-full items-center justify-center bg-black overflow-hidden'>
           {/* コンテンツ */}
           <div
             className='size-full pointer-events-none absolute'
-            style={displayProps.contentStyle}
+            style={contentStyle}
           >
             {children}
           </div>
-
-          {/* ボーダー */}
-          <div
-            className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
-            style={{
-              borderColor,
-              opacity: isHovered ? 1 : 0.3,
-            }}
-          />
         </div>
-      </div>
 
-      <div
-        className='absolute select-none cursor-move'
-        style={displayProps.containerStyle}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onMouseDown={handleMouseDown}
-        role='button'
-        tabIndex={0}
-        aria-label={`${currentMode === "resize" ? "Move" : "Pan content"}`}
-      >
-        <div className='group/transform-display size-full'>
-          {/* リサイズハンドル */}
-          {isHovered && (
-            <>
-              <ResizeHandle
-                handle='nw'
-                onMouseDown={handleResizeStart}
-                mode={currentMode}
-              />
-              <ResizeHandle
-                handle='ne'
-                onMouseDown={handleResizeStart}
-                mode={currentMode}
-              />
-              <ResizeHandle
-                handle='sw'
-                onMouseDown={handleResizeStart}
-                mode={currentMode}
-              />
-              <ResizeHandle
-                handle='se'
-                onMouseDown={handleResizeStart}
-                mode={currentMode}
-              />
-            </>
-          )}
+        {/* ボーダー */}
+        <div
+          className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
+          style={{
+            borderColor,
+            opacity: isHovered ? 1 : 0.3,
+          }}
+        />
 
-          {/* クロップモード表示 */}
-          {currentMode === "crop" && isHovered && (
-            <div className='absolute inset-0 pointer-events-none border-2 border-dashed border-yellow-400 opacity-50' />
-          )}
-        </div>
+        {isHovered && (
+          <>
+            {/* リサイズハンドル */}
+            <ResizeHandle
+              handle='nw'
+              onMouseDown={handleResizeStart}
+              mode={mode}
+            />
+            <ResizeHandle
+              handle='ne'
+              onMouseDown={handleResizeStart}
+              mode={mode}
+            />
+            <ResizeHandle
+              handle='sw'
+              onMouseDown={handleResizeStart}
+              mode={mode}
+            />
+            <ResizeHandle
+              handle='se'
+              onMouseDown={handleResizeStart}
+              mode={mode}
+            />
+          </>
+        )}
       </div>
     </div>
   );

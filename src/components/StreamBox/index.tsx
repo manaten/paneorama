@@ -1,8 +1,7 @@
 import classNames from "classnames";
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 
-import { Mode, StreamBoxData } from "../../types/streamBox";
-import { createDefaultStreamBoxData } from "../../utils/streamBoxDisplay";
+import { Mode } from "../../types/streamBox";
 import { Button } from "../Button";
 import { StreamBoxDisplay } from "../StreamBoxDisplay";
 
@@ -26,11 +25,6 @@ export const StreamBox: FC<Props> = ({
   onClickSwitchVideo,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-
-  // データモデル状態
-  const [streamBoxData, setStreamBoxData] = useState<StreamBoxData>(
-    createDefaultStreamBoxData(),
-  );
   const [mode, setMode] = useState<Mode>("resize");
 
   useEffect(() => {
@@ -47,11 +41,6 @@ export const StreamBox: FC<Props> = ({
       }
     };
   }, [media]);
-
-  // データ変更ハンドラー
-  const handleDataChange = useCallback((newData: StreamBoxData) => {
-    setStreamBoxData(newData);
-  }, []);
 
   const closeHandler = useCallback(() => {
     onClickClose?.(id);
@@ -76,10 +65,8 @@ export const StreamBox: FC<Props> = ({
   return (
     <StreamBoxDisplay
       className='group/video-box relative'
-      data={streamBoxData}
       mode={mode}
       borderColor={color}
-      onDataChange={handleDataChange}
     >
       <video
         ref={videoRef}
