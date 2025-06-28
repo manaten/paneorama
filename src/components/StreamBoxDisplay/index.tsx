@@ -187,30 +187,53 @@ export const TransformDisplay: FC<Props> = ({
         })();
 
         if (currentMode === "resize") {
-          const minSize = 100;
-          const displayProps = calculateDisplayProperties(initialData);
+          const MIN_SIZE = 50;
+          const scaleX =
+            initialData.scale +
+            (activeHandle === "sw" || activeHandle === "nw" ? -1 : 1) *
+              (deltaX / initialData.crop.width);
+          const scaleY =
+            initialData.scale +
+            (activeHandle === "ne" || activeHandle === "nw" ? -1 : 1) *
+              (deltaY / initialData.crop.height);
+          const scale = Math.min(
+            Math.max(scaleX, MIN_SIZE / initialData.crop.width),
+            Math.max(scaleY, MIN_SIZE / initialData.crop.height),
+          );
 
-          const containerSize = {
-            width: Math.max(
-              minSize,
-              displayProps.containerStyle.width +
-                deltaX *
-                  (activeHandle === "sw" || activeHandle === "nw" ? -1 : 1),
-            ),
-            height: Math.max(
-              minSize,
-              displayProps.containerStyle.height +
-                deltaY *
-                  (activeHandle === "nw" || activeHandle === "ne" ? -1 : 1),
-            ),
-          };
-
-          const scaleX = containerSize.width / initialData.originalSize.width;
-          const scaleY = containerSize.height / initialData.originalSize.height;
+          const screenPosition = (() => {
+            switch (activeHandle) {
+              case "se": // 右下
+                return initialData.screenPosition;
+              case "sw": // 左下
+                return {
+                  ...initialData.screenPosition,
+                  x:
+                    initialData.screenPosition.x -
+                    initialData.crop.width * (scale - initialData.scale),
+                };
+              case "ne": // 右上
+                return {
+                  ...initialData.screenPosition,
+                  y:
+                    initialData.screenPosition.y -
+                    initialData.crop.height * (scale - initialData.scale),
+                };
+              case "nw": // 左上
+                return {
+                  x:
+                    initialData.screenPosition.x -
+                    initialData.crop.width * (scale - initialData.scale),
+                  y:
+                    initialData.screenPosition.y -
+                    initialData.crop.height * (scale - initialData.scale),
+                };
+            }
+          })();
           // リサイズ時は、cropRectをコンテナサイズに比例して調整
           updateData({
             ...currentData,
-            scale: Math.min(scaleX, scaleY),
+            scale,
             screenPosition,
           });
           return;
