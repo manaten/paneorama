@@ -194,6 +194,36 @@ describe("functions", () => {
       const expectedMinScale = 50 / 60; // MIN_SIZE / crop.width
       expect(result.scale).toBe(expectedMinScale);
     });
+
+    it("should handle resize with initial scale 0.5", () => {
+      const scaledTransform: StreamBoxTransform = {
+        crop: { x: 0, y: 0, width: 400, height: 300 },
+        screenPosition: { x: 200, y: 100 },
+        scale: 0.5,
+      };
+      const delta = { x: 40, y: 30, handle: "se" as const };
+      const result = handleDragOnResize(scaledTransform, delta);
+
+      expect(result.scale).toBe(0.6); // 0.5 + (40/400) = 0.5 + 0.1 = 0.6
+      expect(result.screenPosition).toEqual(scaledTransform.screenPosition); // SE doesn't change position
+    });
+
+    it("should handle resize with initial scale 2", () => {
+      const scaledTransform: StreamBoxTransform = {
+        crop: { x: 0, y: 0, width: 400, height: 300 },
+        screenPosition: { x: 50, y: 25 },
+        scale: 2,
+      };
+      const delta = { x: -40, y: -30, handle: "nw" as const };
+      const result = handleDragOnResize(scaledTransform, delta);
+
+      // scaleX = 2 + (-1) * (-40/400) = 2 + 0.1 = 2.1
+      // scaleY = 2 + (-1) * (-30/300) = 2 + 0.1 = 2.1
+      // scale = min(2.1, 2.1) = 2.1
+      expect(result.scale).toBe(2.1);
+      expect(Math.round(result.screenPosition.x)).toBe(10); // 50 - 400 * 0.1 = 50 - 40 = 10
+      expect(Math.round(result.screenPosition.y)).toBe(-5); // 25 - 300 * 0.1 = 25 - 30 = -5
+    });
   });
 
   describe("contentDragOnCrop", () => {
