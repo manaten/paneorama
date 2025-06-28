@@ -1,10 +1,4 @@
-export interface StreamBoxData {
-  // 実際のコンテンツサイズ（画像など）
-  originalSize: {
-    width: number; // 元の幅
-    height: number; // 元の高さ
-  };
-
+export interface StreamBoxTransform {
   // ボックスの表示位置とサイズ（クロップ後）
   crop: {
     x: number; // content内の左上のx（クロップ開始）

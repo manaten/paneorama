@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 import { StreamBoxInner } from "./index";
-import { StreamBoxData } from "../../../types/streamBox";
+import { StreamBoxTransform } from "./types";
 
 const meta: Meta<typeof StreamBoxInner> = {
   component: StreamBoxInner,
@@ -15,7 +15,7 @@ const meta: Meta<typeof StreamBoxInner> = {
     },
   },
   argTypes: {
-    data: {
+    initialTransform: {
       description: "StreamBoxの初期データモデル",
     },
     children: {
@@ -37,9 +37,8 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // ベースとなるデータ
-const baseData: StreamBoxData = {
+const baseTransform: StreamBoxTransform = {
   screenPosition: { x: 50, y: 50 },
-  originalSize: { width: 400, height: 300 },
   crop: { x: 0, y: 0, width: 400, height: 300 },
   scale: 1,
 };
@@ -149,7 +148,9 @@ const TestGrid = () => (
 
 export const Default: Story = {
   args: {
-    data: baseData,
+    contentWidth: 400,
+    contentHeight: 300,
+    initialTransform: baseTransform,
     mode: "resize",
     borderColor: "#3b82f6",
     children: <TestGrid />,
@@ -158,20 +159,19 @@ export const Default: Story = {
 
 export const Crop: Story = {
   args: {
-    data: baseData,
+    ...Default.args,
     mode: "crop",
     borderColor: "#10b981",
-    children: <TestGrid />,
   },
 };
 
 export const CroppedCenter: Story = {
   args: {
-    data: {
-      ...baseData,
+    ...Default.args,
+    initialTransform: {
+      ...baseTransform,
       crop: { x: 100, y: 75, width: 200, height: 150 }, // 中央部分をクロップ
     },
-    children: <TestGrid />,
     borderColor: "#10b981",
   },
   parameters: {
@@ -186,11 +186,11 @@ export const CroppedCenter: Story = {
 
 export const CroppedTopLeft: Story = {
   args: {
-    data: {
-      ...baseData,
+    ...Default.args,
+    initialTransform: {
+      ...baseTransform,
       crop: { x: 0, y: 0, width: 200, height: 150 }, // 左上をクロップ
     },
-    children: <TestGrid />,
     borderColor: "#f59e0b",
   },
   parameters: {
@@ -205,11 +205,11 @@ export const CroppedTopLeft: Story = {
 
 export const CroppedBottomRight: Story = {
   args: {
-    data: {
-      ...baseData,
+    ...Default.args,
+    initialTransform: {
+      ...baseTransform,
       crop: { x: 200, y: 150, width: 200, height: 150 }, // 右下をクロップ
     },
-    children: <TestGrid />,
     borderColor: "#ef4444",
   },
   parameters: {
@@ -226,12 +226,12 @@ export const CroppedBottomRight: Story = {
 
 export const ZoomedIn: Story = {
   args: {
-    data: {
-      ...baseData,
+    ...Default.args,
+    initialTransform: {
+      ...baseTransform,
       crop: { x: 150, y: 112.5, width: 100, height: 75 }, // 中央付近の小さい範囲
       scale: 4,
     },
-    children: <TestGrid />,
     borderColor: "#8b5cf6",
   },
   parameters: {
@@ -246,12 +246,12 @@ export const ZoomedIn: Story = {
 
 export const ZoomedOut: Story = {
   args: {
-    data: {
-      ...baseData,
+    ...Default.args,
+    initialTransform: {
+      ...baseTransform,
       crop: { x: -100, y: -75, width: 600, height: 450 }, // 大きい範囲 = ズームアウト
       scale: 0.75,
     },
-    children: <TestGrid />,
     borderColor: "#06b6d4",
   },
   parameters: {
@@ -268,11 +268,11 @@ export const ZoomedOut: Story = {
 
 export const PannedLeft: Story = {
   args: {
-    data: {
-      ...baseData,
+    ...Default.args,
+    initialTransform: {
+      ...baseTransform,
       crop: { x: 50, y: 0, width: 350, height: 300 }, // 左にパン
     },
-    children: <TestGrid />,
     borderColor: "#f97316",
   },
   parameters: {
@@ -287,11 +287,11 @@ export const PannedLeft: Story = {
 
 export const PannedUp: Story = {
   args: {
-    data: {
-      ...baseData,
+    ...Default.args,
+    initialTransform: {
+      ...baseTransform,
       crop: { x: 0, y: 50, width: 400, height: 250 }, // 上にパン
     },
-    children: <TestGrid />,
     borderColor: "#84cc16",
   },
   parameters: {
@@ -308,13 +308,13 @@ export const PannedUp: Story = {
 
 export const ComplexTransform: Story = {
   args: {
-    data: {
-      ...baseData,
+    ...Default.args,
+    initialTransform: {
+      ...baseTransform,
       screenPosition: { x: 100, y: 100 },
       crop: { x: 125, y: 125, width: 150, height: 100 }, // パン + ズーム
       scale: 4,
     },
-    children: <TestGrid />,
     borderColor: "#be185d",
   },
   parameters: {

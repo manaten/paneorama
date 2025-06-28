@@ -1,19 +1,18 @@
-import { StreamBoxData } from "@/types/streamBox";
+import { StreamBoxTransform } from "./types";
 
 /**
  * デフォルトのStreamBoxデータを生成
  */
-export function createDefaultStreamBoxData(): StreamBoxData {
+export function createDefaultTransform(
+  width: number,
+  height: number,
+): StreamBoxTransform {
   return {
-    originalSize: {
-      width: 400,
-      height: 300,
-    },
     crop: {
       x: 0,
       y: 0,
-      width: 400,
-      height: 300,
+      width,
+      height,
     },
     screenPosition: { x: 100, y: 100 },
     scale: 1,
@@ -21,14 +20,17 @@ export function createDefaultStreamBoxData(): StreamBoxData {
 }
 
 /**
- * StreamBoxデータから表示用CSSプロパティを計算
+ * トランスフォーム情報から表示用CSSプロパティを計算
  *
  * 表示ルール:
  * - ソースビデオは常にコンテナに内接表示
  * - cropRectで指定された範囲がコンテナサイズに拡大/縮小される
  */
-export function calculateDisplayProperties(data: StreamBoxData) {
-  const { scale, screenPosition, crop } = data;
+export function calculateDisplayProperties(
+  contentSize: { width: number; height: number },
+  transform: StreamBoxTransform,
+) {
+  const { scale, screenPosition, crop } = transform;
 
   return {
     containerStyle: {
@@ -40,8 +42,8 @@ export function calculateDisplayProperties(data: StreamBoxData) {
     contentStyle: {
       left: -crop.x * scale,
       top: -crop.y * scale,
-      width: data.originalSize.width * scale,
-      height: data.originalSize.height * scale,
+      width: contentSize.width * scale,
+      height: contentSize.height * scale,
     },
   };
 }
@@ -55,9 +57,9 @@ type MouseDelta = {
 };
 
 export function contentDragOnResize(
-  initialData: StreamBoxData,
+  initialData: StreamBoxTransform,
   delta: MouseDelta,
-): StreamBoxData {
+): StreamBoxTransform {
   return {
     ...initialData,
     screenPosition: {
@@ -68,9 +70,9 @@ export function contentDragOnResize(
 }
 
 export function handleDragOnResize(
-  initialData: StreamBoxData,
+  initialData: StreamBoxTransform,
   delta: MouseDelta,
-): StreamBoxData {
+): StreamBoxTransform {
   if (!delta.handle) {
     return initialData;
   }
@@ -122,9 +124,9 @@ export function handleDragOnResize(
 }
 
 export function contentDragOnCrop(
-  initialData: StreamBoxData,
+  initialData: StreamBoxTransform,
   delta: MouseDelta,
-): StreamBoxData {
+): StreamBoxTransform {
   const deltaXScaled = delta.x / initialData.scale;
   const deltaYScaled = delta.y / initialData.scale;
 
@@ -139,9 +141,9 @@ export function contentDragOnCrop(
 }
 
 export function handleDragOnCrop(
-  initialData: StreamBoxData,
+  initialData: StreamBoxTransform,
   delta: MouseDelta,
-): StreamBoxData {
+): StreamBoxTransform {
   if (!delta.handle) {
     return initialData;
   }

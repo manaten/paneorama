@@ -8,9 +8,9 @@ import { getPastelColor } from "./utils/colors";
 const displayMediaOptions = {
   video: {
     displaySurface: "window",
+    frameRate: { ideal: 30 },
     width: { ideal: 2000 },
     height: { ideal: 2000 },
-    frameRate: { ideal: 30 },
   },
   audio: false,
 } as const satisfies DisplayMediaStreamOptions;
@@ -19,31 +19,61 @@ type MediaItem = {
   id: string;
   media: MediaStream;
   color: string;
+  contentWidth: number;
+  contentHeight: number;
+  // 他のプロパティが必要な場合はここに追加
 };
+
+async function captureNewStream() {
+  try {
+    // @see https://developer.mozilla.org/en-US/docs/Web/API/Screen_Capture_API/Using_Screen_Capture
+    const captureStream =
+      await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
+
+    const settings = captureStream.getVideoTracks()[0]?.getSettings();
+    console.log(settings?.width, settings?.height, settings?.frameRate);
+
+    const originWidth = settings?.width ?? 400;
+    const originHeight = settings?.height ?? 300;
+
+    const { contentWidth, contentHeight } =
+      originWidth > originHeight
+        ? {
+            contentWidth: 400,
+            contentHeight: (originHeight / originWidth) * 400,
+          }
+        : {
+            contentWidth: (originWidth / originHeight) * 400,
+            contentHeight: 400,
+          };
+
+    return {
+      media: captureStream,
+      contentWidth,
+      contentHeight,
+    };
+  } catch (_) {
+    return null;
+  }
+}
 
 export const Container: FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
 
   const clickAddHandler = useCallback(async () => {
-    try {
-      // @see https://developer.mozilla.org/en-US/docs/Web/API/Screen_Capture_API/Using_Screen_Capture
-      const captureStream =
-        await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-
-      const settings = captureStream.getVideoTracks()[0]?.getSettings();
-      console.log(settings?.width, settings?.height, settings?.frameRate);
-
-      setMediaItems((prev) => [
-        ...prev,
-        {
-          id: crypto.randomUUID(),
-          media: captureStream,
-          color: getPastelColor(prev.length),
-        },
-      ]);
-    } catch (_) {
-      // noop
+    const captureStream = await captureNewStream();
+    if (!captureStream) {
+      return;
     }
+
+    setMediaItems((prev) => [
+      ...prev,
+      {
+        ...captureStream,
+        id: crypto.randomUUID(),
+        color: getPastelColor(prev.length),
+      },
+    ]);
   }, []);
 
   const clickCloseHandler = useCallback((id: string) => {
@@ -70,25 +100,23 @@ export const Container: FC = () => {
   }, []);
 
   const clickSwitchVideoHandler = useCallback(async (id: string) => {
-    try {
-      // 新しいストリームを取得
-      const newCaptureStream =
-        await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
-
-      setMediaItems((prev) =>
-        prev.map((item) => {
-          if (item.id === id) {
-            // 古いストリームを停止
-            item.media.getTracks().forEach((track) => track.stop());
-            // 新しいストリームに置き換え
-            return { ...item, media: newCaptureStream };
-          }
-          return item;
-        }),
-      );
-    } catch (_) {
-      // noop
+    // 新しいストリームを取得
+    const captureStream = await captureNewStream();
+    if (!captureStream) {
+      return;
     }
+
+    setMediaItems((prev) =>
+      prev.map((item) => {
+        if (item.id === id) {
+          // 古いストリームを停止
+          item.media.getTracks().forEach((track) => track.stop());
+          // 新しいストリームに置き換え
+          return { ...item, ...captureStream };
+        }
+        return item;
+      }),
+    );
   }, []);
 
   return (

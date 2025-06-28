@@ -1,13 +1,21 @@
 import classNames from "classnames";
-import { FC, useCallback, useEffect, useRef, useState } from "react";
+import {
+  ComponentProps,
+  FC,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
-import { Mode } from "../../types/streamBox";
 import { Button } from "../Button";
 import { StreamBoxInner } from "./StreamBoxInner";
 
 interface Props {
   id: string;
   media: MediaStream;
+  contentWidth: number;
+  contentHeight: number;
   color: string;
   onClickClose?: (id: string) => void;
   onClickMoveUp?: (id: string) => void;
@@ -18,6 +26,8 @@ interface Props {
 export const StreamBox: FC<Props> = ({
   id,
   media,
+  contentWidth,
+  contentHeight,
   color,
   onClickClose,
   onClickMoveUp,
@@ -25,7 +35,8 @@ export const StreamBox: FC<Props> = ({
   onClickSwitchVideo,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const [mode, setMode] = useState<Mode>("resize");
+  const [mode, setMode] =
+    useState<ComponentProps<typeof StreamBoxInner>["mode"]>("resize");
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -67,7 +78,7 @@ export const StreamBox: FC<Props> = ({
       className={classNames(
         "pointer-events-none absolute right-0 top-0 z-50 flex flex-row gap-1 p-2",
         "transition-opacity duration-200 ease-in-out",
-        "opacity-0 group-hover/video-box:opacity-100",
+        "opacity-0 group-hover/stream-box:opacity-100",
       )}
     >
       <Button
@@ -112,7 +123,9 @@ export const StreamBox: FC<Props> = ({
 
   return (
     <StreamBoxInner
-      className='group/video-box relative'
+      className='group/stream-box'
+      contentWidth={contentWidth}
+      contentHeight={contentHeight}
       mode={mode}
       borderColor={color}
       buttons={buttons}

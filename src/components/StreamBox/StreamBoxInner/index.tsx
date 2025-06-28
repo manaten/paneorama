@@ -12,11 +12,11 @@ import {
   calculateDisplayProperties,
   contentDragOnCrop,
   contentDragOnResize,
-  createDefaultStreamBoxData,
+  createDefaultTransform,
   handleDragOnCrop,
   handleDragOnResize,
 } from "./functions";
-import { Mode, StreamBoxData } from "../../../types/streamBox";
+import { Mode, StreamBoxTransform } from "./types";
 
 type HandleType = "nw" | "ne" | "sw" | "se";
 
@@ -55,7 +55,7 @@ const ResizeHandle: FC<ResizeHandleProps> = ({ handle, onMouseDown, mode }) => {
     <button
       type='button'
       className={classNames(
-        "absolute w-3 h-3 border-2 border-white bg-blue-500 rounded-full z-50",
+        "absolute w-4 h-4 border-2 border-white bg-blue-500 rounded-full z-50",
         "hover:bg-blue-600 transition-colors",
         position,
         cursor,
@@ -71,9 +71,9 @@ interface Props {
   className?: string;
 
   /**
-   * StreamBoxの初期データモデル
+   * StreamBoxの初期トランスフォーム
    */
-  data?: StreamBoxData;
+  initialTransform?: StreamBoxTransform;
 
   /**
    * 表示するコンテンツ
@@ -81,9 +81,19 @@ interface Props {
   children: ReactNode;
 
   /**
-   * モード（オプション）
+   * コンテンツの幅
    */
-  mode?: Mode;
+  contentWidth: number;
+
+  /**
+   * コンテンツの高さ
+   */
+  contentHeight: number;
+
+  /**
+   * モード
+   */
+  mode: Mode;
 
   /**
    * ボーダーカラー（オプション）
@@ -104,20 +114,23 @@ interface Props {
  */
 export const StreamBoxInner: FC<Props> = ({
   className,
-  data,
+  initialTransform,
+  contentWidth,
+  contentHeight,
   children,
-  mode = "resize",
+  mode,
   borderColor = "#3b82f6",
   buttons,
 }) => {
   // 内部状態
-  const [currentData, setCurrentData] = useState<StreamBoxData>(
-    () => data ?? createDefaultStreamBoxData(),
+  const [currentTransform, setCurrentTransform] = useState<StreamBoxTransform>(
+    () =>
+      initialTransform ?? createDefaultTransform(contentWidth, contentHeight),
   );
   const [isHovered, setIsHovered] = useState(false);
 
   const [dragStartData, setDragStartData] = useState<{
-    initialData: StreamBoxData;
+    initialTransform: StreamBoxTransform;
     x: number;
     y: number;
     dragOrResize: "drag" | "resize";
@@ -128,7 +141,7 @@ export const StreamBoxInner: FC<Props> = ({
   const handleMouseMove = useCallback(
     (e: MouseEvent) => {
       if (!dragStartData) return;
-      const { initialData } = dragStartData;
+      const { initialTransform } = dragStartData;
       const delta = {
         x: e.clientX - dragStartData.x,
         y: e.clientY - dragStartData.y,
@@ -137,19 +150,19 @@ export const StreamBoxInner: FC<Props> = ({
 
       if (dragStartData.dragOrResize === "drag") {
         if (mode === "resize") {
-          setCurrentData(contentDragOnResize(initialData, delta));
+          setCurrentTransform(contentDragOnResize(initialTransform, delta));
         }
         if (mode === "crop") {
-          setCurrentData(contentDragOnCrop(initialData, delta));
+          setCurrentTransform(contentDragOnCrop(initialTransform, delta));
         }
       }
 
       if (dragStartData.dragOrResize === "resize") {
         if (mode === "resize") {
-          setCurrentData(handleDragOnResize(initialData, delta));
+          setCurrentTransform(handleDragOnResize(initialTransform, delta));
         }
         if (mode === "crop") {
-          setCurrentData(handleDragOnCrop(initialData, delta));
+          setCurrentTransform(handleDragOnCrop(initialTransform, delta));
         }
       }
     },
@@ -166,13 +179,13 @@ export const StreamBoxInner: FC<Props> = ({
       e.stopPropagation();
 
       setDragStartData({
-        initialData: currentData,
+        initialTransform: currentTransform,
         x: e.clientX,
         y: e.clientY,
         dragOrResize: "drag",
       });
     },
-    [currentData],
+    [currentTransform],
   );
 
   const handleResizeStart = useCallback(
@@ -181,14 +194,14 @@ export const StreamBoxInner: FC<Props> = ({
       e.stopPropagation();
 
       setDragStartData({
-        initialData: currentData,
+        initialTransform: currentTransform,
         x: e.clientX,
         y: e.clientY,
         dragOrResize: "resize",
         handle,
       });
     },
-    [currentData],
+    [currentTransform],
   );
 
   // イベントリスナーの管理
@@ -205,8 +218,13 @@ export const StreamBoxInner: FC<Props> = ({
   }, [dragStartData, handleMouseMove, handleMouseUp]);
 
   // 表示用プロパティを計算
-  const { containerStyle, contentStyle } =
-    calculateDisplayProperties(currentData);
+  const { containerStyle, contentStyle } = calculateDisplayProperties(
+    {
+      width: contentWidth,
+      height: contentHeight,
+    },
+    currentTransform,
+  );
 
   return (
     <div
@@ -235,7 +253,7 @@ export const StreamBoxInner: FC<Props> = ({
         className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
         style={{
           borderColor,
-          opacity: isHovered ? 1 : 0.3,
+          opacity: isHovered ? 1 : 0,
         }}
       />
 

@@ -8,7 +8,6 @@ const meta: Meta<typeof StreamBox> = {
   title: "Components/StreamBox",
   component: StreamBox,
   parameters: {
-    layout: "centered",
     backgrounds: {
       default: "dark",
       values: [
@@ -31,54 +30,45 @@ const meta: Meta<typeof StreamBox> = {
     onClickMoveDown: { action: "move down clicked" },
     onClickSwitchVideo: { action: "switch video clicked" },
   },
-  decorators: [
-    (Story) => (
-      <div style={{ width: "400px", height: "300px", position: "relative" }}>
-        <Story />
-      </div>
-    ),
-  ],
 };
 
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Default = {
   args: {
     id: "stream-1",
     media: mockMediaStream,
     color: "hsl(0, 60%, 80%)",
+    contentWidth: 640,
+    contentHeight: 480,
   },
-};
+} as const satisfies Story;
 
 export const WithPastelRed: Story = {
   args: {
-    id: "stream-red",
-    media: mockMediaStream,
+    ...Default.args,
     color: "hsl(0, 60%, 80%)",
   },
 };
 
 export const WithPastelBlue: Story = {
   args: {
-    id: "stream-blue",
-    media: mockMediaStream,
-    color: "hsl(240, 60%, 80%)",
+    ...Default.args,
+    color: "hsl(240, 44.44444444444444%, 3.5294117647058822%)",
   },
 };
 
 export const WithPastelGreen: Story = {
   args: {
-    id: "stream-green",
-    media: mockMediaStream,
+    ...Default.args,
     color: "hsl(120, 60%, 80%)",
   },
 };
 
 export const WithPastelPurple: Story = {
   args: {
-    id: "stream-purple",
-    media: mockMediaStream,
+    ...Default.args,
     color: "hsl(300, 60%, 80%)",
   },
 };
@@ -97,23 +87,19 @@ export const MultipleStreams: Story = {
         }}
       >
         <div style={{ width: "300px", height: "200px", position: "relative" }}>
-          <StreamBox
-            id='stream-1'
-            media={mockMediaStream}
-            color='hsl(0, 60%, 80%)'
-          />
+          <StreamBox {...Default.args} id='stream-1' color='hsl(0, 60%, 80%)' />
         </div>
         <div style={{ width: "300px", height: "200px", position: "relative" }}>
           <StreamBox
+            {...Default.args}
             id='stream-2'
-            media={mockMediaStream}
             color='hsl(120, 60%, 80%)'
           />
         </div>
         <div style={{ width: "300px", height: "200px", position: "relative" }}>
           <StreamBox
+            {...Default.args}
             id='stream-3'
-            media={mockMediaStream}
             color='hsl(240, 60%, 80%)'
           />
         </div>
