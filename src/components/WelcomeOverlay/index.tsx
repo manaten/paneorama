@@ -5,6 +5,7 @@ import { FC } from "react";
 
 import Icon from "../../../public/assets/icon.svg?react";
 import { useInstallPrompt } from "../../hooks/useInstallPrompt";
+import { t } from "../../i18n";
 
 interface Props {
   className?: string;
@@ -36,7 +37,7 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
             <span>Paneorama</span>
           </h1>
           <p className='text-lg font-medium text-slate-700'>
-            Screen pane manager for streaming
+            {t("welcome.subtitle")}
           </p>
         </div>
 
@@ -46,23 +47,21 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
             <div className='flex size-6 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-xs font-bold text-white'>
               1
             </div>
-            <span className='text-base'>
-              Capture multiple screens or windows
-            </span>
+            <span className='text-base'>{t("welcome.step1")}</span>
           </div>
 
           <div className='flex items-center justify-center space-x-3 text-slate-600'>
             <div className='flex size-6 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-xs font-bold text-white'>
               2
             </div>
-            <span className='text-base'>Drag and resize freely</span>
+            <span className='text-base'>{t("welcome.step2")}</span>
           </div>
 
           <div className='flex items-center justify-center space-x-3 text-slate-600'>
             <div className='flex size-6 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-xs font-bold text-white'>
               3
             </div>
-            <span className='text-base'>Control layers and switch sources</span>
+            <span className='text-base'>{t("welcome.step3")}</span>
           </div>
         </div>
 
@@ -70,10 +69,10 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
         <div className='flex items-center justify-center'>
           <div className='flex flex-col items-center'>
             <p className='mb-2 text-base font-medium text-slate-700'>
-              Click the + button to start capturing
+              {t("welcome.cta")}
             </p>
             <div className='flex items-center space-x-1 text-xs text-slate-500'>
-              <span>Look for the button in the top-right corner</span>
+              <span>{t("welcome.ctaHint")}</span>
               <span className='text-blue-500'>↗</span>
             </div>
 
@@ -81,14 +80,14 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
             {isInstallable && (
               <div className='mt-4 flex flex-col items-center'>
                 <p className='mb-2 text-sm font-medium text-slate-700'>
-                  Install the app for a better experience
+                  {t("welcome.installTip")}
                 </p>
                 <button
                   onClick={handleInstallClick}
                   className='pointer-events-auto px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700 border border-slate-300 hover:border-slate-400 rounded-md bg-transparent transition-colors cursor-pointer'
-                  title='Install Paneorama as a Progressive Web App'
+                  title={t("welcome.installTitle")}
                 >
-                  Install App
+                  {t("welcome.installButton")}
                 </button>
               </div>
             )}

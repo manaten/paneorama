@@ -17,6 +17,7 @@ import {
   handleDragOnResize,
 } from "./functions";
 import { Mode, StreamBoxTransform } from "./types";
+import { t } from "../../../i18n";
 
 type HandleType = "nw" | "ne" | "sw" | "se" | "n" | "s" | "e" | "w";
 
@@ -94,8 +95,8 @@ const ResizeHandle: FC<ResizeHandleProps> = ({
       )}
       style={{ borderColor }}
       onMouseDown={(e) => onMouseDown(handle, e)}
-      title={mode === "resize" ? "Resize" : "Crop"}
-      aria-label={`${mode === "resize" ? "Resize" : "Crop"} handle ${handle}`}
+      title={mode === "resize" ? t("streamBox.resize") : t("streamBox.crop")}
+      aria-label={`${mode === "resize" ? t("streamBox.resizeHandle") : t("streamBox.cropHandle")} ${handle}`}
     />
   );
 };
@@ -282,7 +283,7 @@ export const StreamBoxInner: FC<Props> = ({
       onMouseLeave={() => setIsHovered(false)}
       onMouseDown={handleDragStart}
       role='presentation'
-      aria-label={`${mode === "resize" ? "Move" : "Pan content"}`}
+      aria-label={`${mode === "resize" ? t("streamBox.move") : t("streamBox.panContent")}`}
     >
       <div className='relative flex size-full items-center justify-center bg-black overflow-hidden'>
         {/* コンテンツ */}
