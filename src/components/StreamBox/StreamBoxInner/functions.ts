@@ -64,179 +64,160 @@ type MouseDelta = {
 };
 
 export function contentDragOnResize(
-  initialData: StreamBoxTransform,
+  current: StreamBoxTransform,
   delta: MouseDelta,
 ): StreamBoxTransform {
   return {
-    ...initialData,
+    ...current,
     screenPosition: {
-      x: initialData.screenPosition.x + delta.x,
-      y: initialData.screenPosition.y + delta.y,
+      x: current.screenPosition.x + delta.x,
+      y: current.screenPosition.y + delta.y,
     },
   };
 }
 
 export function handleDragOnResize(
-  initialData: StreamBoxTransform,
+  current: StreamBoxTransform,
   delta: MouseDelta,
 ): StreamBoxTransform {
   if (!delta.handle) {
-    return initialData;
+    return current;
   }
 
+  const isWest = delta.handle === "nw" || delta.handle === "sw";
+  const isNorth = delta.handle === "nw" || delta.handle === "ne";
+
   const scaleX =
-    initialData.scale +
-    (delta.handle === "sw" || delta.handle === "nw" ? -1 : 1) *
-      (delta.x / initialData.crop.width);
+    current.scale + (isWest ? -1 : 1) * (delta.x / current.crop.width);
 
   const scaleY =
-    initialData.scale +
-    (delta.handle === "ne" || delta.handle === "nw" ? -1 : 1) *
-      (delta.y / initialData.crop.height);
+    current.scale + (isNorth ? -1 : 1) * (delta.y / current.crop.height);
 
   const scale = Math.min(
-    Math.max(scaleX, MIN_SIZE / initialData.crop.width),
-    Math.max(scaleY, MIN_SIZE / initialData.crop.height),
+    Math.max(scaleX, MIN_SIZE / current.crop.width),
+    Math.max(scaleY, MIN_SIZE / current.crop.height),
   );
 
-  const scaleDelta = scale - initialData.scale;
+  const scaleDelta = scale - current.scale;
 
-  // 左下･左上の場合はy座標を変えない
-  const x =
-    delta.handle === "se" || delta.handle === "ne"
-      ? initialData.screenPosition.x
-      : initialData.screenPosition.x - initialData.crop.width * scaleDelta;
+  // ハンドルが左下･左上の場合はx座標を変更
+  const x = isWest
+    ? current.screenPosition.x - current.crop.width * scaleDelta
+    : current.screenPosition.x;
 
-  // 左下･右下の場合はy座標を変えない
-  const y =
-    delta.handle === "se" || delta.handle === "sw"
-      ? initialData.screenPosition.y
-      : initialData.screenPosition.y - initialData.crop.height * scaleDelta;
+  // ハンドルが左上･右上の場合はy座標を変更
+  const y = isNorth
+    ? current.screenPosition.y - current.crop.height * scaleDelta
+    : current.screenPosition.y;
 
   return {
-    ...initialData,
+    ...current,
     scale,
-    screenPosition: {
-      x,
-      y,
-    },
+    screenPosition: { x, y },
   };
 }
 
 export function contentDragOnCrop(
-  initialData: StreamBoxTransform,
+  current: StreamBoxTransform,
   delta: MouseDelta,
   contentSize: { width: number; height: number },
 ): StreamBoxTransform {
-  const deltaXScaled = delta.x / initialData.scale;
-  const deltaYScaled = delta.y / initialData.scale;
-
   return {
-    ...initialData,
+    ...current,
     crop: {
-      ...initialData.crop,
-      x: adjust(initialData.crop.x - deltaXScaled, {
+      ...current.crop,
+      x: adjust(current.crop.x - delta.x / current.scale, {
         min: 0,
-        max: contentSize.width - initialData.crop.width,
+        max: contentSize.width - current.crop.width,
       }),
-      y: adjust(initialData.crop.y - deltaYScaled, {
+      y: adjust(current.crop.y - delta.y / current.scale, {
         min: 0,
-        max: contentSize.height - initialData.crop.height,
+        max: contentSize.height - current.crop.height,
       }),
     },
   };
 }
 
 export function handleDragOnCrop(
-  initialData: StreamBoxTransform,
+  current: StreamBoxTransform,
   delta: MouseDelta,
   contentSize: { width: number; height: number },
 ): StreamBoxTransform {
   if (!delta.handle) {
-    return initialData;
+    return current;
   }
 
-  const minCropSize = MIN_SIZE / initialData.scale; // 最小クロップサイズをスケールに基づいて計算
+  const minCropSize = MIN_SIZE / current.scale; // 最小クロップサイズをスケールに基づいて計算
 
   const newCropX = (() => {
-    const deltaXScaled = delta.x / initialData.scale;
+    const deltaXScaled = delta.x / current.scale;
 
     switch (delta.handle) {
       case "se":
       case "ne": {
         // 右下/右上 - cropRectの右端を調整
         return {
-          x: initialData.crop.x,
-          width: adjust(initialData.crop.width + deltaXScaled, {
+          x: current.crop.x,
+          width: adjust(current.crop.width + deltaXScaled, {
             min: minCropSize,
-            max: contentSize.width - initialData.crop.x,
+            max: contentSize.width - current.crop.x,
           }),
         };
       }
       case "sw":
       case "nw": {
         // 左下/左上 - cropRectの左端
-
-        const newWidth = adjust(initialData.crop.width - deltaXScaled, {
+        const width = adjust(current.crop.width - deltaXScaled, {
           min: minCropSize,
+          max: current.crop.x + current.crop.width,
         });
-
-        // x座標が0未満にならないように調整
-        const x = adjust(
-          initialData.crop.x + initialData.crop.width - newWidth,
-          { min: 0 },
-        );
         return {
-          x,
-          width: initialData.crop.width + initialData.crop.x - x,
+          x: current.crop.x + current.crop.width - width,
+          width,
         };
       }
     }
   })();
 
   const newCropY = (() => {
-    const deltaYScaled = delta.y / initialData.scale;
+    const deltaYScaled = delta.y / current.scale;
 
     switch (delta.handle) {
       case "se":
       case "sw": {
         // 右下/左下 - cropRectの下端を調整
         return {
-          y: initialData.crop.y,
-          height: adjust(initialData.crop.height + deltaYScaled, {
+          y: current.crop.y,
+          height: adjust(current.crop.height + deltaYScaled, {
             min: minCropSize,
-            max: contentSize.height - initialData.crop.y,
+            max: contentSize.height - current.crop.y,
           }),
         };
       }
       case "ne":
       case "nw": {
         // 右上/左上 - cropRectの上端を調整
-        const newHeight = adjust(initialData.crop.height - deltaYScaled, {
+        const height = adjust(current.crop.height - deltaYScaled, {
           min: minCropSize,
+          max: current.crop.y + current.crop.height,
         });
-        // y座標が0未満にならないように調整
-        const y = adjust(
-          initialData.crop.y + initialData.crop.height - newHeight,
-          { min: 0 },
-        );
         return {
-          y,
-          height: initialData.crop.y + initialData.crop.height - y,
+          y: current.crop.y + current.crop.height - height,
+          height,
         };
       }
     }
   })();
 
   return {
-    ...initialData,
+    ...current,
     screenPosition: {
       x:
-        initialData.screenPosition.x +
-        (newCropX.x - initialData.crop.x) * initialData.scale,
+        current.screenPosition.x +
+        (newCropX.x - current.crop.x) * current.scale,
       y:
-        initialData.screenPosition.y +
-        (newCropY.y - initialData.crop.y) * initialData.scale,
+        current.screenPosition.y +
+        (newCropY.y - current.crop.y) * current.scale,
     },
     crop: {
       ...newCropX,
