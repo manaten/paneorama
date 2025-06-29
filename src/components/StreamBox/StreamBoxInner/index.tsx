@@ -296,7 +296,7 @@ export const StreamBoxInner: FC<Props> = ({
 
       {buttons}
 
-      {isHovered && (
+      {(isHovered || dragStartData !== null) && (
         <>
           {/* ボーダー */}
           <div
@@ -309,16 +309,16 @@ export const StreamBoxInner: FC<Props> = ({
           <ResizeHandle handle='ne' {...handleProps} />
           <ResizeHandle handle='sw' {...handleProps} />
           <ResizeHandle handle='se' {...handleProps} />
-        </>
-      )}
 
-      {isHovered && mode === "crop" && (
-        <>
           {/* エッジハンドル（クロップモード時のみ表示） */}
-          <ResizeHandle handle='n' {...handleProps} />
-          <ResizeHandle handle='s' {...handleProps} />
-          <ResizeHandle handle='e' {...handleProps} />
-          <ResizeHandle handle='w' {...handleProps} />
+          {mode === "crop" && (
+            <>
+              <ResizeHandle handle='n' {...handleProps} />
+              <ResizeHandle handle='s' {...handleProps} />
+              <ResizeHandle handle='e' {...handleProps} />
+              <ResizeHandle handle='w' {...handleProps} />
+            </>
+          )}
         </>
       )}
     </div>
