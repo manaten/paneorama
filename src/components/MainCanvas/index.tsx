@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { FC, PropsWithChildren } from "react";
 
+import { t } from "../../i18n";
 import { Button } from "../Button";
 import { WelcomeOverlay } from "../WelcomeOverlay";
 
@@ -39,7 +40,7 @@ export const MainCanvas: FC<Props> = ({
           )}
           iconType='add'
           onClick={onClickAdd}
-          title='Start screen capture'
+          title={t("mainCanvas.startCapture")}
         />
       </div>
 
