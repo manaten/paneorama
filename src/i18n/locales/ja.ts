@@ -23,4 +23,10 @@ export const ja = {
   "streamBox.cropHandle": "クロップハンドル",
   "streamBox.move": "移動",
   "streamBox.panContent": "コンテンツをパン",
+  "streamBox.switchToCrop": "クロップモードに切り替え",
+  "streamBox.switchToResize": "リサイズモードに切り替え",
+  "streamBox.switchVideo": "別の画面/ウィンドウに切り替え",
+  "streamBox.bringToFront": "前面に移動",
+  "streamBox.sendToBack": "背面に移動",
+  "streamBox.closeStream": "閉じる",
 } as const satisfies Record<keyof typeof en, string>;

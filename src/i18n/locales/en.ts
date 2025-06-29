@@ -20,4 +20,10 @@ export const en = {
   "streamBox.cropHandle": "Crop handle",
   "streamBox.move": "Move",
   "streamBox.panContent": "Pan content",
+  "streamBox.switchToCrop": "Switch to crop mode",
+  "streamBox.switchToResize": "Switch to resize mode",
+  "streamBox.switchVideo": "Switch to different screen/window",
+  "streamBox.bringToFront": "Bring to front",
+  "streamBox.sendToBack": "Send to back",
+  "streamBox.closeStream": "Close stream",
 } as const;

@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 
+import { t } from "../../i18n";
 import { Button } from "../Button";
 import { StreamBoxInner } from "./StreamBoxInner";
 
@@ -86,7 +87,9 @@ export const StreamBox: FC<Props> = ({
         iconColor={color}
         onClick={toggleMode}
         title={
-          mode === "resize" ? "Switch to crop mode" : "Switch to resize mode"
+          mode === "resize"
+            ? t("streamBox.switchToCrop")
+            : t("streamBox.switchToResize")
         }
       />
       <Button
@@ -94,28 +97,28 @@ export const StreamBox: FC<Props> = ({
         iconType='switch_video'
         iconColor={color}
         onClick={switchVideoHandler}
-        title='Switch to different screen/window'
+        title={t("streamBox.switchVideo")}
       />
       <Button
         className='pointer-events-auto'
         iconType='move_up'
         iconColor={color}
         onClick={moveUpHandler}
-        title='Bring to front'
+        title={t("streamBox.bringToFront")}
       />
       <Button
         className='pointer-events-auto'
         iconType='move_down'
         iconColor={color}
         onClick={moveDownHandler}
-        title='Send to back'
+        title={t("streamBox.sendToBack")}
       />
       <Button
         className='pointer-events-auto'
         iconType='close'
         iconColor={color}
         onClick={closeHandler}
-        title='Close stream'
+        title={t("streamBox.closeStream")}
       />
     </div>
   );
