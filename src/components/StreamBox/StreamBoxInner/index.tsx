@@ -148,12 +148,19 @@ export const StreamBoxInner: FC<Props> = ({
         handle: dragStartData.handle,
       } as const;
 
+      const contentSize = {
+        width: contentWidth,
+        height: contentHeight,
+      } as const;
+
       if (dragStartData.dragOrResize === "drag") {
         if (mode === "resize") {
           setCurrentTransform(contentDragOnResize(initialTransform, delta));
         }
         if (mode === "crop") {
-          setCurrentTransform(contentDragOnCrop(initialTransform, delta));
+          setCurrentTransform(
+            contentDragOnCrop(initialTransform, delta, contentSize),
+          );
         }
       }
 
@@ -162,11 +169,13 @@ export const StreamBoxInner: FC<Props> = ({
           setCurrentTransform(handleDragOnResize(initialTransform, delta));
         }
         if (mode === "crop") {
-          setCurrentTransform(handleDragOnCrop(initialTransform, delta));
+          setCurrentTransform(
+            handleDragOnCrop(initialTransform, delta, contentSize),
+          );
         }
       }
     },
-    [mode, dragStartData],
+    [mode, dragStartData, contentWidth, contentHeight],
   );
 
   const handleMouseUp = useCallback(() => {

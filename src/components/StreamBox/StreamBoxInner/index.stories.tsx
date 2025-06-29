@@ -1,4 +1,6 @@
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import { ComponentProps } from "react";
+import { useArgs } from "storybook/preview-api";
 
 import { StreamBoxInner } from "./index";
 import { StreamBoxTransform } from "./types";
@@ -31,6 +33,42 @@ const meta: Meta<typeof StreamBoxInner> = {
       description: "ボーダーの色",
     },
   },
+  decorators: [
+    (Story) => {
+      const [args, setArgs] = useArgs<ComponentProps<typeof StreamBoxInner>>();
+      return (
+        <Story
+          args={{
+            ...args,
+            buttons: (
+              <button
+                style={{
+                  backgroundColor: args.mode === "crop" ? "#1ec35d" : "#f56f1c",
+                  color: "white",
+                  padding: "0.5rem",
+                  border: "none",
+                  borderRadius: "0.25rem",
+                  cursor: "pointer",
+                  position: "absolute",
+                  top: "1rem",
+                  right: "1rem",
+                  boxShadow: "0 2px 4px rgba(0,0,0,0.3)",
+                }}
+                onClick={() =>
+                  setArgs({
+                    ...args,
+                    mode: args.mode === "crop" ? "resize" : "crop",
+                  })
+                }
+              >
+                {args.mode === "crop" ? "current: crop" : "current: resize"}
+              </button>
+            ),
+          }}
+        />
+      );
+    },
+  ],
 };
 
 export default meta;
@@ -42,8 +80,6 @@ const baseTransform: StreamBoxTransform = {
   crop: { x: 0, y: 0, width: 400, height: 300 },
   scale: 1,
 };
-
-// クロッピングパターン
 
 // サンプルSVGグリッドコンポーネント（videoタグと同じ挙動）
 const TestGrid = () => (
