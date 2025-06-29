@@ -190,8 +190,8 @@ describe("functions", () => {
 
       const result = handleDragOnResize(smallTransform, delta);
 
-      // Scale should be limited to maintain minimum size (50px)
-      const expectedMinScale = 50 / 60; // MIN_SIZE / crop.width
+      // Scale should be limited to maintain minimum size (100px)
+      const expectedMinScale = 100 / 60; // MIN_SIZE / crop.width
       expect(result.scale).toBe(expectedMinScale);
     });
 
@@ -367,9 +367,9 @@ describe("functions", () => {
       const delta = { x: -500, y: -400, handle: "se" as const }; // Try to shrink below minimum
       const result = handleDragOnCrop(baseTransform, delta, contentSize);
 
-      // Should enforce minimum size (50px at scale 1)
-      expect(result.crop.width).toBeGreaterThanOrEqual(50);
-      expect(result.crop.height).toBeGreaterThanOrEqual(50);
+      // Should enforce minimum size (100px at scale 1)
+      expect(result.crop.width).toBeGreaterThanOrEqual(100);
+      expect(result.crop.height).toBeGreaterThanOrEqual(100);
     });
 
     it("should adjust screen position when crop position changes", () => {
@@ -484,8 +484,8 @@ describe("functions", () => {
 
       const result = handleDragOnCrop(transform, delta, contentSize);
 
-      // Should enforce minimum size (50px at scale 1)
-      expect(result.crop.width).toBeGreaterThanOrEqual(50);
+      // Should enforce minimum size (100px at scale 1)
+      expect(result.crop.width).toBeGreaterThanOrEqual(100);
     });
   });
 });

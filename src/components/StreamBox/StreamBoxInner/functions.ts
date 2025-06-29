@@ -55,7 +55,7 @@ export function calculateDisplayProperties(
   };
 }
 
-const MIN_SIZE = 50;
+const MIN_SIZE = 100;
 
 type MouseDelta = {
   x: number;
