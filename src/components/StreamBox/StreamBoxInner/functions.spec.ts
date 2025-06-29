@@ -433,5 +433,59 @@ describe("functions", () => {
       expect(result.crop.width).toBe(150); // Original right edge was at 150
       expect(result.crop.height).toBe(150); // Original bottom edge was at 150
     });
+
+    it('should handle "n" (north) edge crop resize - Y axis only', () => {
+      const delta = { x: 50, y: -40, handle: "n" as const };
+      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+
+      expect(result.crop.x).toBe(100); // X unchanged
+      expect(result.crop.width).toBe(400); // Width unchanged
+      expect(result.crop.height).toBe(340); // 300 - (-40)
+      expect(result.crop.y).toBe(10); // Adjusted to maintain bottom edge
+    });
+
+    it('should handle "s" (south) edge crop resize - Y axis only', () => {
+      const delta = { x: 50, y: 40, handle: "s" as const };
+      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+
+      expect(result.crop.x).toBe(100); // X unchanged
+      expect(result.crop.width).toBe(400); // Width unchanged
+      expect(result.crop.y).toBe(50); // Y unchanged
+      expect(result.crop.height).toBe(340); // 300 + 40
+    });
+
+    it('should handle "e" (east) edge crop resize - X axis only', () => {
+      const delta = { x: 50, y: 40, handle: "e" as const };
+      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+
+      expect(result.crop.y).toBe(50); // Y unchanged
+      expect(result.crop.height).toBe(300); // Height unchanged
+      expect(result.crop.x).toBe(100); // X unchanged
+      expect(result.crop.width).toBe(450); // 400 + 50
+    });
+
+    it('should handle "w" (west) edge crop resize - X axis only', () => {
+      const delta = { x: -50, y: 40, handle: "w" as const };
+      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+
+      expect(result.crop.y).toBe(50); // Y unchanged
+      expect(result.crop.height).toBe(300); // Height unchanged
+      expect(result.crop.width).toBe(450); // 400 - (-50)
+      expect(result.crop.x).toBe(50); // Adjusted to maintain right edge
+    });
+
+    it("should enforce minimum size for edge handles", () => {
+      const transform: StreamBoxTransform = {
+        crop: { x: 100, y: 50, width: 60, height: 60 },
+        screenPosition: { x: 200, y: 150 },
+        scale: 1,
+      };
+      const delta = { x: -100, y: 0, handle: "w" as const }; // Try to shrink below minimum
+
+      const result = handleDragOnCrop(transform, delta, contentSize);
+
+      // Should enforce minimum size (50px at scale 1)
+      expect(result.crop.width).toBeGreaterThanOrEqual(50);
+    });
   });
 });

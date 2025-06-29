@@ -60,7 +60,7 @@ const MIN_SIZE = 50;
 type MouseDelta = {
   x: number;
   y: number;
-  handle?: "se" | "sw" | "ne" | "nw";
+  handle?: "se" | "sw" | "ne" | "nw" | "n" | "s" | "e" | "w";
 };
 
 export function contentDragOnResize(
@@ -154,8 +154,9 @@ export function handleDragOnCrop(
 
     switch (delta.handle) {
       case "se":
-      case "ne": {
-        // 右下/右上 - cropRectの右端を調整
+      case "ne":
+      case "e": {
+        // 右下/右上/右 - cropRectの右端を調整
         return {
           x: current.crop.x,
           width: adjust(current.crop.width + deltaXScaled, {
@@ -165,8 +166,9 @@ export function handleDragOnCrop(
         };
       }
       case "sw":
-      case "nw": {
-        // 左下/左上 - cropRectの左端
+      case "nw":
+      case "w": {
+        // 左下/左上/左 - cropRectの左端
         const width = adjust(current.crop.width - deltaXScaled, {
           min: minCropSize,
           max: current.crop.x + current.crop.width,
@@ -174,6 +176,14 @@ export function handleDragOnCrop(
         return {
           x: current.crop.x + current.crop.width - width,
           width,
+        };
+      }
+      case "n":
+      case "s": {
+        // 上/下 - X軸は変更しない
+        return {
+          x: current.crop.x,
+          width: current.crop.width,
         };
       }
     }
@@ -184,8 +194,9 @@ export function handleDragOnCrop(
 
     switch (delta.handle) {
       case "se":
-      case "sw": {
-        // 右下/左下 - cropRectの下端を調整
+      case "sw":
+      case "s": {
+        // 右下/左下/下 - cropRectの下端を調整
         return {
           y: current.crop.y,
           height: adjust(current.crop.height + deltaYScaled, {
@@ -195,8 +206,9 @@ export function handleDragOnCrop(
         };
       }
       case "ne":
-      case "nw": {
-        // 右上/左上 - cropRectの上端を調整
+      case "nw":
+      case "n": {
+        // 右上/左上/上 - cropRectの上端を調整
         const height = adjust(current.crop.height - deltaYScaled, {
           min: minCropSize,
           max: current.crop.y + current.crop.height,
@@ -204,6 +216,14 @@ export function handleDragOnCrop(
         return {
           y: current.crop.y + current.crop.height - height,
           height,
+        };
+      }
+      case "e":
+      case "w": {
+        // 左/右 - Y軸は変更しない
+        return {
+          y: current.crop.y,
+          height: current.crop.height,
         };
       }
     }
