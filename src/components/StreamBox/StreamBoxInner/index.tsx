@@ -78,7 +78,7 @@ const ResizeHandle: FC<ResizeHandleProps> = ({
     <button
       type='button'
       className={classNames(
-        "absolute border-3 border-black bg-white z-50",
+        "absolute border-3 border-black bg-white",
         "hover:bg-gray-300 transition-colors",
         {
           // Corner handles: round
@@ -294,8 +294,6 @@ export const StreamBoxInner: FC<Props> = ({
         </div>
       </div>
 
-      {buttons}
-
       {(isHovered || dragStartData !== null) && (
         <>
           {/* ボーダー */}
@@ -319,6 +317,9 @@ export const StreamBoxInner: FC<Props> = ({
               <ResizeHandle handle='w' {...handleProps} />
             </>
           )}
+
+          {/* ユーザー定義ボタン */}
+          {buttons}
         </>
       )}
     </div>

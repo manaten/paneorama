@@ -54,7 +54,7 @@ export const Button: FC<Props> = memo(function Button({
     <button
       className={classNames(
         className,
-        "block rounded-full bg-slate-950/50 p-1 hover:bg-slate-950/30",
+        "block rounded-full bg-slate-950/80 p-2 hover:bg-slate-950/50",
         "transition-bg duration-200 ease-in-out cursor-pointer",
       )}
       {...props}

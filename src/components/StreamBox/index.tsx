@@ -76,9 +76,8 @@ export const StreamBox: FC<Props> = ({
   const buttons = (
     <div
       className={classNames(
-        "pointer-events-none absolute right-0 top-0 z-50 flex flex-row gap-1 p-2",
+        "pointer-events-none absolute right-0 top-0 flex flex-row gap-2 p-4",
         "transition-opacity duration-200 ease-in-out",
-        "opacity-0 group-hover/stream-box:opacity-100",
       )}
     >
       <Button
@@ -123,7 +122,6 @@ export const StreamBox: FC<Props> = ({
 
   return (
     <StreamBoxInner
-      className='group/stream-box'
       contentWidth={contentWidth}
       contentHeight={contentHeight}
       mode={mode}
