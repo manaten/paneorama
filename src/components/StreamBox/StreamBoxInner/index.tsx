@@ -18,25 +18,39 @@ import {
 } from "./functions";
 import { Mode, StreamBoxTransform } from "./types";
 
-type HandleType = "nw" | "ne" | "sw" | "se";
+type HandleType = "nw" | "ne" | "sw" | "se" | "n" | "s" | "e" | "w";
 
 interface ResizeHandleProps {
   handle: HandleType;
   onMouseDown: (handle: HandleType, e: React.MouseEvent) => void;
   mode: Mode;
+  borderColor?: string;
 }
 
-const ResizeHandle: FC<ResizeHandleProps> = ({ handle, onMouseDown, mode }) => {
+const ResizeHandle: FC<ResizeHandleProps> = ({
+  handle,
+  onMouseDown,
+  mode,
+  borderColor,
+}) => {
   const position = useMemo(() => {
     switch (handle) {
       case "nw":
-        return "top-0 left-0 -translate-x-1/2 -translate-y-1/2";
+        return "top-0 left-0 -translate-x-1 -translate-y-1";
       case "ne":
-        return "top-0 right-0 translate-x-1/2 -translate-y-1/2";
+        return "top-0 right-0 translate-x-1 -translate-y-1";
       case "sw":
-        return "bottom-0 left-0 -translate-x-1/2 translate-y-1/2";
+        return "bottom-0 left-0 -translate-x-1 translate-y-1";
       case "se":
-        return "bottom-0 right-0 translate-x-1/2 translate-y-1/2";
+        return "bottom-0 right-0 translate-x-1 translate-y-1";
+      case "n":
+        return "top-0 left-1/2 -translate-x-1/2 -translate-y-1";
+      case "s":
+        return "bottom-0 left-1/2 -translate-x-1/2 translate-y-1";
+      case "e":
+        return "right-0 top-1/2 translate-x-1 -translate-y-1/2";
+      case "w":
+        return "left-0 top-1/2 -translate-x-1 -translate-y-1/2";
     }
   }, [handle]);
 
@@ -48,18 +62,37 @@ const ResizeHandle: FC<ResizeHandleProps> = ({ handle, onMouseDown, mode }) => {
       case "ne":
       case "sw":
         return "cursor-ne-resize";
+      case "n":
+      case "s":
+        return "cursor-ns-resize";
+      case "e":
+      case "w":
+        return "cursor-ew-resize";
     }
   }, [handle]);
+
+  const isCornerHandle = ["nw", "ne", "sw", "se"].includes(handle);
+  const isEdgeHandle = ["n", "s", "e", "w"].includes(handle);
 
   return (
     <button
       type='button'
       className={classNames(
-        "absolute w-4 h-4 border-2 border-white bg-blue-500 rounded-full z-50",
-        "hover:bg-blue-600 transition-colors",
+        "absolute border-3 border-black bg-white",
+        "hover:bg-gray-300 transition-colors",
+        {
+          // Corner handles: round
+          "w-5 h-5 rounded-sm": isCornerHandle,
+          // Edge handles: rectangular
+          "w-16 h-3 rounded-sm":
+            isEdgeHandle && (handle === "n" || handle === "s"),
+          "w-3 h-16 rounded-sm":
+            isEdgeHandle && (handle === "e" || handle === "w"),
+        },
         position,
         cursor,
       )}
+      style={{ borderColor }}
       onMouseDown={(e) => onMouseDown(handle, e)}
       title={mode === "resize" ? "Resize" : "Crop"}
       aria-label={`${mode === "resize" ? "Resize" : "Crop"} handle ${handle}`}
@@ -235,6 +268,12 @@ export const StreamBoxInner: FC<Props> = ({
     currentTransform,
   );
 
+  const handleProps = {
+    mode,
+    borderColor,
+    onMouseDown: handleResizeStart,
+  } as const;
+
   return (
     <div
       className={classNames(className, "absolute select-none cursor-move")}
@@ -255,40 +294,32 @@ export const StreamBoxInner: FC<Props> = ({
         </div>
       </div>
 
-      {buttons}
-
-      {/* ボーダー */}
-      <div
-        className='pointer-events-none absolute inset-0 border-4 transition-opacity duration-200'
-        style={{
-          borderColor,
-          opacity: isHovered ? 1 : 0,
-        }}
-      />
-
-      {isHovered && (
+      {(isHovered || dragStartData !== null) && (
         <>
-          {/* リサイズハンドル */}
-          <ResizeHandle
-            handle='nw'
-            onMouseDown={handleResizeStart}
-            mode={mode}
+          {/* ボーダー */}
+          <div
+            className='pointer-events-none absolute inset-0 border-6'
+            style={{ borderColor }}
           />
-          <ResizeHandle
-            handle='ne'
-            onMouseDown={handleResizeStart}
-            mode={mode}
-          />
-          <ResizeHandle
-            handle='sw'
-            onMouseDown={handleResizeStart}
-            mode={mode}
-          />
-          <ResizeHandle
-            handle='se'
-            onMouseDown={handleResizeStart}
-            mode={mode}
-          />
+
+          {/* コーナーハンドル */}
+          <ResizeHandle handle='nw' {...handleProps} />
+          <ResizeHandle handle='ne' {...handleProps} />
+          <ResizeHandle handle='sw' {...handleProps} />
+          <ResizeHandle handle='se' {...handleProps} />
+
+          {/* エッジハンドル（クロップモード時のみ表示） */}
+          {mode === "crop" && (
+            <>
+              <ResizeHandle handle='n' {...handleProps} />
+              <ResizeHandle handle='s' {...handleProps} />
+              <ResizeHandle handle='e' {...handleProps} />
+              <ResizeHandle handle='w' {...handleProps} />
+            </>
+          )}
+
+          {/* ユーザー定義ボタン */}
+          {buttons}
         </>
       )}
     </div>
