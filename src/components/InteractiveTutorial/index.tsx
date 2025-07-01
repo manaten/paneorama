@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { FC, useState, useEffect } from "react";
 
+import { t } from "../../i18n";
 import { Button } from "../Button";
 
 interface Props {
@@ -9,57 +10,51 @@ interface Props {
   onClose: () => void;
 }
 
-const tutorialSteps = [
+const getTutorialSteps = () => [
   {
     id: "welcome",
-    title: "Welcome to Paneorama! 🎉",
-    description:
-      "Let's take a quick tour to help you get started with screen capture management.",
+    title: t("tutorial.welcome"),
+    description: t("tutorial.welcomeDesc"),
     position: "center",
     highlight: null,
     action: null,
   },
   {
     id: "add-button",
-    title: "Start Your First Capture",
-    description:
-      "Click the + button in the top-right corner to begin capturing your screen or window.",
+    title: t("tutorial.startFirstCapture"),
+    description: t("tutorial.startFirstCaptureDesc"),
     position: "top-right",
     highlight: "add-button",
     action: "click-add",
   },
   {
     id: "permission",
-    title: "Grant Permissions",
-    description:
-      "Your browser will ask for permission to capture your screen. Click 'Allow' to continue.",
+    title: t("tutorial.grantPermissions"),
+    description: t("tutorial.grantPermissionsDesc"),
     position: "center",
     highlight: null,
     action: null,
   },
   {
     id: "choose-source",
-    title: "Select What to Capture",
-    description:
-      "Choose the screen, window, or tab you want to capture from the browser's selection dialog.",
+    title: t("tutorial.chooseSource"),
+    description: t("tutorial.chooseSourceDesc"),
     position: "center",
     highlight: null,
     action: null,
   },
   {
     id: "controls",
-    title: "Hover for Controls",
-    description:
-      "Hover over your captured window to see the control buttons. Try dragging to move and resizing the corners!",
+    title: t("tutorial.hoverControls"),
+    description: t("tutorial.hoverControlsDesc"),
     position: "center",
     highlight: "stream-controls",
     action: null,
   },
   {
     id: "complete",
-    title: "You're All Set! 🚀",
-    description:
-      "You now know the basics! Click the help button anytime for detailed documentation.",
+    title: t("tutorial.complete"),
+    description: t("tutorial.completeDesc"),
     position: "center",
     highlight: null,
     action: null,
@@ -74,6 +69,7 @@ export const InteractiveTutorial: FC<Props> = ({
   const [currentStep, setCurrentStep] = useState(0);
   const [isVisible, setIsVisible] = useState(false);
   const [hasStarted, setHasStarted] = useState(false);
+  const tutorialSteps = getTutorialSteps();
 
   useEffect(() => {
     // Auto-start tutorial for first-time users
@@ -153,14 +149,15 @@ export const InteractiveTutorial: FC<Props> = ({
                 </span>
               </div>
               <div className='text-xs text-white/60'>
-                Step {currentStep + 1} of {tutorialSteps.length}
+                {t("tutorial.step")} {currentStep + 1} {t("tutorial.of")}{" "}
+                {tutorialSteps.length}
               </div>
             </div>
             <Button
               iconType='close'
               onClick={handleSkip}
               className='pointer-events-auto opacity-60 hover:opacity-100'
-              title='Skip Tutorial'
+              title={t("tutorial.skipTutorial")}
             />
           </div>
 
@@ -178,13 +175,13 @@ export const InteractiveTutorial: FC<Props> = ({
                 onClick={startTutorial}
                 className='w-full px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg font-medium transition-all duration-300 hover:scale-105'
               >
-                Start Tutorial
+                {t("tutorial.startTutorial")}
               </button>
               <button
                 onClick={handleSkip}
                 className='w-full px-4 py-2 text-white/70 hover:text-white text-sm transition-colors'
               >
-                Skip for now
+                {t("tutorial.skipForNow")}
               </button>
             </div>
           ) : (
@@ -199,7 +196,7 @@ export const InteractiveTutorial: FC<Props> = ({
                     : "text-white/80 hover:text-white hover:bg-white/10",
                 )}
               >
-                Previous
+                {t("tutorial.previous")}
               </button>
 
               <div className='flex gap-1'>
@@ -218,7 +215,7 @@ export const InteractiveTutorial: FC<Props> = ({
                 onClick={handleNext}
                 className='px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white text-sm rounded-lg font-medium transition-all duration-300 hover:scale-105'
               >
-                {isLastStep ? "Finish" : "Next"}
+                {isLastStep ? t("tutorial.finish") : t("tutorial.next")}
               </button>
             </div>
           )}

@@ -1,6 +1,8 @@
 import classNames from "classnames";
 import { FC } from "react";
 
+import { t } from "../../i18n";
+
 interface Props {
   className?: string;
   streamCount: number;
@@ -32,7 +34,7 @@ export const StatusIndicator: FC<Props> = ({
           )}
         />
         <span className='text-white/80 text-sm font-medium'>
-          {isCapturing ? "Capturing" : "Paused"}
+          {isCapturing ? t("status.capturing") : t("status.paused")}
         </span>
       </div>
 

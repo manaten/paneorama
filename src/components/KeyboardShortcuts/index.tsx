@@ -1,6 +1,7 @@
 import classNames from "classnames";
 import { FC, useEffect, useState } from "react";
 
+import { t } from "../../i18n";
 import { Button } from "../Button";
 
 interface Props {
@@ -9,32 +10,32 @@ interface Props {
   onClose: () => void;
 }
 
-const shortcuts = [
+const getShortcuts = () => [
   {
-    category: "General",
+    category: t("shortcuts.general"),
     items: [
-      { key: "?", description: "Show keyboard shortcuts" },
-      { key: "h", description: "Show help panel" },
-      { key: "Esc", description: "Close panels/dialogs" },
-      { key: "Space", description: "Add new capture" },
+      { key: "?", description: t("shortcuts.showShortcuts") },
+      { key: "h", description: t("shortcuts.showHelp") },
+      { key: "Esc", description: t("shortcuts.closePanels") },
+      { key: "Space", description: t("shortcuts.addCapture") },
     ],
   },
   {
-    category: "Stream Controls",
+    category: t("shortcuts.streamControls"),
     items: [
-      { key: "Delete", description: "Close selected stream" },
-      { key: "↑", description: "Bring stream to front" },
-      { key: "↓", description: "Send stream to back" },
-      { key: "r", description: "Switch stream source" },
-      { key: "m", description: "Toggle resize/crop mode" },
+      { key: "Delete", description: t("shortcuts.closeStream") },
+      { key: "↑", description: t("shortcuts.bringToFront") },
+      { key: "↓", description: t("shortcuts.sendToBack") },
+      { key: "r", description: t("shortcuts.switchSource") },
+      { key: "m", description: t("shortcuts.toggleMode") },
     ],
   },
   {
-    category: "Navigation",
+    category: t("shortcuts.navigation"),
     items: [
-      { key: "Tab", description: "Select next stream" },
-      { key: "Shift + Tab", description: "Select previous stream" },
-      { key: "1-9", description: "Select stream by number" },
+      { key: "Tab", description: t("shortcuts.selectNext") },
+      { key: "Shift + Tab", description: t("shortcuts.selectPrevious") },
+      { key: "1-9", description: t("shortcuts.selectByNumber") },
     ],
   },
 ];
@@ -45,6 +46,7 @@ export const KeyboardShortcuts: FC<Props> = ({
   onClose,
 }) => {
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const shortcuts = getShortcuts();
 
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -102,7 +104,7 @@ export const KeyboardShortcuts: FC<Props> = ({
               <span className='text-white font-bold text-sm'>⌨️</span>
             </div>
             <h2 className='text-2xl font-bold text-white'>
-              Keyboard Shortcuts
+              {t("shortcuts.title")}
             </h2>
           </div>
           <Button
@@ -112,7 +114,7 @@ export const KeyboardShortcuts: FC<Props> = ({
               onClose();
             }}
             className='pointer-events-auto'
-            title='Close Shortcuts'
+            title={t("shortcuts.close")}
           />
         </div>
 
@@ -160,11 +162,12 @@ export const KeyboardShortcuts: FC<Props> = ({
           {/* Footer tip */}
           <div className='mt-8 p-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 rounded-lg border border-purple-500/20'>
             <p className='text-white/70 text-sm text-center'>
-              <span className='font-semibold'>💡 Tip:</span> Press{" "}
+              <span className='font-semibold'>💡 {t("shortcuts.tip")}</span>{" "}
+              Press{" "}
               <kbd className='px-1 py-0.5 bg-white/20 rounded text-xs font-mono'>
                 ?
               </kbd>{" "}
-              anytime to show these shortcuts
+              {t("shortcuts.tipDesc")}
             </p>
           </div>
         </div>
