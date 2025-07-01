@@ -28,8 +28,8 @@ export const MainCanvas: FC<Props> = ({
 
       <div
         className={classNames(
-          "pointer-events-none fixed right-0 top-0 z-50 flex-row gap-4 p-4",
-          "transition-opacity duration-200 ease-in-out",
+          "pointer-events-none fixed right-0 top-0 z-50 flex flex-row gap-4 p-6",
+          "transition-all duration-300 ease-out",
           isEmpty ? "opacity-100" : "opacity-0 group-hover/main:opacity-100",
         )}
       >
