@@ -13,49 +13,8 @@
   }
 }
 
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-@keyframes shimmer {
-  0% {
-    background-position: -200% 0;
-  }
-  100% {
-    background-position: 200% 0;
-  }
-}
-
-@keyframes subtle-bounce {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-4px);
-  }
-}
-
 .animate-soft-glow {
   animation: soft-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite;
-}
-
-.animate-shimmer {
-  animation: shimmer 2s linear infinite;
-}
-
-.animate-subtle-bounce {
-  animation: subtle-bounce 2s ease-in-out infinite;
 }
 
 /* Modern Glass Effect */
@@ -71,19 +30,6 @@
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   background: rgba(0, 0, 0, 0.2);
   border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* Premium Gradient Backgrounds */
-.bg-premium-gradient {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-}
-
-.bg-sunset-gradient {
-  background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-}
-
-.bg-ocean-gradient {
-  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
 }
 
 :root {

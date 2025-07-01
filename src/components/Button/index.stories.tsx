@@ -19,7 +19,6 @@ const meta: Meta<typeof Button> = {
         "close",
         "crop",
         "fullscreen_exit",
-        "help",
         "move_up",
         "move_down",
         "switch_video",

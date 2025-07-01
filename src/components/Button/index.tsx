@@ -58,23 +58,13 @@ export const Button: FC<Props> = memo(function Button({
     <button
       className={classNames(
         className,
-        "group relative block rounded-full p-3",
-        "glass-effect-dark hover:glass-effect",
-        "transition-all duration-300 ease-out cursor-pointer",
-        "hover:scale-110 hover:shadow-lg",
-        "active:scale-95",
-        "before:absolute before:inset-0 before:rounded-full",
-        "before:bg-gradient-to-r before:from-white/10 before:to-white/5",
-        "before:opacity-0 hover:before:opacity-100",
-        "before:transition-opacity before:duration-300",
+        "block rounded-full bg-slate-950/80 p-2 hover:bg-slate-950/50",
+        "transition-bg duration-200 ease-in-out cursor-pointer",
       )}
       {...props}
     >
       <Icon
-        className={classNames(
-          "block size-5 object-contain transition-all duration-300",
-          "group-hover:drop-shadow-sm",
-        )}
+        className='block size-5 object-contain'
         style={{ fill: iconColor || "white" }}
         viewBox='0 0 24 24'
       />
