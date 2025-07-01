@@ -15,6 +15,7 @@ export const ja = {
 
   // Main Canvas
   "mainCanvas.startCapture": "画面キャプチャを開始",
+  "mainCanvas.help": "ヘルプ・ドキュメント",
 
   // Stream Box
   "streamBox.resize": "リサイズ",

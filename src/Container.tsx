@@ -1,6 +1,7 @@
 import { FC, useCallback, useState } from "react";
 
 import { MainCanvas } from "./components/MainCanvas";
+import { StatusIndicator } from "./components/StatusIndicator";
 import { StreamBox } from "./components/StreamBox";
 import { swap } from "./utils/array";
 import { getPastelColor } from "./utils/colors";
@@ -120,17 +121,27 @@ export const Container: FC = () => {
   }, []);
 
   return (
-    <MainCanvas onClickAdd={clickAddHandler} isEmpty={mediaItems.length === 0}>
-      {mediaItems.map((item) => (
-        <StreamBox
-          key={item.id}
-          {...item}
-          onClickClose={clickCloseHandler}
-          onClickMoveUp={clickMoveUpHandler}
-          onClickMoveDown={clickMoveDownHandler}
-          onClickSwitchVideo={clickSwitchVideoHandler}
-        />
-      ))}
-    </MainCanvas>
+    <>
+      <MainCanvas
+        onClickAdd={clickAddHandler}
+        isEmpty={mediaItems.length === 0}
+      >
+        {mediaItems.map((item) => (
+          <StreamBox
+            key={item.id}
+            {...item}
+            onClickClose={clickCloseHandler}
+            onClickMoveUp={clickMoveUpHandler}
+            onClickMoveDown={clickMoveDownHandler}
+            onClickSwitchVideo={clickSwitchVideoHandler}
+          />
+        ))}
+      </MainCanvas>
+
+      <StatusIndicator
+        streamCount={mediaItems.length}
+        isCapturing={mediaItems.some((item) => item.media.active)}
+      />
+    </>
   );
 };

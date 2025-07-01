@@ -12,6 +12,7 @@ export const en = {
 
   // Main Canvas
   "mainCanvas.startCapture": "Start screen capture",
+  "mainCanvas.help": "Help & Documentation",
 
   // Stream Box
   "streamBox.resize": "Resize",
