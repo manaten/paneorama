@@ -45,13 +45,11 @@ Built with Vite + React for fast development and optimized production builds.
 #### Main Application Flow
 
 1. **Container** (`src/Container.tsx`) - Main state management
-
    - Manages MediaStream collection using Screen Capture API
    - Handles CRUD operations for media items
    - Provides pastel color theming for each stream
 
 2. **MainCanvas** (`src/components/MainCanvas/index.tsx`) - Layout wrapper
-
    - Provides the main canvas area with hover-based add button
    - Full-screen container for all stream boxes
 

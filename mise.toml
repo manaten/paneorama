@@ -1,0 +1,8 @@
+[env]
+_.file = "./.env"
+
+[settings]
+idiomatic_version_file_enable_tools = ["node"]
+
+[tools]
+"npm:@anthropic-ai/claude-code" = "latest"

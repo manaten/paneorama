@@ -44,7 +44,7 @@ export const MainCanvas: FC<Props> = ({
         />
       </div>
 
-      <div className='size-full overflow-hidden relative'>{children}</div>
+      <div className='relative size-full overflow-hidden'>{children}</div>
     </div>
   );
 };
