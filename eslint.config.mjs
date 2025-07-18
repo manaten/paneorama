@@ -27,7 +27,6 @@ export default tsEslint.config(
   storybook.configs["flat/recommended"],
   eslintConfigPrettier,
 
-  // 非Reactプロジェクトの場合は以下のブロックと関連するimportを削除してください
   storybook.configs["flat/recommended"],
   {
     plugins: {

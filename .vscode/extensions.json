@@ -1,12 +1,11 @@
 {
   "recommendations": [
+    "bradlc.vscode-tailwindcss",
     "dbaeumer.vscode-eslint",
-    "esbenp.prettier-vscode",
     "editorconfig.editorconfig",
-    "streetsidesoftware.code-spell-checker",
     "esbenp.prettier-vscode",
     "GitHub.copilot",
     "Gruntfuggly.auto-snippet",
-    "bradlc.vscode-tailwindcss"
+    "streetsidesoftware.code-spell-checker"
   ]
 }
