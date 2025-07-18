@@ -133,7 +133,7 @@ export const StreamBox: FC<Props> = ({
     >
       <video
         ref={videoRef}
-        className='size-full pointer-events-none'
+        className='pointer-events-none size-full'
         autoPlay
         muted
       />

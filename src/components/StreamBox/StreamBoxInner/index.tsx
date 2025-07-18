@@ -285,10 +285,15 @@ export const StreamBoxInner: FC<Props> = ({
       role='presentation'
       aria-label={`${mode === "resize" ? t("streamBox.move") : t("streamBox.panContent")}`}
     >
-      <div className='relative flex size-full items-center justify-center bg-black overflow-hidden'>
+      <div
+        className={`
+          relative flex size-full items-center justify-center overflow-hidden
+          bg-black
+        `}
+      >
         {/* コンテンツ */}
         <div
-          className='size-full pointer-events-none absolute'
+          className='pointer-events-none absolute size-full'
           style={contentStyle}
         >
           {children}

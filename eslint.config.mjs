@@ -3,14 +3,14 @@
 import js from "@eslint/js";
 import tsParser from "@typescript-eslint/parser";
 import eslintConfigPrettier from "eslint-config-prettier";
+import eslintPluginBetterTailwindcss from "eslint-plugin-better-tailwindcss";
 import functionalPlugin from "eslint-plugin-functional";
-// @ts-expect-error 型定義がないため
 import importPlugin from "eslint-plugin-import";
 // @ts-expect-error 型定義がないため
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
 import storybook from "eslint-plugin-storybook";
-// import tailwind from "eslint-plugin-tailwindcss";
 import globals from "globals";
 import tsEslint from "typescript-eslint";
 
@@ -23,11 +23,24 @@ export default tsEslint.config(
   tsEslint.configs.recommended,
   tsEslint.configs.eslintRecommended,
   functionalPlugin.configs.noMutations,
-  // tailwind.configs["flat/recommended"],
   jsxA11y.flatConfigs.recommended,
   storybook.configs["flat/recommended"],
-  reactHooks.configs["recommended-latest"],
   eslintConfigPrettier,
+
+  // 非Reactプロジェクトの場合は以下のブロックと関連するimportを削除してください
+  storybook.configs["flat/recommended"],
+  {
+    plugins: {
+      "react-hooks": reactHooks,
+      "react-refresh": reactRefresh,
+      "better-tailwindcss": eslintPluginBetterTailwindcss,
+    },
+    rules: {
+      ...reactHooks.configs.recommended.rules,
+      ...eslintPluginBetterTailwindcss.configs["recommended-error"]?.rules,
+    },
+  },
+
   {
     languageOptions: {
       globals: {
@@ -46,7 +59,9 @@ export default tsEslint.config(
         project: "./tsconfig.json",
       },
     },
+  },
 
+  {
     rules: {
       "import/order": [
         "error",

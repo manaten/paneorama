@@ -32,8 +32,14 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
       <div className='mx-auto max-w-xl px-8 text-center'>
         {/* Logo/Title */}
         <div className='mb-8'>
-          <h1 className='mb-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-5xl font-bold text-transparent flex items-center gap-2'>
-            <Icon className='w-14 h-14' />
+          <h1
+            className={`
+              mb-4 flex items-center gap-2 bg-gradient-to-r from-indigo-600
+              via-purple-600 to-pink-600 bg-clip-text text-5xl font-bold
+              text-transparent
+            `}
+          >
+            <Icon className='h-14 w-14' />
             <span>Paneorama</span>
           </h1>
           <p className='text-lg font-medium text-slate-700'>
@@ -43,22 +49,52 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
 
         {/* Tutorial Steps */}
         <div className='mb-8 space-y-4'>
-          <div className='flex items-center justify-center space-x-3 text-slate-600'>
-            <div className='flex size-6 items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 text-xs font-bold text-white'>
+          <div
+            className={`
+              flex items-center justify-center space-x-3 text-slate-600
+            `}
+          >
+            <div
+              className={`
+                flex size-6 items-center justify-center rounded-full
+                bg-gradient-to-r from-blue-500 to-cyan-500 text-xs font-bold
+                text-white
+              `}
+            >
               1
             </div>
             <span className='text-base'>{t("welcome.step1")}</span>
           </div>
 
-          <div className='flex items-center justify-center space-x-3 text-slate-600'>
-            <div className='flex size-6 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 text-xs font-bold text-white'>
+          <div
+            className={`
+              flex items-center justify-center space-x-3 text-slate-600
+            `}
+          >
+            <div
+              className={`
+                flex size-6 items-center justify-center rounded-full
+                bg-gradient-to-r from-green-500 to-emerald-500 text-xs font-bold
+                text-white
+              `}
+            >
               2
             </div>
             <span className='text-base'>{t("welcome.step2")}</span>
           </div>
 
-          <div className='flex items-center justify-center space-x-3 text-slate-600'>
-            <div className='flex size-6 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-xs font-bold text-white'>
+          <div
+            className={`
+              flex items-center justify-center space-x-3 text-slate-600
+            `}
+          >
+            <div
+              className={`
+                flex size-6 items-center justify-center rounded-full
+                bg-gradient-to-r from-purple-500 to-pink-500 text-xs font-bold
+                text-white
+              `}
+            >
               3
             </div>
             <span className='text-base'>{t("welcome.step3")}</span>
@@ -84,7 +120,12 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
                 </p>
                 <button
                   onClick={handleInstallClick}
-                  className='pointer-events-auto px-3 py-1.5 text-xs text-slate-500 hover:text-slate-700 border border-slate-300 hover:border-slate-400 rounded-md bg-transparent transition-colors cursor-pointer'
+                  className={`
+                    pointer-events-auto cursor-pointer rounded-md border
+                    border-slate-300 bg-transparent px-3 py-1.5 text-xs
+                    text-slate-500 transition-colors
+                    hover:border-slate-400 hover:text-slate-700
+                  `}
                   title={t("welcome.installTitle")}
                 >
                   {t("welcome.installButton")}
@@ -96,8 +137,20 @@ export const WelcomeOverlay: FC<Props> = ({ className }) => {
       </div>
 
       {/* Subtle decorative elements */}
-      <div className='absolute left-1/4 top-1/4 size-20 animate-pulse rounded-full bg-gradient-to-r from-pink-200 to-purple-200 opacity-30 blur-xl delay-700' />
-      <div className='absolute bottom-1/4 right-1/4 size-24 animate-pulse rounded-full bg-gradient-to-r from-blue-200 to-cyan-200 opacity-30 blur-xl delay-1000' />
+      <div
+        className={`
+          absolute top-1/4 left-1/4 size-20 animate-pulse rounded-full
+          bg-gradient-to-r from-pink-200 to-purple-200 opacity-30 blur-xl
+          delay-700
+        `}
+      />
+      <div
+        className={`
+          absolute right-1/4 bottom-1/4 size-24 animate-pulse rounded-full
+          bg-gradient-to-r from-blue-200 to-cyan-200 opacity-30 blur-xl
+          delay-1000
+        `}
+      />
     </div>
   );
 };

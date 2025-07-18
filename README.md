@@ -33,13 +33,11 @@ Paneorama is a web-based screen capture management tool designed for presenters 
 ### Basic Operations
 
 1. **Add Screen Capture**
-
    - Click the `+` button or hover over the main area
    - Select the screen, window, or tab you want to capture
    - The new capture appears as a draggable window
 
 2. **Manage Captures**
-
    - **Drag**: Click and drag to reposition
    - **Resize**: Drag corners/edges to resize
    - **Layer Control**: Use ↑/↓ buttons to change stacking order
