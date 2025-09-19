@@ -4,7 +4,7 @@
 
 > A screen pane manager for streaming
 
-https://manaten.github.io/paneorama/
+https://paneorama.manaten.app/
 
 Paneorama is a web-based screen capture management tool designed for presenters using [Screen Capture API](https://developer.mozilla.org/en-US/docs/Web/API/Screen_Capture_API/Using_Screen_Capture). It allows you to capture multiple screens or windows simultaneously and manage them in a flexible, drag-and-drop interface.
 

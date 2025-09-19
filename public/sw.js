@@ -1,10 +1,5 @@
 const CACHE_NAME = "paneorama-v1";
-const urlsToCache = [
-  "/paneorama/",
-  "/paneorama/index.html",
-  "/paneorama/assets/",
-  "/paneorama/manifest.webmanifest",
-];
+const urlsToCache = ["/", "/index.html", "/assets/", "/manifest.webmanifest"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
