@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { TimerBoxView } from "./index";
 
 const meta: Meta<typeof TimerBoxView> = {
-  title: "Components/TimerBoxView",
   component: TimerBoxView,
   parameters: {
     layout: "centered",
@@ -25,7 +24,7 @@ const meta: Meta<typeof TimerBoxView> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const now = Date.now();
+const now = new Date("2025-10-04T09:15:30").getTime();
 
 export const StoppedDefault: Story = {
   args: {

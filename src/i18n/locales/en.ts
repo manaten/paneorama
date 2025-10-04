@@ -12,6 +12,8 @@ export const en = {
 
   // Main Canvas
   "mainCanvas.startCapture": "Start screen capture",
+  "mainCanvas.addClock": "Add Clock",
+  "mainCanvas.addTimer": "Add Timer",
 
   // Stream Box
   "streamBox.resize": "Resize",

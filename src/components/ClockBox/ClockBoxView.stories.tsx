@@ -3,7 +3,6 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ClockBoxView } from "./index";
 
 const meta: Meta<typeof ClockBoxView> = {
-  title: "Components/ClockBoxView",
   component: ClockBoxView,
   parameters: {
     layout: "centered",
@@ -44,20 +43,6 @@ export const Evening: Story = {
   args: {
     currentTime: new Date("2025-10-04T18:45:10"),
     color: "hsl(240, 60%, 80%)",
-  },
-};
-
-export const Midnight: Story = {
-  args: {
-    currentTime: new Date("2025-10-05T00:00:00"),
-    color: "hsl(0, 60%, 80%)",
-  },
-};
-
-export const Noon: Story = {
-  args: {
-    currentTime: new Date("2025-10-04T12:00:00"),
-    color: "hsl(120, 60%, 80%)",
   },
 };
 

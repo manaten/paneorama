@@ -33,7 +33,7 @@ function getDisplayTime(timerState: TimerState): number {
     return timerState.targetDuration - timerState.pausedElapsed;
   } else {
     const elapsed =
-      Date.now() - timerState.startedAt + timerState.pausedElapsed;
+      timerState.currentTime - timerState.startedAt + timerState.pausedElapsed;
     return timerState.targetDuration - elapsed;
   }
 }

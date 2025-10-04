@@ -41,13 +41,13 @@ export const MainCanvas: FC<Props> = ({
           className='pointer-events-auto'
           iconType='schedule'
           onClick={onClickAddClock}
-          title='時計を追加'
+          title={t("mainCanvas.addClock")}
         />
         <Button
           className='pointer-events-auto'
           iconType='timer'
           onClick={onClickAddTimer}
-          title='タイマーを追加'
+          title={t("mainCanvas.addTimer")}
         />
         <Button
           className={classNames(

@@ -15,6 +15,8 @@ export const ja = {
 
   // Main Canvas
   "mainCanvas.startCapture": "画面キャプチャを開始",
+  "mainCanvas.addClock": "時計を追加",
+  "mainCanvas.addTimer": "タイマーを追加",
 
   // Stream Box
   "streamBox.resize": "リサイズ",
