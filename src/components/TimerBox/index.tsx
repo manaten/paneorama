@@ -13,9 +13,16 @@ type Props = {
 type TimerState = {
   targetDuration: number; // 目標時間（ミリ秒）
   pausedElapsed: number; // 停止中に経過した時間
-  status: "stopped" | "running";
-  startedAt: number | null; // 開始時刻のタイムスタンプ (running時のみ非null)
-};
+} & (
+  | {
+      status: "stopped";
+      startedAt: null;
+    }
+  | {
+      status: "running";
+      startedAt: number; // 開始時刻のタイムスタンプ
+    }
+);
 
 export const TimerBox: FC<Props> = ({
   onClickClose,
@@ -50,9 +57,9 @@ export const TimerBox: FC<Props> = ({
     if (timerState.status === "stopped") {
       return timerState.targetDuration - timerState.pausedElapsed;
     } else {
-      // running
+      // running - startedAtは必ずnumber型
       const elapsed =
-        Date.now() - timerState.startedAt! + timerState.pausedElapsed;
+        Date.now() - timerState.startedAt + timerState.pausedElapsed;
       return timerState.targetDuration - elapsed;
     }
   };
@@ -88,12 +95,12 @@ export const TimerBox: FC<Props> = ({
   const handleStartPause = () => {
     setTimerState((prev) => {
       if (prev.status === "running") {
-        // Pause
+        // Pause - prev.startedAtは必ずnumber型
         return {
           ...prev,
           status: "stopped",
           startedAt: null,
-          pausedElapsed: Date.now() - prev.startedAt! + prev.pausedElapsed,
+          pausedElapsed: Date.now() - prev.startedAt + prev.pausedElapsed,
         };
       } else {
         // Start
