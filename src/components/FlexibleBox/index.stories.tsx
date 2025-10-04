@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ComponentProps } from "react";
 import { useArgs } from "storybook/preview-api";
 
-import { StreamBoxInner } from "./index";
-import { StreamBoxTransform } from "./types";
+import { FlexibleBox } from "./index";
+import { FlexibleBoxTransform } from "./types";
 
-const meta: Meta<typeof StreamBoxInner> = {
-  component: StreamBoxInner,
+const meta: Meta<typeof FlexibleBox> = {
+  component: FlexibleBox,
   parameters: {
     layout: "fullscreen",
     docs: {
@@ -35,7 +35,7 @@ const meta: Meta<typeof StreamBoxInner> = {
   },
   decorators: [
     (Story) => {
-      const [args, setArgs] = useArgs<ComponentProps<typeof StreamBoxInner>>();
+      const [args, setArgs] = useArgs<ComponentProps<typeof FlexibleBox>>();
       return (
         <Story
           args={{
@@ -75,7 +75,7 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 // ベースとなるデータ
-const baseTransform: StreamBoxTransform = {
+const baseTransform: FlexibleBoxTransform = {
   screenPosition: { x: 50, y: 50 },
   crop: { x: 0, y: 0, width: 400, height: 300 },
   scale: 1,

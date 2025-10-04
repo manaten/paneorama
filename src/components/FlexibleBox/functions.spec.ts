@@ -8,7 +8,7 @@ import {
   contentDragOnCrop,
   handleDragOnCrop,
 } from "./functions";
-import { StreamBoxTransform } from "./types";
+import { FlexibleBoxTransform } from "./types";
 
 describe("functions", () => {
   describe("createDefaultTransform", () => {
@@ -40,7 +40,7 @@ describe("functions", () => {
   describe("calculateDisplayProperties", () => {
     it("should calculate display properties with scale 1", () => {
       const contentSize = { width: 800, height: 600 };
-      const transform: StreamBoxTransform = {
+      const transform: FlexibleBoxTransform = {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 100, y: 50 },
         scale: 1,
@@ -64,7 +64,7 @@ describe("functions", () => {
 
     it("should calculate display properties with scale 2", () => {
       const contentSize = { width: 800, height: 600 };
-      const transform: StreamBoxTransform = {
+      const transform: FlexibleBoxTransform = {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 2,
@@ -88,7 +88,7 @@ describe("functions", () => {
 
     it("should handle crop offset correctly", () => {
       const contentSize = { width: 1000, height: 800 };
-      const transform: StreamBoxTransform = {
+      const transform: FlexibleBoxTransform = {
         crop: { x: 200, y: 100, width: 500, height: 400 },
         screenPosition: { x: 0, y: 0 },
         scale: 1,
@@ -103,7 +103,7 @@ describe("functions", () => {
 
   describe("contentDragOnResize", () => {
     it("should update screen position based on delta", () => {
-      const initialData: StreamBoxTransform = {
+      const initialData: FlexibleBoxTransform = {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 100, y: 50 },
         scale: 1,
@@ -118,7 +118,7 @@ describe("functions", () => {
     });
 
     it("should handle negative delta", () => {
-      const initialData: StreamBoxTransform = {
+      const initialData: FlexibleBoxTransform = {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 100, y: 50 },
         scale: 1,
@@ -132,7 +132,7 @@ describe("functions", () => {
   });
 
   describe("handleDragOnResize", () => {
-    const baseTransform: StreamBoxTransform = {
+    const baseTransform: FlexibleBoxTransform = {
       crop: { x: 0, y: 0, width: 400, height: 300 },
       screenPosition: { x: 100, y: 50 },
       scale: 1,
@@ -181,7 +181,7 @@ describe("functions", () => {
     });
 
     it("should enforce minimum size constraint", () => {
-      const smallTransform: StreamBoxTransform = {
+      const smallTransform: FlexibleBoxTransform = {
         crop: { x: 0, y: 0, width: 60, height: 60 },
         screenPosition: { x: 100, y: 50 },
         scale: 1,
@@ -196,7 +196,7 @@ describe("functions", () => {
     });
 
     it("should handle resize with initial scale 0.5", () => {
-      const scaledTransform: StreamBoxTransform = {
+      const scaledTransform: FlexibleBoxTransform = {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 200, y: 100 },
         scale: 0.5,
@@ -209,7 +209,7 @@ describe("functions", () => {
     });
 
     it("should handle resize with initial scale 2", () => {
-      const scaledTransform: StreamBoxTransform = {
+      const scaledTransform: FlexibleBoxTransform = {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 50, y: 25 },
         scale: 2,
@@ -230,7 +230,7 @@ describe("functions", () => {
     const contentSize = { width: 800, height: 600 };
 
     it("should update crop position based on scaled delta", () => {
-      const initialData: StreamBoxTransform = {
+      const initialData: FlexibleBoxTransform = {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 2,
@@ -248,7 +248,7 @@ describe("functions", () => {
     });
 
     it("should handle scale 1 correctly", () => {
-      const initialData: StreamBoxTransform = {
+      const initialData: FlexibleBoxTransform = {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
@@ -262,7 +262,7 @@ describe("functions", () => {
     });
 
     it("should handle negative delta", () => {
-      const initialData: StreamBoxTransform = {
+      const initialData: FlexibleBoxTransform = {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
@@ -276,7 +276,7 @@ describe("functions", () => {
     });
 
     it("should clamp crop position to content bounds", () => {
-      const initialData: StreamBoxTransform = {
+      const initialData: FlexibleBoxTransform = {
         crop: { x: 50, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
@@ -291,7 +291,7 @@ describe("functions", () => {
     });
 
     it("should prevent crop from going beyond content right/bottom edge", () => {
-      const initialData: StreamBoxTransform = {
+      const initialData: FlexibleBoxTransform = {
         crop: { x: 200, y: 200, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
@@ -309,7 +309,7 @@ describe("functions", () => {
 
   describe("handleDragOnCrop", () => {
     const contentSize = { width: 800, height: 600 };
-    const baseTransform: StreamBoxTransform = {
+    const baseTransform: FlexibleBoxTransform = {
       crop: { x: 100, y: 50, width: 400, height: 300 },
       screenPosition: { x: 200, y: 150 },
       scale: 1,
@@ -389,7 +389,7 @@ describe("functions", () => {
     });
 
     it("should handle scaled crop operations", () => {
-      const scaledTransform: StreamBoxTransform = {
+      const scaledTransform: FlexibleBoxTransform = {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 2,
@@ -403,7 +403,7 @@ describe("functions", () => {
     });
 
     it("should prevent crop from extending beyond content bounds", () => {
-      const transform: StreamBoxTransform = {
+      const transform: FlexibleBoxTransform = {
         crop: { x: 700, y: 500, width: 50, height: 50 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
@@ -418,7 +418,7 @@ describe("functions", () => {
     });
 
     it("should handle boundary constraints for nw handle", () => {
-      const transform: StreamBoxTransform = {
+      const transform: FlexibleBoxTransform = {
         crop: { x: 50, y: 50, width: 100, height: 100 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
@@ -475,7 +475,7 @@ describe("functions", () => {
     });
 
     it("should enforce minimum size for edge handles", () => {
-      const transform: StreamBoxTransform = {
+      const transform: FlexibleBoxTransform = {
         crop: { x: 100, y: 50, width: 60, height: 60 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,

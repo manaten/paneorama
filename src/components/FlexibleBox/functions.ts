@@ -1,4 +1,4 @@
-import { StreamBoxTransform } from "./types";
+import { FlexibleBoxTransform } from "./types";
 
 function adjust(
   value: number,
@@ -13,7 +13,7 @@ function adjust(
 export function createDefaultTransform(
   width: number,
   height: number,
-): StreamBoxTransform {
+): FlexibleBoxTransform {
   return {
     crop: {
       x: 0,
@@ -35,7 +35,7 @@ export function createDefaultTransform(
  */
 export function calculateDisplayProperties(
   contentSize: { width: number; height: number },
-  transform: StreamBoxTransform,
+  transform: FlexibleBoxTransform,
 ) {
   const { scale, screenPosition, crop } = transform;
 
@@ -64,9 +64,9 @@ type MouseDelta = {
 };
 
 export function contentDragOnResize(
-  current: StreamBoxTransform,
+  current: FlexibleBoxTransform,
   delta: MouseDelta,
-): StreamBoxTransform {
+): FlexibleBoxTransform {
   return {
     ...current,
     screenPosition: {
@@ -77,9 +77,9 @@ export function contentDragOnResize(
 }
 
 export function handleDragOnResize(
-  current: StreamBoxTransform,
+  current: FlexibleBoxTransform,
   delta: MouseDelta,
-): StreamBoxTransform {
+): FlexibleBoxTransform {
   if (!delta.handle) {
     return current;
   }
@@ -118,10 +118,10 @@ export function handleDragOnResize(
 }
 
 export function contentDragOnCrop(
-  current: StreamBoxTransform,
+  current: FlexibleBoxTransform,
   delta: MouseDelta,
   contentSize: { width: number; height: number },
-): StreamBoxTransform {
+): FlexibleBoxTransform {
   return {
     ...current,
     crop: {
@@ -139,10 +139,10 @@ export function contentDragOnCrop(
 }
 
 export function handleDragOnCrop(
-  current: StreamBoxTransform,
+  current: FlexibleBoxTransform,
   delta: MouseDelta,
   contentSize: { width: number; height: number },
-): StreamBoxTransform {
+): FlexibleBoxTransform {
   if (!delta.handle) {
     return current;
   }

@@ -1,7 +1,7 @@
 import { FC, useState, useEffect } from "react";
 
 import { Button } from "../Button";
-import { StreamBoxInner } from "../StreamBox/StreamBoxInner";
+import { FlexibleBox } from "../FlexibleBox";
 
 type Props = {
   onClickClose?: () => void;
@@ -52,7 +52,7 @@ export const ClockBox: FC<Props> = ({
   };
 
   return (
-    <StreamBoxInner
+    <FlexibleBox
       contentWidth={280}
       contentHeight={100}
       mode='resize'
@@ -109,6 +109,6 @@ export const ClockBox: FC<Props> = ({
           {formatDate(currentTime)}
         </div>
       </div>
-    </StreamBoxInner>
+    </FlexibleBox>
   );
 };

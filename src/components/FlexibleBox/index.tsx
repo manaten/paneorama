@@ -16,8 +16,8 @@ import {
   handleDragOnCrop,
   handleDragOnResize,
 } from "./functions";
-import { Mode, StreamBoxTransform } from "./types";
-import { t } from "../../../i18n";
+import { Mode, FlexibleBoxTransform } from "./types";
+import { t } from "../../i18n";
 
 type HandleType = "nw" | "ne" | "sw" | "se" | "n" | "s" | "e" | "w";
 
@@ -107,7 +107,7 @@ interface Props {
   /**
    * StreamBoxの初期トランスフォーム
    */
-  initialTransform?: StreamBoxTransform;
+  initialTransform?: FlexibleBoxTransform;
 
   /**
    * 表示するコンテンツ
@@ -146,7 +146,7 @@ interface Props {
  * StreamBoxDataに基づいて、コンテナサイズとクロッピング変形を適用してコンテンツを表示します。
  * interactive=trueの場合、ユーザー操作も可能です。
  */
-export const StreamBoxInner: FC<Props> = ({
+export const FlexibleBox: FC<Props> = ({
   className,
   initialTransform,
   contentWidth,
@@ -157,14 +157,15 @@ export const StreamBoxInner: FC<Props> = ({
   buttons,
 }) => {
   // 内部状態
-  const [currentTransform, setCurrentTransform] = useState<StreamBoxTransform>(
-    () =>
-      initialTransform ?? createDefaultTransform(contentWidth, contentHeight),
-  );
+  const [currentTransform, setCurrentTransform] =
+    useState<FlexibleBoxTransform>(
+      () =>
+        initialTransform ?? createDefaultTransform(contentWidth, contentHeight),
+    );
   const [isHovered, setIsHovered] = useState(false);
 
   const [dragStartData, setDragStartData] = useState<{
-    initialTransform: StreamBoxTransform;
+    initialTransform: FlexibleBoxTransform;
     x: number;
     y: number;
     dragOrResize: "drag" | "resize";
