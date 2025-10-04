@@ -3,6 +3,9 @@ import { FC, useState, useEffect } from "react";
 import { Button } from "../Button";
 import { FlexibleBox } from "../FlexibleBox";
 
+const BOX_WIDTH = 280,
+  BOX_HEIGHT = 120;
+
 type Props = {
   onClickClose?: () => void;
   onClickMoveUp?: () => void;
@@ -53,8 +56,8 @@ export const ClockBox: FC<Props> = ({
 
   return (
     <FlexibleBox
-      contentWidth={280}
-      contentHeight={120}
+      contentWidth={BOX_WIDTH}
+      contentHeight={BOX_HEIGHT}
       mode='resize'
       borderColor={color}
       transparent
@@ -88,13 +91,16 @@ export const ClockBox: FC<Props> = ({
         </div>
       }
     >
-      <svg viewBox='0 0 280 120' className='pointer-events-auto h-full w-full'>
+      <svg
+        viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
+        className={`pointer-events-auto h-full w-full`}
+      >
         {/* Background */}
-        <rect width='280' height='120' fill='#00000099' rx={16} />
+        <rect width={BOX_WIDTH} height={BOX_HEIGHT} fill='#00000099' rx={16} />
 
         {/* Time Display */}
         <text
-          x='140'
+          x={BOX_WIDTH / 2}
           y='65'
           textAnchor='middle'
           fontFamily='sans-serif'
@@ -106,7 +112,13 @@ export const ClockBox: FC<Props> = ({
         </text>
 
         {/* Date Display */}
-        <text x='140' y='95' textAnchor='middle' fontSize='18' fill={color}>
+        <text
+          x={BOX_WIDTH / 2}
+          y='95'
+          textAnchor='middle'
+          fontSize='18'
+          fill={color}
+        >
           {formatDate(currentTime)}
         </text>
       </svg>
