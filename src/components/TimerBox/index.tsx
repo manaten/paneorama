@@ -10,6 +10,13 @@ type Props = {
   color: string;
 };
 
+type TimerState = {
+  targetDuration: number; // 目標時間（ミリ秒）
+  pausedElapsed: number; // 停止中に経過した時間
+  status: "stopped" | "running";
+  startedAt: number | null; // 開始時刻のタイムスタンプ (running時のみ非null)
+};
+
 export const TimerBox: FC<Props> = ({
   onClickClose,
   onClickMoveUp,
@@ -17,15 +24,17 @@ export const TimerBox: FC<Props> = ({
   color,
 }) => {
   // タイマーの状態
-  const [targetDuration, setTargetDuration] = useState(5 * 60 * 1000); // デフォルト5分
-  const [status, setStatus] = useState<"stopped" | "running">("stopped");
-  const [startedAt, setStartedAt] = useState<number | null>(null);
-  const [pausedElapsed, setPausedElapsed] = useState(0);
+  const [timerState, setTimerState] = useState<TimerState>({
+    targetDuration: 5 * 60 * 1000, // デフォルト5分
+    pausedElapsed: 0,
+    status: "stopped",
+    startedAt: null,
+  });
   const [_tick, setTick] = useState(0); // 再レンダリング用
 
   // running中は100ms毎に再レンダリング
   useEffect(() => {
-    if (status !== "running") return;
+    if (timerState.status !== "running") return;
 
     const intervalId = window.setInterval(() => {
       setTick((prev) => prev + 1);
@@ -34,16 +43,17 @@ export const TimerBox: FC<Props> = ({
     return () => {
       window.clearInterval(intervalId);
     };
-  }, [status]);
+  }, [timerState.status]);
 
   // 残り時間を計算
   const getDisplayTime = (): number => {
-    if (status === "stopped") {
-      return targetDuration - pausedElapsed;
+    if (timerState.status === "stopped") {
+      return timerState.targetDuration - timerState.pausedElapsed;
     } else {
       // running
-      const elapsed = Date.now() - startedAt! + pausedElapsed;
-      return targetDuration - elapsed;
+      const elapsed =
+        Date.now() - timerState.startedAt! + timerState.pausedElapsed;
+      return timerState.targetDuration - elapsed;
     }
   };
 
@@ -68,29 +78,43 @@ export const TimerBox: FC<Props> = ({
 
   // ±30秒ボタン
   const handleAdjust30Seconds = (delta: number) => {
-    setTargetDuration((prev) => Math.max(0, prev + delta * 30 * 1000));
+    setTimerState((prev) => ({
+      ...prev,
+      targetDuration: Math.max(0, prev.targetDuration + delta * 30 * 1000),
+    }));
   };
 
   // Start/Pauseボタン
   const handleStartPause = () => {
-    if (status === "running") {
-      // Pause
-      setPausedElapsed(Date.now() - startedAt! + pausedElapsed);
-      setStartedAt(null);
-      setStatus("stopped");
-    } else {
-      // Start
-      setStartedAt(Date.now());
-      setStatus("running");
-    }
+    setTimerState((prev) => {
+      if (prev.status === "running") {
+        // Pause
+        return {
+          ...prev,
+          status: "stopped",
+          startedAt: null,
+          pausedElapsed: Date.now() - prev.startedAt! + prev.pausedElapsed,
+        };
+      } else {
+        // Start
+        return {
+          ...prev,
+          status: "running",
+          startedAt: Date.now(),
+        };
+      }
+    });
   };
 
   // Resetボタン
   const handleReset = () => {
-    setStatus("stopped");
-    setStartedAt(null);
-    setPausedElapsed(0);
-    // targetDurationは保持
+    setTimerState((prev) => ({
+      ...prev,
+      status: "stopped",
+      startedAt: null,
+      pausedElapsed: 0,
+      // targetDurationは保持
+    }));
   };
 
   const textColor = isOvertime ? "#ef4444" : color;
@@ -161,7 +185,7 @@ export const TimerBox: FC<Props> = ({
             >
               -30s
             </button>
-            {status === "stopped" && (
+            {timerState.status === "stopped" && (
               <button
                 onClick={handleStartPause}
                 onMouseDown={(e) => e.stopPropagation()}
@@ -173,7 +197,7 @@ export const TimerBox: FC<Props> = ({
                 Start
               </button>
             )}
-            {status === "running" && (
+            {timerState.status === "running" && (
               <button
                 onClick={handleStartPause}
                 onMouseDown={(e) => e.stopPropagation()}
