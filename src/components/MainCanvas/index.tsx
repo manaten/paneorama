@@ -8,6 +8,8 @@ import { WelcomeOverlay } from "../WelcomeOverlay";
 type Props = PropsWithChildren<{
   className?: string;
   onClickAdd?: () => void;
+  onClickAddTimer?: () => void;
+  onClickAddClock?: () => void;
   isEmpty?: boolean;
 }>;
 
@@ -15,6 +17,8 @@ export const MainCanvas: FC<Props> = ({
   className,
   children,
   onClickAdd,
+  onClickAddTimer,
+  onClickAddClock,
   isEmpty = false,
 }) => {
   return (
@@ -41,6 +45,18 @@ export const MainCanvas: FC<Props> = ({
           iconType='add'
           onClick={onClickAdd}
           title={t("mainCanvas.startCapture")}
+        />
+        <Button
+          className='pointer-events-auto'
+          iconType='timer'
+          onClick={onClickAddTimer}
+          title='タイマーを追加'
+        />
+        <Button
+          className='pointer-events-auto'
+          iconType='schedule'
+          onClick={onClickAddClock}
+          title='時計を追加'
         />
       </div>
 

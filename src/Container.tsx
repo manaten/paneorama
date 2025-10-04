@@ -76,13 +76,8 @@ async function captureNewStream() {
 
 export const Container: FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
-  const [showAddMenu, setShowAddMenu] = useState(false);
 
-  const clickAddHandler = useCallback(() => {
-    setShowAddMenu(true);
-  }, []);
-
-  const addStreamHandler = useCallback(async () => {
+  const clickAddHandler = useCallback(async () => {
     const captureStream = await captureNewStream();
     if (!captureStream) {
       return;
@@ -97,10 +92,9 @@ export const Container: FC = () => {
         color: getPastelColor(prev.length),
       },
     ]);
-    setShowAddMenu(false);
   }, []);
 
-  const addTimerHandler = useCallback(() => {
+  const clickAddTimerHandler = useCallback(() => {
     setMediaItems((prev) => [
       ...prev,
       {
@@ -111,10 +105,9 @@ export const Container: FC = () => {
         contentHeight: 200,
       },
     ]);
-    setShowAddMenu(false);
   }, []);
 
-  const addClockHandler = useCallback(() => {
+  const clickAddClockHandler = useCallback(() => {
     setMediaItems((prev) => [
       ...prev,
       {
@@ -125,7 +118,6 @@ export const Container: FC = () => {
         contentHeight: 180,
       },
     ]);
-    setShowAddMenu(false);
   }, []);
 
   const clickCloseHandler = useCallback((id: string) => {
@@ -174,7 +166,12 @@ export const Container: FC = () => {
   }, []);
 
   return (
-    <MainCanvas onClickAdd={clickAddHandler} isEmpty={mediaItems.length === 0}>
+    <MainCanvas
+      onClickAdd={clickAddHandler}
+      onClickAddTimer={clickAddTimerHandler}
+      onClickAddClock={clickAddClockHandler}
+      isEmpty={mediaItems.length === 0}
+    >
       {mediaItems.map((item) => {
         switch (item.type) {
           case "stream":
@@ -210,54 +207,6 @@ export const Container: FC = () => {
             );
         }
       })}
-
-      {showAddMenu && (
-        <div className={`
-          fixed inset-0 z-50 flex items-center justify-center bg-black/50
-        `}>
-          <div className='rounded-lg bg-white p-6 shadow-xl'>
-            <h2 className='mb-4 text-xl font-bold'>追加するアイテムを選択</h2>
-            <div className='flex flex-col gap-3'>
-              <button
-                onClick={addStreamHandler}
-                className={`
-                  rounded-lg bg-blue-500 px-6 py-3 text-white transition
-                  hover:bg-blue-600
-                `}
-              >
-                画面キャプチャ
-              </button>
-              <button
-                onClick={addTimerHandler}
-                className={`
-                  rounded-lg bg-green-500 px-6 py-3 text-white transition
-                  hover:bg-green-600
-                `}
-              >
-                タイマー
-              </button>
-              <button
-                onClick={addClockHandler}
-                className={`
-                  rounded-lg bg-purple-500 px-6 py-3 text-white transition
-                  hover:bg-purple-600
-                `}
-              >
-                時計
-              </button>
-              <button
-                onClick={() => setShowAddMenu(false)}
-                className={`
-                  rounded-lg bg-gray-300 px-6 py-3 text-gray-700 transition
-                  hover:bg-gray-400
-                `}
-              >
-                キャンセル
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </MainCanvas>
   );
 };

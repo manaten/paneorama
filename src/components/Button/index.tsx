@@ -5,7 +5,9 @@ import FullscreenExit from "@material-design-icons/svg/filled/fullscreen_exit.sv
 import Help from "@material-design-icons/svg/filled/help.svg?react";
 import KeyboardArrowDown from "@material-design-icons/svg/filled/keyboard_arrow_down.svg?react";
 import KeyboardArrowUp from "@material-design-icons/svg/filled/keyboard_arrow_up.svg?react";
+import Schedule from "@material-design-icons/svg/filled/schedule.svg?react";
 import SwitchVideo from "@material-design-icons/svg/filled/switch_video.svg?react";
+import Timer from "@material-design-icons/svg/filled/timer.svg?react";
 import classNames from "classnames";
 import { ComponentPropsWithoutRef, FC, memo } from "react";
 
@@ -19,7 +21,9 @@ interface Props extends ComponentPropsWithoutRef<"button"> {
     | "help"
     | "move_up"
     | "move_down"
-    | "switch_video";
+    | "switch_video"
+    | "timer"
+    | "schedule";
   iconColor?: string;
 }
 
@@ -41,6 +45,10 @@ function getIcon(iconType: Props["iconType"]) {
       return KeyboardArrowDown;
     case "switch_video":
       return SwitchVideo;
+    case "timer":
+      return Timer;
+    case "schedule":
+      return Schedule;
     default:
       return Add;
   }
