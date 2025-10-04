@@ -37,7 +37,6 @@ type Story = StoryObj<typeof meta>;
 
 export const Default = {
   args: {
-    id: "stream-1",
     media: mockMediaStream,
     color: "hsl(0, 60%, 80%)",
     contentWidth: 640,
@@ -87,21 +86,13 @@ export const MultipleStreams: Story = {
         }}
       >
         <div style={{ width: "300px", height: "200px", position: "relative" }}>
-          <StreamBox {...Default.args} id='stream-1' color='hsl(0, 60%, 80%)' />
+          <StreamBox {...Default.args} color='hsl(0, 60%, 80%)' />
         </div>
         <div style={{ width: "300px", height: "200px", position: "relative" }}>
-          <StreamBox
-            {...Default.args}
-            id='stream-2'
-            color='hsl(120, 60%, 80%)'
-          />
+          <StreamBox {...Default.args} color='hsl(120, 60%, 80%)' />
         </div>
         <div style={{ width: "300px", height: "200px", position: "relative" }}>
-          <StreamBox
-            {...Default.args}
-            id='stream-3'
-            color='hsl(240, 60%, 80%)'
-          />
+          <StreamBox {...Default.args} color='hsl(240, 60%, 80%)' />
         </div>
       </div>
     ),

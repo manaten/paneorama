@@ -1,7 +1,9 @@
 import { FC, useCallback, useState } from "react";
 
+import { ClockBox } from "./components/ClockBox";
 import { MainCanvas } from "./components/MainCanvas";
 import { StreamBox } from "./components/StreamBox";
+import { TimerBox } from "./components/TimerBox";
 import { swap } from "./utils/array";
 import { getPastelColor } from "./utils/colors";
 
@@ -15,14 +17,27 @@ const displayMediaOptions = {
   audio: false,
 } as const satisfies DisplayMediaStreamOptions;
 
-type MediaItem = {
+type BaseItem = {
   id: string;
-  media: MediaStream;
   color: string;
   contentWidth: number;
   contentHeight: number;
-  // 他のプロパティが必要な場合はここに追加
 };
+
+type StreamItem = BaseItem & {
+  type: "stream";
+  media: MediaStream;
+};
+
+type TimerItem = BaseItem & {
+  type: "timer";
+};
+
+type ClockItem = BaseItem & {
+  type: "clock";
+};
+
+type MediaItem = StreamItem | TimerItem | ClockItem;
 
 async function captureNewStream() {
   try {
@@ -57,6 +72,67 @@ async function captureNewStream() {
   }
 }
 
+const ItemBox: FC<{
+  item: MediaItem;
+  onClickClose?: (id: string) => void;
+  onClickMoveUp?: (id: string) => void;
+  onClickMoveDown?: (id: string) => void;
+  onClickSwitchVideo?: (id: string) => void;
+}> = ({
+  item,
+  onClickClose,
+  onClickMoveUp,
+  onClickMoveDown,
+  onClickSwitchVideo,
+}) => {
+  const closeHandler = useCallback(() => {
+    onClickClose?.(item.id);
+  }, [item.id, onClickClose]);
+
+  const moveUpHandler = useCallback(() => {
+    onClickMoveUp?.(item.id);
+  }, [item.id, onClickMoveUp]);
+
+  const moveDownHandler = useCallback(() => {
+    onClickMoveDown?.(item.id);
+  }, [item.id, onClickMoveDown]);
+
+  const switchVideoHandler = useCallback(() => {
+    onClickSwitchVideo?.(item.id);
+  }, [item.id, onClickSwitchVideo]);
+
+  switch (item.type) {
+    case "stream":
+      return (
+        <StreamBox
+          {...item}
+          onClickClose={closeHandler}
+          onClickMoveUp={moveUpHandler}
+          onClickMoveDown={moveDownHandler}
+          onClickSwitchVideo={switchVideoHandler}
+        />
+      );
+    case "timer":
+      return (
+        <TimerBox
+          {...item}
+          onClickClose={closeHandler}
+          onClickMoveUp={moveUpHandler}
+          onClickMoveDown={moveDownHandler}
+        />
+      );
+    case "clock":
+      return (
+        <ClockBox
+          {...item}
+          onClickClose={closeHandler}
+          onClickMoveUp={moveUpHandler}
+          onClickMoveDown={moveDownHandler}
+        />
+      );
+  }
+};
+
 export const Container: FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
 
@@ -69,6 +145,7 @@ export const Container: FC = () => {
     setMediaItems((prev) => [
       ...prev,
       {
+        type: "stream",
         ...captureStream,
         id: crypto.randomUUID(),
         color: getPastelColor(prev.length),
@@ -76,10 +153,38 @@ export const Container: FC = () => {
     ]);
   }, []);
 
+  const clickAddTimerHandler = useCallback(() => {
+    setMediaItems((prev) => [
+      ...prev,
+      {
+        type: "timer",
+        id: crypto.randomUUID(),
+        color: getPastelColor(prev.length),
+        contentWidth: 300,
+        contentHeight: 200,
+      },
+    ]);
+  }, []);
+
+  const clickAddClockHandler = useCallback(() => {
+    setMediaItems((prev) => [
+      ...prev,
+      {
+        type: "clock",
+        id: crypto.randomUUID(),
+        color: getPastelColor(prev.length),
+        contentWidth: 350,
+        contentHeight: 180,
+      },
+    ]);
+  }, []);
+
   const clickCloseHandler = useCallback((id: string) => {
     setMediaItems((prev) => {
       const item = prev.find((item) => item.id === id);
-      item?.media.getTracks().forEach((track) => track.stop());
+      if (item?.type === "stream") {
+        item.media.getTracks().forEach((track) => track.stop());
+      }
 
       return prev.filter((item) => item.id !== id);
     });
@@ -108,7 +213,7 @@ export const Container: FC = () => {
 
     setMediaItems((prev) =>
       prev.map((item) => {
-        if (item.id === id) {
+        if (item.id === id && item.type === "stream") {
           // 古いストリームを停止
           item.media.getTracks().forEach((track) => track.stop());
           // 新しいストリームに置き換え
@@ -120,11 +225,16 @@ export const Container: FC = () => {
   }, []);
 
   return (
-    <MainCanvas onClickAdd={clickAddHandler} isEmpty={mediaItems.length === 0}>
+    <MainCanvas
+      onClickAdd={clickAddHandler}
+      onClickAddTimer={clickAddTimerHandler}
+      onClickAddClock={clickAddClockHandler}
+      isEmpty={mediaItems.length === 0}
+    >
       {mediaItems.map((item) => (
-        <StreamBox
+        <ItemBox
           key={item.id}
-          {...item}
+          item={item}
           onClickClose={clickCloseHandler}
           onClickMoveUp={clickMoveUpHandler}
           onClickMoveDown={clickMoveDownHandler}

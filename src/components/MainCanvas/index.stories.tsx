@@ -56,7 +56,6 @@ export const WithOneStream: Story = {
         }}
       >
         <StreamBox
-          id='stream-1'
           media={mockMediaStream}
           color='hsl(0, 60%, 80%)'
           contentWidth={640}
@@ -84,7 +83,6 @@ export const WithMultipleStreams: Story = {
         }}
       >
         <StreamBox
-          id='stream-1'
           media={mockMediaStream}
           color='hsl(0, 60%, 80%)'
           contentWidth={640}
@@ -102,7 +100,6 @@ export const WithMultipleStreams: Story = {
         }}
       >
         <StreamBox
-          id='stream-2'
           media={mockMediaStream}
           color='hsl(120, 60%, 80%)'
           contentWidth={640}
@@ -120,7 +117,6 @@ export const WithMultipleStreams: Story = {
         }}
       >
         <StreamBox
-          id='stream-3'
           media={mockMediaStream}
           color='hsl(240, 60%, 80%)'
           contentWidth={640}
