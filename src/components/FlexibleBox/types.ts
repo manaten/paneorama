@@ -1,4 +1,4 @@
-export interface StreamBoxTransform {
+export interface FlexibleBoxTransform {
   // ボックスの表示位置とサイズ（クロップ後）
   crop: {
     x: number; // content内の左上のx（クロップ開始）

@@ -10,7 +10,7 @@ import {
 
 import { t } from "../../i18n";
 import { Button } from "../Button";
-import { StreamBoxInner } from "./StreamBoxInner";
+import { FlexibleBox } from "../FlexibleBox";
 
 interface Props {
   media: MediaStream;
@@ -35,7 +35,7 @@ export const StreamBox: FC<Props> = ({
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const [mode, setMode] =
-    useState<ComponentProps<typeof StreamBoxInner>["mode"]>("resize");
+    useState<ComponentProps<typeof FlexibleBox>["mode"]>("resize");
 
   useEffect(() => {
     const videoElement = videoRef.current;
@@ -106,7 +106,7 @@ export const StreamBox: FC<Props> = ({
   );
 
   return (
-    <StreamBoxInner
+    <FlexibleBox
       contentWidth={contentWidth}
       contentHeight={contentHeight}
       mode={mode}
@@ -119,6 +119,6 @@ export const StreamBox: FC<Props> = ({
         autoPlay
         muted
       />
-    </StreamBoxInner>
+    </FlexibleBox>
   );
 };
