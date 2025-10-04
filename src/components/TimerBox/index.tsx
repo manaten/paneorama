@@ -80,6 +80,9 @@ export const TimerBox: FC<Props> = ({
       .padStart(2, "0")}.${tenths}`;
   };
 
+  const lightColor = `hsl(${color}, 70%, 85%)`;
+  const darkColor = `hsl(${color}, 70%, 75%)`;
+
   return (
     <FlexibleBox
       contentWidth={300}
@@ -116,108 +119,130 @@ export const TimerBox: FC<Props> = ({
         </div>
       }
     >
-      <div
-        className={`
-          pointer-events-auto flex h-full w-full flex-col items-center
-          justify-center overflow-hidden p-4
-        `}
+      <svg
+        viewBox='0 0 300 200'
+        className='pointer-events-auto h-full w-full'
+        style={{ backgroundColor: lightColor }}
       >
-        <div className='mb-4 text-center'>
-          <div
-            className='font-mono text-4xl font-bold text-gray-200'
-            style={{ fontSize: "clamp(1.5rem, 4vw, 2.5rem)" }}
-          >
-            {formatTime(time)}
-          </div>
-        </div>
+        {/* Background */}
+        <rect
+          width='300'
+          height='200'
+          fill={lightColor}
+          stroke={darkColor}
+          strokeWidth='2'
+        />
 
+        {/* Timer Display */}
+        <text
+          x='150'
+          y='80'
+          textAnchor='middle'
+          fontFamily='monospace'
+          fontSize='40'
+          fontWeight='bold'
+          fill='#1f2937'
+        >
+          {formatTime(time)}
+        </text>
+
+        {/* Input section when stopped */}
         {time === 0 && !isRunning && (
-          <div className='mb-4 flex gap-2'>
-            <input
-              type='number'
-              min='0'
-              max='99'
-              value={inputMinutes}
-              onChange={(e) => setInputMinutes(e.target.value)}
-              className='w-16 rounded border px-2 py-1 text-center'
-              onMouseDown={(e) => e.stopPropagation()}
-            />
-            <span className='self-center'>:</span>
-            <input
-              type='number'
-              min='0'
-              max='59'
-              value={inputSeconds}
-              onChange={(e) => setInputSeconds(e.target.value)}
-              className='w-16 rounded border px-2 py-1 text-center'
-              onMouseDown={(e) => e.stopPropagation()}
-            />
-          </div>
+          <g>
+            <foreignObject x='75' y='90' width='150' height='40'>
+              <div className='flex h-full items-center justify-center gap-2'>
+                <input
+                  type='number'
+                  min='0'
+                  max='99'
+                  value={inputMinutes}
+                  onChange={(e) => setInputMinutes(e.target.value)}
+                  className='w-16 rounded border px-2 py-1 text-center'
+                  style={{ borderColor: darkColor }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+                <span>:</span>
+                <input
+                  type='number'
+                  min='0'
+                  max='59'
+                  value={inputSeconds}
+                  onChange={(e) => setInputSeconds(e.target.value)}
+                  className='w-16 rounded border px-2 py-1 text-center'
+                  style={{ borderColor: darkColor }}
+                  onMouseDown={(e) => e.stopPropagation()}
+                />
+              </div>
+            </foreignObject>
+          </g>
         )}
 
-        <div className='flex gap-2'>
-          {!isRunning && time === 0 && (
-            <button
-              onClick={handleStart}
-              onMouseDown={(e) => e.stopPropagation()}
-              className={`
-                rounded bg-green-500 px-4 py-2 text-white
-                hover:bg-green-600
-              `}
-            >
-              Start
-            </button>
-          )}
-          {!isRunning && time > 0 && (
-            <>
+        {/* Buttons */}
+        <foreignObject x='50' y='140' width='200' height='50'>
+          <div className='flex h-full justify-center gap-2'>
+            {!isRunning && time === 0 && (
               <button
                 onClick={handleStart}
                 onMouseDown={(e) => e.stopPropagation()}
                 className={`
-                  rounded bg-blue-500 px-4 py-2 text-white
-                  hover:bg-blue-600
+                  rounded bg-green-500 px-4 py-2 text-sm text-white
+                  hover:bg-green-600
                 `}
               >
-                Resume
+                Start
               </button>
-              <button
-                onClick={handleReset}
-                onMouseDown={(e) => e.stopPropagation()}
-                className={`
-                  rounded bg-gray-500 px-4 py-2 text-white
-                  hover:bg-gray-600
-                `}
-              >
-                Reset
-              </button>
-            </>
-          )}
-          {isRunning && (
-            <>
-              <button
-                onClick={handlePause}
-                onMouseDown={(e) => e.stopPropagation()}
-                className={`
-                  rounded bg-yellow-500 px-4 py-2 text-white
-                  hover:bg-yellow-600
-                `}
-              >
-                Pause
-              </button>
-              <button
-                onClick={handleReset}
-                onMouseDown={(e) => e.stopPropagation()}
-                className={`
-                  rounded bg-gray-500 px-4 py-2 text-white
-                  hover:bg-gray-600
-                `}
-              >
-                Reset
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+            )}
+            {!isRunning && time > 0 && (
+              <>
+                <button
+                  onClick={handleStart}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className={`
+                    rounded bg-blue-500 px-3 py-2 text-sm text-white
+                    hover:bg-blue-600
+                  `}
+                >
+                  Resume
+                </button>
+                <button
+                  onClick={handleReset}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className={`
+                    rounded bg-gray-500 px-3 py-2 text-sm text-white
+                    hover:bg-gray-600
+                  `}
+                >
+                  Reset
+                </button>
+              </>
+            )}
+            {isRunning && (
+              <>
+                <button
+                  onClick={handlePause}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className={`
+                    rounded bg-yellow-500 px-3 py-2 text-sm text-white
+                    hover:bg-yellow-600
+                  `}
+                >
+                  Pause
+                </button>
+                <button
+                  onClick={handleReset}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  className={`
+                    rounded bg-gray-500 px-3 py-2 text-sm text-white
+                    hover:bg-gray-600
+                  `}
+                >
+                  Reset
+                </button>
+              </>
+            )}
+          </div>
+        </foreignObject>
+      </svg>
     </FlexibleBox>
   );
 };

@@ -51,10 +51,13 @@ export const ClockBox: FC<Props> = ({
     });
   };
 
+  const lightColor = `hsl(${color}, 70%, 85%)`;
+  const darkColor = `hsl(${color}, 70%, 75%)`;
+
   return (
     <FlexibleBox
-      contentWidth={280}
-      contentHeight={100}
+      contentWidth={350}
+      contentHeight={180}
       mode='resize'
       borderColor={color}
       buttons={
@@ -87,28 +90,38 @@ export const ClockBox: FC<Props> = ({
         </div>
       }
     >
-      <div
-        className={`
-          pointer-events-auto flex h-full w-full flex-col items-center
-          justify-center overflow-hidden p-4
-        `}
+      <svg
+        viewBox='0 0 350 180'
+        className='pointer-events-auto h-full w-full'
+        style={{ backgroundColor: lightColor }}
       >
-        <div className='mb-2 text-center'>
-          <div
-            className='font-mono text-5xl font-bold text-gray-200'
-            style={{ fontSize: "clamp(2rem, 6vw, 3rem)" }}
-          >
-            {formatTime(currentTime)}
-          </div>
-        </div>
+        {/* Background */}
+        <rect
+          width='350'
+          height='180'
+          fill={lightColor}
+          stroke={darkColor}
+          strokeWidth='2'
+        />
 
-        <div
-          className='mb-4 text-center text-gray-200'
-          style={{ fontSize: "clamp(0.875rem, 2vw, 1.125rem)" }}
+        {/* Time Display */}
+        <text
+          x='175'
+          y='90'
+          textAnchor='middle'
+          fontFamily='monospace'
+          fontSize='48'
+          fontWeight='bold'
+          fill='#1f2937'
         >
+          {formatTime(currentTime)}
+        </text>
+
+        {/* Date Display */}
+        <text x='175' y='130' textAnchor='middle' fontSize='16' fill='#4b5563'>
           {formatDate(currentTime)}
-        </div>
-      </div>
+        </text>
+      </svg>
     </FlexibleBox>
   );
 };
