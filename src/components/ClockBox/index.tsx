@@ -13,23 +13,12 @@ type Props = {
   color: string;
 };
 
-export const ClockBox: FC<Props> = ({
-  onClickClose,
-  onClickMoveUp,
-  onClickMoveDown,
-  color,
-}) => {
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
-  useEffect(() => {
-    const intervalId = window.setInterval(() => {
-      setCurrentTime(new Date());
-    }, 100);
+type ClockBoxViewProps = {
+  currentTime: Date | null;
+  color: string;
+};
 
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, []);
-
+export const ClockBoxView: FC<ClockBoxViewProps> = ({ currentTime, color }) => {
   const formatTime = (date: Date | null) => {
     if (!date) {
       return "";
@@ -53,6 +42,58 @@ export const ClockBox: FC<Props> = ({
       weekday: "long",
     });
   };
+
+  return (
+    <svg
+      viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
+      className={`pointer-events-auto h-full w-full`}
+    >
+      {/* Background */}
+      <rect width={BOX_WIDTH} height={BOX_HEIGHT} fill='#00000099' rx={16} />
+
+      {/* Time Display */}
+      <text
+        x={BOX_WIDTH / 2}
+        y='65'
+        textAnchor='middle'
+        fontFamily='sans-serif'
+        fontSize='48'
+        fontWeight='bold'
+        fill={color}
+      >
+        {formatTime(currentTime)}
+      </text>
+
+      {/* Date Display */}
+      <text
+        x={BOX_WIDTH / 2}
+        y='95'
+        textAnchor='middle'
+        fontSize='18'
+        fill={color}
+      >
+        {formatDate(currentTime)}
+      </text>
+    </svg>
+  );
+};
+
+export const ClockBox: FC<Props> = ({
+  onClickClose,
+  onClickMoveUp,
+  onClickMoveDown,
+  color,
+}) => {
+  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  useEffect(() => {
+    const intervalId = window.setInterval(() => {
+      setCurrentTime(new Date());
+    }, 100);
+
+    return () => {
+      window.clearInterval(intervalId);
+    };
+  }, []);
 
   return (
     <FlexibleBox
@@ -91,37 +132,7 @@ export const ClockBox: FC<Props> = ({
         </div>
       }
     >
-      <svg
-        viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
-        className={`pointer-events-auto h-full w-full`}
-      >
-        {/* Background */}
-        <rect width={BOX_WIDTH} height={BOX_HEIGHT} fill='#00000099' rx={16} />
-
-        {/* Time Display */}
-        <text
-          x={BOX_WIDTH / 2}
-          y='65'
-          textAnchor='middle'
-          fontFamily='sans-serif'
-          fontSize='48'
-          fontWeight='bold'
-          fill={color}
-        >
-          {formatTime(currentTime)}
-        </text>
-
-        {/* Date Display */}
-        <text
-          x={BOX_WIDTH / 2}
-          y='95'
-          textAnchor='middle'
-          fontSize='18'
-          fill={color}
-        >
-          {formatDate(currentTime)}
-        </text>
-      </svg>
+      <ClockBoxView currentTime={currentTime} color={color} />
     </FlexibleBox>
   );
 };

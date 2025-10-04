@@ -32,9 +32,8 @@ function getDisplayTime(timerState: TimerState): number {
   if (timerState.status === "stopped") {
     return timerState.targetDuration - timerState.pausedElapsed;
   } else {
-    // running - startedAtは必ずnumber型
     const elapsed =
-      Date.now() - timerState.startedAt + timerState.pausedElapsed;
+      timerState.currentTime - timerState.startedAt + timerState.pausedElapsed;
     return timerState.targetDuration - elapsed;
   }
 }
@@ -76,6 +75,69 @@ const TimerButton: FC<{
   );
 };
 
+type TimerBoxViewProps = {
+  timerState: TimerState;
+  color: string;
+  onClickMinus30s: () => void;
+  onClickStartPause: () => void;
+  onClickReset: () => void;
+  onClickPlus30s: () => void;
+};
+
+export const TimerBoxView: FC<TimerBoxViewProps> = ({
+  timerState,
+  color,
+  onClickMinus30s,
+  onClickStartPause,
+  onClickReset,
+  onClickPlus30s,
+}) => {
+  const displayTime = getDisplayTime(timerState);
+  const isOvertime = displayTime < 0;
+  const textColor = isOvertime ? "#ef4444" : color;
+
+  return (
+    <svg
+      viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
+      className={`pointer-events-auto h-full w-full`}
+    >
+      {/* Background */}
+      <rect width={BOX_WIDTH} height={BOX_HEIGHT} rx={16} fill='#00000099' />
+
+      {/* Timer Display */}
+      <text
+        x={BOX_WIDTH / 2}
+        y='55'
+        textAnchor='middle'
+        fontFamily='sans-serif'
+        fontSize='48'
+        fontWeight='bold'
+        fill={textColor}
+      >
+        {formatTime(displayTime)}
+      </text>
+
+      {/* Buttons */}
+      <foreignObject x='0' y='70' width={BOX_WIDTH} height='40'>
+        <div className='flex h-full justify-center gap-2'>
+          <TimerButton onClick={onClickMinus30s} color={color}>
+            -30s
+          </TimerButton>
+          <TimerButton onClick={onClickStartPause} color={color}>
+            {timerState.status === "running" ? "Pause" : "Start"}
+          </TimerButton>
+          <TimerButton onClick={onClickReset} color={color}>
+            Reset
+          </TimerButton>
+          <TimerButton onClick={onClickPlus30s} color={color}>
+            +30s
+          </TimerButton>
+        </div>
+      </foreignObject>
+    </svg>
+  );
+};
+
 export const TimerBox: FC<Props> = ({
   onClickClose,
   onClickMoveUp,
@@ -104,9 +166,6 @@ export const TimerBox: FC<Props> = ({
       window.clearInterval(intervalId);
     };
   }, [timerState.status]);
-
-  const displayTime = getDisplayTime(timerState);
-  const isOvertime = displayTime < 0;
 
   // ±30秒ボタン
   const handleAdjust30Seconds = (delta: number) => {
@@ -150,8 +209,6 @@ export const TimerBox: FC<Props> = ({
     }));
   };
 
-  const textColor = isOvertime ? "#ef4444" : color;
-
   return (
     <FlexibleBox
       contentWidth={BOX_WIDTH}
@@ -189,54 +246,14 @@ export const TimerBox: FC<Props> = ({
         </div>
       }
     >
-      <svg
-        viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
-        className={`pointer-events-auto h-full w-full`}
-      >
-        {/* Background */}
-        <rect width={BOX_WIDTH} height={BOX_HEIGHT} rx={16} fill='#00000099' />
-
-        {/* Timer Display */}
-        <text
-          x={BOX_WIDTH / 2}
-          y='55'
-          textAnchor='middle'
-          fontFamily='sans-serif'
-          fontSize='48'
-          fontWeight='bold'
-          fill={textColor}
-        >
-          {formatTime(displayTime)}
-        </text>
-
-        {/* Buttons */}
-        <foreignObject x='0' y='70' width={BOX_WIDTH} height='40'>
-          <div className='flex h-full justify-center gap-2'>
-            <TimerButton
-              onClick={() => handleAdjust30Seconds(-1)}
-              color={color}
-            >
-              -30s
-            </TimerButton>
-            {timerState.status === "stopped" && (
-              <TimerButton onClick={handleStartPause} color={color}>
-                Start
-              </TimerButton>
-            )}
-            {timerState.status === "running" && (
-              <TimerButton onClick={handleStartPause} color={color}>
-                Pause
-              </TimerButton>
-            )}
-            <TimerButton onClick={handleReset} color={color}>
-              Reset
-            </TimerButton>
-            <TimerButton onClick={() => handleAdjust30Seconds(1)} color={color}>
-              +30s
-            </TimerButton>
-          </div>
-        </foreignObject>
-      </svg>
+      <TimerBoxView
+        timerState={timerState}
+        color={color}
+        onClickMinus30s={() => handleAdjust30Seconds(-1)}
+        onClickStartPause={handleStartPause}
+        onClickReset={handleReset}
+        onClickPlus30s={() => handleAdjust30Seconds(1)}
+      />
     </FlexibleBox>
   );
 };
