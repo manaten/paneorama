@@ -79,6 +79,7 @@ const baseTransform: FlexibleBoxTransform = {
   screenPosition: { x: 50, y: 50 },
   crop: { x: 0, y: 0, width: 400, height: 300 },
   scale: 1,
+  contentSize: { width: 400, height: 300 },
 };
 
 // サンプルSVGグリッドコンポーネント（videoタグと同じ挙動）

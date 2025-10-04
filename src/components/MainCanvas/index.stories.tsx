@@ -55,12 +55,7 @@ export const WithOneStream: Story = {
           height: "200px",
         }}
       >
-        <StreamBox
-          media={mockMediaStream}
-          color='hsl(0, 60%, 80%)'
-          contentWidth={640}
-          contentHeight={480}
-        />
+        <StreamBox media={mockMediaStream} color='hsl(0, 60%, 80%)' />
       </div>
     </MainCanvas>
   ),
@@ -82,12 +77,7 @@ export const WithMultipleStreams: Story = {
           zIndex: 3,
         }}
       >
-        <StreamBox
-          media={mockMediaStream}
-          color='hsl(0, 60%, 80%)'
-          contentWidth={640}
-          contentHeight={480}
-        />
+        <StreamBox media={mockMediaStream} color='hsl(0, 60%, 80%)' />
       </div>
       <div
         style={{
@@ -99,12 +89,7 @@ export const WithMultipleStreams: Story = {
           zIndex: 2,
         }}
       >
-        <StreamBox
-          media={mockMediaStream}
-          color='hsl(120, 60%, 80%)'
-          contentWidth={640}
-          contentHeight={480}
-        />
+        <StreamBox media={mockMediaStream} color='hsl(120, 60%, 80%)' />
       </div>
       <div
         style={{
@@ -116,12 +101,7 @@ export const WithMultipleStreams: Story = {
           zIndex: 1,
         }}
       >
-        <StreamBox
-          media={mockMediaStream}
-          color='hsl(240, 60%, 80%)'
-          contentWidth={640}
-          contentHeight={480}
-        />
+        <StreamBox media={mockMediaStream} color='hsl(240, 60%, 80%)' />
       </div>
     </MainCanvas>
   ),

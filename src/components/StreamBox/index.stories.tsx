@@ -39,8 +39,6 @@ export const Default = {
   args: {
     media: mockMediaStream,
     color: "hsl(0, 60%, 80%)",
-    contentWidth: 640,
-    contentHeight: 480,
   },
 } as const satisfies Story;
 

@@ -11,8 +11,6 @@ const displayMediaOptions = {
   video: {
     displaySurface: "window",
     frameRate: { ideal: 30 },
-    width: { ideal: 2000 },
-    height: { ideal: 2000 },
   },
   audio: false,
 } as const satisfies DisplayMediaStreamOptions;
@@ -20,8 +18,6 @@ const displayMediaOptions = {
 type BaseItem = {
   id: string;
   color: string;
-  contentWidth: number;
-  contentHeight: number;
 };
 
 type StreamItem = BaseItem & {
@@ -45,27 +41,8 @@ async function captureNewStream() {
     const captureStream =
       await navigator.mediaDevices.getDisplayMedia(displayMediaOptions);
 
-    const settings = captureStream.getVideoTracks()[0]?.getSettings();
-    console.log(settings?.width, settings?.height, settings?.frameRate);
-
-    const originWidth = settings?.width ?? 400;
-    const originHeight = settings?.height ?? 300;
-
-    const { contentWidth, contentHeight } =
-      originWidth > originHeight
-        ? {
-            contentWidth: 400,
-            contentHeight: (originHeight / originWidth) * 400,
-          }
-        : {
-            contentWidth: (originWidth / originHeight) * 400,
-            contentHeight: 400,
-          };
-
     return {
       media: captureStream,
-      contentWidth,
-      contentHeight,
     };
   } catch (_) {
     return null;
@@ -160,8 +137,6 @@ export const Container: FC = () => {
         type: "timer",
         id: crypto.randomUUID(),
         color: getPastelColor(prev.length),
-        contentWidth: 300,
-        contentHeight: 200,
       },
     ]);
   }, []);
@@ -173,8 +148,6 @@ export const Container: FC = () => {
         type: "clock",
         id: crypto.randomUUID(),
         color: getPastelColor(prev.length),
-        contentWidth: 350,
-        contentHeight: 180,
       },
     ]);
   }, []);

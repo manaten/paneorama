@@ -14,8 +14,6 @@ import { FlexibleBox } from "../FlexibleBox";
 
 interface Props {
   media: MediaStream;
-  contentWidth: number;
-  contentHeight: number;
   color: string;
   onClickClose?: () => void;
   onClickMoveUp?: () => void;
@@ -25,8 +23,6 @@ interface Props {
 
 export const StreamBox: FC<Props> = ({
   media,
-  contentWidth,
-  contentHeight,
   color,
   onClickClose,
   onClickMoveUp,
@@ -37,11 +33,24 @@ export const StreamBox: FC<Props> = ({
   const [mode, setMode] =
     useState<ComponentProps<typeof FlexibleBox>["mode"]>("resize");
 
+  const [contentSize, setContentSize] = useState<{
+    width: number;
+    height: number;
+  }>({ width: 0, height: 0 });
+
   useEffect(() => {
     const videoElement = videoRef.current;
     if (videoElement && media) {
       // eslint-disable-next-line functional/immutable-data
       videoElement.srcObject = media;
+
+      // TODO innerWidth/Heightより大きい場合はアスペクト比を維持して拡縮する
+      setTimeout(() => {
+        setContentSize({
+          width: videoElement.videoWidth || window.innerWidth * 0.8,
+          height: videoElement.videoHeight || window.innerHeight * 0.8,
+        });
+      }, 100);
     }
 
     return () => {
@@ -107,8 +116,8 @@ export const StreamBox: FC<Props> = ({
 
   return (
     <FlexibleBox
-      contentWidth={contentWidth}
-      contentHeight={contentHeight}
+      contentWidth={contentSize.width}
+      contentHeight={contentSize.height}
       mode={mode}
       borderColor={color}
       buttons={buttons}

@@ -159,12 +159,30 @@ export const FlexibleBox: FC<Props> = ({
   buttons,
   transparent,
 }) => {
-  // 内部状態
   const [currentTransform, setCurrentTransform] =
     useState<FlexibleBoxTransform>(
       () =>
         initialTransform ?? createDefaultTransform(contentWidth, contentHeight),
     );
+
+  // contentWidthまたはcontentHeightが変わったら、currentTransformを更新
+  useEffect(() => {
+    setCurrentTransform((currentTransform) => {
+      // 値に変化がなくともDOMの更新時にuseEffectが走ることがあるため、内容に変化がなければ更新は行わない
+      if (
+        contentWidth === currentTransform.contentSize.width &&
+        contentHeight === currentTransform.contentSize.height
+      ) {
+        return currentTransform;
+      }
+
+      return {
+        ...createDefaultTransform(contentWidth, contentHeight),
+        screenPosition: currentTransform.screenPosition,
+      };
+    });
+  }, [contentWidth, contentHeight]);
+
   const [isHovered, setIsHovered] = useState(false);
 
   const [dragStartData, setDragStartData] = useState<{
@@ -186,19 +204,12 @@ export const FlexibleBox: FC<Props> = ({
         handle: dragStartData.handle,
       } as const;
 
-      const contentSize = {
-        width: contentWidth,
-        height: contentHeight,
-      } as const;
-
       if (dragStartData.dragOrResize === "drag") {
         if (mode === "resize") {
           setCurrentTransform(contentDragOnResize(initialTransform, delta));
         }
         if (mode === "crop") {
-          setCurrentTransform(
-            contentDragOnCrop(initialTransform, delta, contentSize),
-          );
+          setCurrentTransform(contentDragOnCrop(initialTransform, delta));
         }
       }
 
@@ -207,13 +218,11 @@ export const FlexibleBox: FC<Props> = ({
           setCurrentTransform(handleDragOnResize(initialTransform, delta));
         }
         if (mode === "crop") {
-          setCurrentTransform(
-            handleDragOnCrop(initialTransform, delta, contentSize),
-          );
+          setCurrentTransform(handleDragOnCrop(initialTransform, delta));
         }
       }
     },
-    [mode, dragStartData, contentWidth, contentHeight],
+    [mode, dragStartData],
   );
 
   const handleMouseUp = useCallback(() => {
@@ -265,13 +274,8 @@ export const FlexibleBox: FC<Props> = ({
   }, [dragStartData, handleMouseMove, handleMouseUp]);
 
   // 表示用プロパティを計算
-  const { containerStyle, contentStyle } = calculateDisplayProperties(
-    {
-      width: contentWidth,
-      height: contentHeight,
-    },
-    currentTransform,
-  );
+  const { containerStyle, contentStyle } =
+    calculateDisplayProperties(currentTransform);
 
   const handleProps = {
     mode,
