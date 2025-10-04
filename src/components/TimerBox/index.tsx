@@ -4,13 +4,18 @@ import { Button } from "../Button";
 import { StreamBoxInner } from "../StreamBox/StreamBoxInner";
 
 type Props = {
-  onClose: () => void;
-  onUp?: () => void;
-  onDown?: () => void;
+  onClickClose?: () => void;
+  onClickMoveUp?: () => void;
+  onClickMoveDown?: () => void;
   color: string;
 };
 
-export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
+export const TimerBox: FC<Props> = ({
+  onClickClose,
+  onClickMoveUp,
+  onClickMoveDown,
+  color,
+}) => {
   const [time, setTime] = useState(0); // milliseconds
   const [isRunning, setIsRunning] = useState(false);
   const [inputMinutes, setInputMinutes] = useState("5");
@@ -44,8 +49,8 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
 
   const handleStart = () => {
     if (time === 0) {
-      const minutes = parseInt(inputMinutes) || 0;
-      const seconds = parseInt(inputSeconds) || 0;
+      const minutes = parseInt(inputMinutes) ?? 0;
+      const seconds = parseInt(inputSeconds) ?? 0;
       const totalMs = (minutes * 60 + seconds) * 1000;
       if (totalMs > 0) {
         setTime(totalMs);
@@ -75,9 +80,6 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
       .padStart(2, "0")}.${tenths}`;
   };
 
-  const lightColor = `hsl(${color}, 70%, 85%)`;
-  const darkColor = `hsl(${color}, 70%, 75%)`;
-
   return (
     <StreamBoxInner
       contentWidth={300}
@@ -94,21 +96,21 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
             className='pointer-events-auto'
             iconType='move_up'
             iconColor={color}
-            onClick={onUp}
+            onClick={onClickMoveUp}
             title='前面に移動'
           />
           <Button
             className='pointer-events-auto'
             iconType='move_down'
             iconColor={color}
-            onClick={onDown}
+            onClick={onClickMoveDown}
             title='背面に移動'
           />
           <Button
             className='pointer-events-auto'
             iconType='close'
             iconColor={color}
-            onClick={onClose}
+            onClick={onClickClose}
             title='閉じる'
           />
         </div>
@@ -119,14 +121,10 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
           pointer-events-auto flex h-full w-full flex-col items-center
           justify-center overflow-hidden p-4
         `}
-        style={{
-          backgroundColor: lightColor,
-          border: `2px solid ${darkColor}`,
-        }}
       >
         <div className='mb-4 text-center'>
           <div
-            className='font-mono text-4xl font-bold'
+            className='font-mono text-4xl font-bold text-gray-200'
             style={{ fontSize: "clamp(1.5rem, 4vw, 2.5rem)" }}
           >
             {formatTime(time)}
@@ -142,7 +140,6 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
               value={inputMinutes}
               onChange={(e) => setInputMinutes(e.target.value)}
               className='w-16 rounded border px-2 py-1 text-center'
-              style={{ borderColor: darkColor }}
               onMouseDown={(e) => e.stopPropagation()}
             />
             <span className='self-center'>:</span>
@@ -153,7 +150,6 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
               value={inputSeconds}
               onChange={(e) => setInputSeconds(e.target.value)}
               className='w-16 rounded border px-2 py-1 text-center'
-              style={{ borderColor: darkColor }}
               onMouseDown={(e) => e.stopPropagation()}
             />
           </div>

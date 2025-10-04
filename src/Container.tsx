@@ -17,8 +17,6 @@ const displayMediaOptions = {
   audio: false,
 } as const satisfies DisplayMediaStreamOptions;
 
-// type BoxType = "stream" | "timer" | "clock"; // Will be used for future extensions
-
 type BaseItem = {
   id: string;
   color: string;
@@ -73,6 +71,67 @@ async function captureNewStream() {
     return null;
   }
 }
+
+const ItemBox: FC<{
+  item: MediaItem;
+  onClickClose?: (id: string) => void;
+  onClickMoveUp?: (id: string) => void;
+  onClickMoveDown?: (id: string) => void;
+  onClickSwitchVideo?: (id: string) => void;
+}> = ({
+  item,
+  onClickClose,
+  onClickMoveUp,
+  onClickMoveDown,
+  onClickSwitchVideo,
+}) => {
+  const closeHandler = useCallback(() => {
+    onClickClose?.(item.id);
+  }, [item.id, onClickClose]);
+
+  const moveUpHandler = useCallback(() => {
+    onClickMoveUp?.(item.id);
+  }, [item.id, onClickMoveUp]);
+
+  const moveDownHandler = useCallback(() => {
+    onClickMoveDown?.(item.id);
+  }, [item.id, onClickMoveDown]);
+
+  const switchVideoHandler = useCallback(() => {
+    onClickSwitchVideo?.(item.id);
+  }, [item.id, onClickSwitchVideo]);
+
+  switch (item.type) {
+    case "stream":
+      return (
+        <StreamBox
+          {...item}
+          onClickClose={closeHandler}
+          onClickMoveUp={moveUpHandler}
+          onClickMoveDown={moveDownHandler}
+          onClickSwitchVideo={switchVideoHandler}
+        />
+      );
+    case "timer":
+      return (
+        <TimerBox
+          {...item}
+          onClickClose={closeHandler}
+          onClickMoveUp={moveUpHandler}
+          onClickMoveDown={moveDownHandler}
+        />
+      );
+    case "clock":
+      return (
+        <ClockBox
+          {...item}
+          onClickClose={closeHandler}
+          onClickMoveUp={moveUpHandler}
+          onClickMoveDown={moveDownHandler}
+        />
+      );
+  }
+};
 
 export const Container: FC = () => {
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
@@ -172,41 +231,16 @@ export const Container: FC = () => {
       onClickAddClock={clickAddClockHandler}
       isEmpty={mediaItems.length === 0}
     >
-      {mediaItems.map((item) => {
-        switch (item.type) {
-          case "stream":
-            return (
-              <StreamBox
-                key={item.id}
-                {...item}
-                onClickClose={clickCloseHandler}
-                onClickMoveUp={clickMoveUpHandler}
-                onClickMoveDown={clickMoveDownHandler}
-                onClickSwitchVideo={clickSwitchVideoHandler}
-              />
-            );
-          case "timer":
-            return (
-              <TimerBox
-                key={item.id}
-                color={item.color}
-                onClose={() => clickCloseHandler(item.id)}
-                onUp={() => clickMoveUpHandler(item.id)}
-                onDown={() => clickMoveDownHandler(item.id)}
-              />
-            );
-          case "clock":
-            return (
-              <ClockBox
-                key={item.id}
-                color={item.color}
-                onClose={() => clickCloseHandler(item.id)}
-                onUp={() => clickMoveUpHandler(item.id)}
-                onDown={() => clickMoveDownHandler(item.id)}
-              />
-            );
-        }
-      })}
+      {mediaItems.map((item) => (
+        <ItemBox
+          key={item.id}
+          item={item}
+          onClickClose={clickCloseHandler}
+          onClickMoveUp={clickMoveUpHandler}
+          onClickMoveDown={clickMoveDownHandler}
+          onClickSwitchVideo={clickSwitchVideoHandler}
+        />
+      ))}
     </MainCanvas>
   );
 };

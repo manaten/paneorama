@@ -13,19 +13,17 @@ import { Button } from "../Button";
 import { StreamBoxInner } from "./StreamBoxInner";
 
 interface Props {
-  id: string;
   media: MediaStream;
   contentWidth: number;
   contentHeight: number;
   color: string;
-  onClickClose?: (id: string) => void;
-  onClickMoveUp?: (id: string) => void;
-  onClickMoveDown?: (id: string) => void;
-  onClickSwitchVideo?: (id: string) => void;
+  onClickClose?: () => void;
+  onClickMoveUp?: () => void;
+  onClickMoveDown?: () => void;
+  onClickSwitchVideo?: () => void;
 }
 
 export const StreamBox: FC<Props> = ({
-  id,
   media,
   contentWidth,
   contentHeight,
@@ -54,22 +52,6 @@ export const StreamBox: FC<Props> = ({
     };
   }, [media]);
 
-  const closeHandler = useCallback(() => {
-    onClickClose?.(id);
-  }, [id, onClickClose]);
-
-  const moveUpHandler = useCallback(() => {
-    onClickMoveUp?.(id);
-  }, [id, onClickMoveUp]);
-
-  const moveDownHandler = useCallback(() => {
-    onClickMoveDown?.(id);
-  }, [id, onClickMoveDown]);
-
-  const switchVideoHandler = useCallback(() => {
-    onClickSwitchVideo?.(id);
-  }, [id, onClickSwitchVideo]);
-
   const toggleMode = useCallback(() => {
     setMode((prev) => (prev === "resize" ? "crop" : "resize"));
   }, []);
@@ -96,28 +78,28 @@ export const StreamBox: FC<Props> = ({
         className='pointer-events-auto'
         iconType='switch_video'
         iconColor={color}
-        onClick={switchVideoHandler}
+        onClick={onClickSwitchVideo}
         title={t("streamBox.switchVideo")}
       />
       <Button
         className='pointer-events-auto'
         iconType='move_up'
         iconColor={color}
-        onClick={moveUpHandler}
+        onClick={onClickMoveUp}
         title={t("streamBox.bringToFront")}
       />
       <Button
         className='pointer-events-auto'
         iconType='move_down'
         iconColor={color}
-        onClick={moveDownHandler}
+        onClick={onClickMoveDown}
         title={t("streamBox.sendToBack")}
       />
       <Button
         className='pointer-events-auto'
         iconType='close'
         iconColor={color}
-        onClick={closeHandler}
+        onClick={onClickClose}
         title={t("streamBox.closeStream")}
       />
     </div>
