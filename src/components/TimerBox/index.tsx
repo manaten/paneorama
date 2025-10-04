@@ -1,7 +1,10 @@
-import { FC, useState, useEffect, useRef } from "react";
+import { FC, useState, useEffect, ReactNode } from "react";
 
 import { Button } from "../Button";
 import { FlexibleBox } from "../FlexibleBox";
+
+const BOX_WIDTH = 280,
+  BOX_HEIGHT = 120;
 
 type Props = {
   onClickClose?: () => void;
@@ -10,81 +13,151 @@ type Props = {
   color: string;
 };
 
+type TimerState = {
+  targetDuration: number; // 目標時間（ミリ秒）
+  pausedElapsed: number; // 停止中に経過した時間
+} & (
+  | {
+      status: "stopped";
+    }
+  | {
+      status: "running";
+      startedAt: number; // 開始時刻のタイムスタンプ
+      currentTime: number; // 現在のタイムスタンプ（再レンダリング用）
+    }
+);
+
+// 残り時間を計算
+function getDisplayTime(timerState: TimerState): number {
+  if (timerState.status === "stopped") {
+    return timerState.targetDuration - timerState.pausedElapsed;
+  } else {
+    // running - startedAtは必ずnumber型
+    const elapsed =
+      Date.now() - timerState.startedAt + timerState.pausedElapsed;
+    return timerState.targetDuration - elapsed;
+  }
+}
+
+// 時間フォーマット
+function formatTime(ms: number): string {
+  const isNegative = ms < 0;
+  const absMs = Math.abs(ms);
+  const totalSeconds = Math.floor(absMs / 1000);
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  const centiSeconds = Math.floor((absMs % 1000) / 10);
+
+  const timeStr = `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}.${centiSeconds.toString().padStart(2, "0")}`;
+
+  return isNegative ? `-${timeStr}` : timeStr;
+}
+
+const TimerButton: FC<{
+  color: string;
+  onClick?: () => void;
+  children: ReactNode;
+}> = ({ color, onClick, children }) => {
+  return (
+    <button
+      onClick={onClick}
+      onMouseDown={(e) => e.stopPropagation()}
+      className={`
+        cursor-pointer rounded border-2 border-current px-3 py-2 text-sm
+        text-white
+        hover:bg-gray-600
+      `}
+      style={{ color }}
+    >
+      {children}
+    </button>
+  );
+};
+
 export const TimerBox: FC<Props> = ({
   onClickClose,
   onClickMoveUp,
   onClickMoveDown,
   color,
 }) => {
-  const [time, setTime] = useState(0); // milliseconds
-  const [isRunning, setIsRunning] = useState(false);
-  const [inputMinutes, setInputMinutes] = useState("5");
-  const [inputSeconds, setInputSeconds] = useState("0");
-  const intervalRef = useRef<number | undefined>(undefined);
+  // タイマーの状態
+  const [timerState, setTimerState] = useState<TimerState>({
+    targetDuration: 5 * 60 * 1000, // デフォルト5分
+    pausedElapsed: 0,
+    status: "stopped",
+  });
 
+  // running中は100ms毎に再レンダリング
   useEffect(() => {
-    if (isRunning && time > 0) {
-      // eslint-disable-next-line functional/immutable-data
-      intervalRef.current = window.setInterval(() => {
-        setTime((prevTime) => {
-          if (prevTime <= 100) {
-            setIsRunning(false);
-            return 0;
-          }
-          return prevTime - 100;
-        });
-      }, 100);
-    } else {
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current);
-      }
-    }
+    if (timerState.status !== "running") return;
+
+    const intervalId = window.setInterval(() => {
+      setTimerState((prev) => ({
+        ...prev,
+        currentTime: Date.now(),
+      }));
+    }, 66);
 
     return () => {
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current);
-      }
+      window.clearInterval(intervalId);
     };
-  }, [isRunning, time]);
+  }, [timerState.status]);
 
-  const handleStart = () => {
-    if (time === 0) {
-      const minutes = parseInt(inputMinutes) ?? 0;
-      const seconds = parseInt(inputSeconds) ?? 0;
-      const totalMs = (minutes * 60 + seconds) * 1000;
-      if (totalMs > 0) {
-        setTime(totalMs);
-        setIsRunning(true);
+  const displayTime = getDisplayTime(timerState);
+  const isOvertime = displayTime < 0;
+
+  // ±30秒ボタン
+  const handleAdjust30Seconds = (delta: number) => {
+    setTimerState((prev) => ({
+      ...prev,
+      targetDuration: Math.max(0, prev.targetDuration + delta * 30 * 1000),
+    }));
+  };
+
+  // Start/Pauseボタン
+  const handleStartPause = () => {
+    setTimerState((prev) => {
+      if (prev.status === "running") {
+        // Pause - prev.startedAtは必ずnumber型
+        return {
+          ...prev,
+          status: "stopped",
+          startedAt: null,
+          pausedElapsed: Date.now() - prev.startedAt + prev.pausedElapsed,
+        };
+      } else {
+        // Start
+        return {
+          ...prev,
+          status: "running",
+          startedAt: Date.now(),
+          currentTime: Date.now(),
+        };
       }
-    } else {
-      setIsRunning(true);
-    }
+    });
   };
 
-  const handlePause = () => {
-    setIsRunning(false);
-  };
-
+  // Resetボタン
   const handleReset = () => {
-    setIsRunning(false);
-    setTime(0);
+    setTimerState((prev) => ({
+      ...prev,
+      status: "stopped",
+      startedAt: null,
+      pausedElapsed: 0,
+      // targetDurationは保持
+    }));
   };
 
-  const formatTime = (ms: number) => {
-    const totalSeconds = Math.floor(ms / 1000);
-    const minutes = Math.floor(totalSeconds / 60);
-    const seconds = totalSeconds % 60;
-    const tenths = Math.floor((ms % 1000) / 100);
-    return `${minutes.toString().padStart(2, "0")}:${seconds
-      .toString()
-      .padStart(2, "0")}.${tenths}`;
-  };
+  const textColor = isOvertime ? "#ef4444" : color;
 
   return (
     <FlexibleBox
-      contentWidth={300}
-      contentHeight={200}
+      contentWidth={BOX_WIDTH}
+      contentHeight={BOX_HEIGHT}
       mode='resize'
+      transparent
       borderColor={color}
       buttons={
         <div
@@ -116,108 +189,54 @@ export const TimerBox: FC<Props> = ({
         </div>
       }
     >
-      <div
-        className={`
-          pointer-events-auto flex h-full w-full flex-col items-center
-          justify-center overflow-hidden p-4
-        `}
+      <svg
+        viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
+        className={`pointer-events-auto h-full w-full`}
       >
-        <div className='mb-4 text-center'>
-          <div
-            className='font-mono text-4xl font-bold text-gray-200'
-            style={{ fontSize: "clamp(1.5rem, 4vw, 2.5rem)" }}
-          >
-            {formatTime(time)}
-          </div>
-        </div>
+        {/* Background */}
+        <rect width={BOX_WIDTH} height={BOX_HEIGHT} rx={16} fill='#00000099' />
 
-        {time === 0 && !isRunning && (
-          <div className='mb-4 flex gap-2'>
-            <input
-              type='number'
-              min='0'
-              max='99'
-              value={inputMinutes}
-              onChange={(e) => setInputMinutes(e.target.value)}
-              className='w-16 rounded border px-2 py-1 text-center'
-              onMouseDown={(e) => e.stopPropagation()}
-            />
-            <span className='self-center'>:</span>
-            <input
-              type='number'
-              min='0'
-              max='59'
-              value={inputSeconds}
-              onChange={(e) => setInputSeconds(e.target.value)}
-              className='w-16 rounded border px-2 py-1 text-center'
-              onMouseDown={(e) => e.stopPropagation()}
-            />
-          </div>
-        )}
+        {/* Timer Display */}
+        <text
+          x={BOX_WIDTH / 2}
+          y='55'
+          textAnchor='middle'
+          fontFamily='sans-serif'
+          fontSize='48'
+          fontWeight='bold'
+          fill={textColor}
+        >
+          {formatTime(displayTime)}
+        </text>
 
-        <div className='flex gap-2'>
-          {!isRunning && time === 0 && (
-            <button
-              onClick={handleStart}
-              onMouseDown={(e) => e.stopPropagation()}
-              className={`
-                rounded bg-green-500 px-4 py-2 text-white
-                hover:bg-green-600
-              `}
+        {/* Buttons */}
+        <foreignObject x='0' y='70' width={BOX_WIDTH} height='40'>
+          <div className='flex h-full justify-center gap-2'>
+            <TimerButton
+              onClick={() => handleAdjust30Seconds(-1)}
+              color={color}
             >
-              Start
-            </button>
-          )}
-          {!isRunning && time > 0 && (
-            <>
-              <button
-                onClick={handleStart}
-                onMouseDown={(e) => e.stopPropagation()}
-                className={`
-                  rounded bg-blue-500 px-4 py-2 text-white
-                  hover:bg-blue-600
-                `}
-              >
-                Resume
-              </button>
-              <button
-                onClick={handleReset}
-                onMouseDown={(e) => e.stopPropagation()}
-                className={`
-                  rounded bg-gray-500 px-4 py-2 text-white
-                  hover:bg-gray-600
-                `}
-              >
-                Reset
-              </button>
-            </>
-          )}
-          {isRunning && (
-            <>
-              <button
-                onClick={handlePause}
-                onMouseDown={(e) => e.stopPropagation()}
-                className={`
-                  rounded bg-yellow-500 px-4 py-2 text-white
-                  hover:bg-yellow-600
-                `}
-              >
+              -30s
+            </TimerButton>
+            {timerState.status === "stopped" && (
+              <TimerButton onClick={handleStartPause} color={color}>
+                Start
+              </TimerButton>
+            )}
+            {timerState.status === "running" && (
+              <TimerButton onClick={handleStartPause} color={color}>
                 Pause
-              </button>
-              <button
-                onClick={handleReset}
-                onMouseDown={(e) => e.stopPropagation()}
-                className={`
-                  rounded bg-gray-500 px-4 py-2 text-white
-                  hover:bg-gray-600
-                `}
-              >
-                Reset
-              </button>
-            </>
-          )}
-        </div>
-      </div>
+              </TimerButton>
+            )}
+            <TimerButton onClick={handleReset} color={color}>
+              Reset
+            </TimerButton>
+            <TimerButton onClick={() => handleAdjust30Seconds(1)} color={color}>
+              +30s
+            </TimerButton>
+          </div>
+        </foreignObject>
+      </svg>
     </FlexibleBox>
   );
 };

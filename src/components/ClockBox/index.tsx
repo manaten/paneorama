@@ -3,6 +3,9 @@ import { FC, useState, useEffect } from "react";
 import { Button } from "../Button";
 import { FlexibleBox } from "../FlexibleBox";
 
+const BOX_WIDTH = 280,
+  BOX_HEIGHT = 120;
+
 type Props = {
   onClickClose?: () => void;
   onClickMoveUp?: () => void;
@@ -53,10 +56,11 @@ export const ClockBox: FC<Props> = ({
 
   return (
     <FlexibleBox
-      contentWidth={280}
-      contentHeight={100}
+      contentWidth={BOX_WIDTH}
+      contentHeight={BOX_HEIGHT}
       mode='resize'
       borderColor={color}
+      transparent
       buttons={
         <div
           className={`
@@ -87,28 +91,37 @@ export const ClockBox: FC<Props> = ({
         </div>
       }
     >
-      <div
-        className={`
-          pointer-events-auto flex h-full w-full flex-col items-center
-          justify-center overflow-hidden p-4
-        `}
+      <svg
+        viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
+        className={`pointer-events-auto h-full w-full`}
       >
-        <div className='mb-2 text-center'>
-          <div
-            className='font-mono text-5xl font-bold text-gray-200'
-            style={{ fontSize: "clamp(2rem, 6vw, 3rem)" }}
-          >
-            {formatTime(currentTime)}
-          </div>
-        </div>
+        {/* Background */}
+        <rect width={BOX_WIDTH} height={BOX_HEIGHT} fill='#00000099' rx={16} />
 
-        <div
-          className='mb-4 text-center text-gray-200'
-          style={{ fontSize: "clamp(0.875rem, 2vw, 1.125rem)" }}
+        {/* Time Display */}
+        <text
+          x={BOX_WIDTH / 2}
+          y='65'
+          textAnchor='middle'
+          fontFamily='sans-serif'
+          fontSize='48'
+          fontWeight='bold'
+          fill={color}
+        >
+          {formatTime(currentTime)}
+        </text>
+
+        {/* Date Display */}
+        <text
+          x={BOX_WIDTH / 2}
+          y='95'
+          textAnchor='middle'
+          fontSize='18'
+          fill={color}
         >
           {formatDate(currentTime)}
-        </div>
-      </div>
+        </text>
+      </svg>
     </FlexibleBox>
   );
 };

@@ -138,6 +138,8 @@ interface Props {
    * オプションで表示できるボタン
    */
   buttons?: ReactNode;
+
+  transparent?: boolean;
 }
 
 /**
@@ -155,6 +157,7 @@ export const FlexibleBox: FC<Props> = ({
   mode,
   borderColor = "#3b82f6",
   buttons,
+  transparent,
 }) => {
   // 内部状態
   const [currentTransform, setCurrentTransform] =
@@ -289,7 +292,7 @@ export const FlexibleBox: FC<Props> = ({
       <div
         className={`
           relative flex size-full items-center justify-center overflow-hidden
-          bg-black
+          ${transparent ? "bg-transparent" : "bg-black"}
         `}
       >
         {/* コンテンツ */}
