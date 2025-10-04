@@ -85,9 +85,11 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
       mode='resize'
       borderColor={color}
       buttons={
-        <div className={`
-          pointer-events-none absolute top-0 right-0 flex flex-row gap-2 p-4
-        `}>
+        <div
+          className={`
+            pointer-events-none absolute top-0 right-0 flex flex-row gap-2 p-4
+          `}
+        >
           <Button
             className='pointer-events-auto'
             iconType='move_up'
@@ -113,14 +115,22 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
       }
     >
       <div
-        className='flex h-full w-full flex-col items-center justify-center p-4'
+        className={`
+          pointer-events-auto flex h-full w-full flex-col items-center
+          justify-center overflow-hidden p-4
+        `}
         style={{
           backgroundColor: lightColor,
           border: `2px solid ${darkColor}`,
         }}
       >
-        <div className='mb-4 font-mono text-4xl font-bold'>
-          {formatTime(time)}
+        <div className='mb-4 text-center'>
+          <div
+            className='font-mono text-4xl font-bold'
+            style={{ fontSize: "clamp(1.5rem, 4vw, 2.5rem)" }}
+          >
+            {formatTime(time)}
+          </div>
         </div>
 
         {time === 0 && !isRunning && (
@@ -133,6 +143,7 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
               onChange={(e) => setInputMinutes(e.target.value)}
               className='w-16 rounded border px-2 py-1 text-center'
               style={{ borderColor: darkColor }}
+              onMouseDown={(e) => e.stopPropagation()}
             />
             <span className='self-center'>:</span>
             <input
@@ -143,6 +154,7 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
               onChange={(e) => setInputSeconds(e.target.value)}
               className='w-16 rounded border px-2 py-1 text-center'
               style={{ borderColor: darkColor }}
+              onMouseDown={(e) => e.stopPropagation()}
             />
           </div>
         )}
@@ -151,6 +163,7 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
           {!isRunning && time === 0 && (
             <button
               onClick={handleStart}
+              onMouseDown={(e) => e.stopPropagation()}
               className={`
                 rounded bg-green-500 px-4 py-2 text-white
                 hover:bg-green-600
@@ -163,6 +176,7 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
             <>
               <button
                 onClick={handleStart}
+                onMouseDown={(e) => e.stopPropagation()}
                 className={`
                   rounded bg-blue-500 px-4 py-2 text-white
                   hover:bg-blue-600
@@ -172,6 +186,7 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
               </button>
               <button
                 onClick={handleReset}
+                onMouseDown={(e) => e.stopPropagation()}
                 className={`
                   rounded bg-gray-500 px-4 py-2 text-white
                   hover:bg-gray-600
@@ -185,6 +200,7 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
             <>
               <button
                 onClick={handlePause}
+                onMouseDown={(e) => e.stopPropagation()}
                 className={`
                   rounded bg-yellow-500 px-4 py-2 text-white
                   hover:bg-yellow-600
@@ -194,6 +210,7 @@ export const TimerBox: FC<Props> = ({ onClose, onUp, onDown, color }) => {
               </button>
               <button
                 onClick={handleReset}
+                onMouseDown={(e) => e.stopPropagation()}
                 className={`
                   rounded bg-gray-500 px-4 py-2 text-white
                   hover:bg-gray-600
