@@ -21,6 +21,24 @@ interface Props {
   onClickSwitchVideo?: () => void;
 }
 
+function detectContentSize(videoWidth: number, videoHeight: number) {
+  const aspectRatio = videoWidth / videoHeight;
+  const maxWidth = window.innerWidth * 0.8;
+  const maxHeight = window.innerHeight * 0.8;
+  const maxAspectRatio = maxWidth / maxHeight;
+
+  if (aspectRatio >= maxAspectRatio && videoWidth > maxWidth) {
+    // 横長すぎる場合は横幅を基準にする
+    return { width: maxWidth, height: maxWidth / aspectRatio };
+  }
+  if (aspectRatio < maxAspectRatio && videoHeight > maxHeight) {
+    // 縦長すぎる場合は高さを基準にする
+    return { width: maxHeight * aspectRatio, height: maxHeight };
+  }
+
+  return { width: videoWidth, height: videoHeight };
+}
+
 export const StreamBox: FC<Props> = ({
   media,
   color,
@@ -44,13 +62,26 @@ export const StreamBox: FC<Props> = ({
       // eslint-disable-next-line functional/immutable-data
       videoElement.srcObject = media;
 
-      // TODO innerWidth/Heightより大きい場合はアスペクト比を維持して拡縮する
-      setTimeout(() => {
+      (async () => {
+        // videoのサイズが即座に取得できないことがあるため、取得可能になるまで何回か繰り返す
+        for (const _ of Array.from({ length: 20 })) {
+          await new Promise((r) => setTimeout(r, 50));
+          if (videoElement.videoWidth && videoElement.videoHeight) {
+            setContentSize(
+              detectContentSize(
+                videoElement.videoWidth,
+                videoElement.videoHeight,
+              ),
+            );
+            return;
+          }
+        }
+        // サイズが取得できなかったらしょうがないのでウィンドウサイズベースで決める
         setContentSize({
-          width: videoElement.videoWidth || window.innerWidth * 0.8,
-          height: videoElement.videoHeight || window.innerHeight * 0.8,
+          width: window.innerWidth * 0.8,
+          height: window.innerHeight * 0.8,
         });
-      }, 100);
+      })();
     }
 
     return () => {
