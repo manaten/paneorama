@@ -23,6 +23,7 @@ export function createDefaultTransform(
     },
     screenPosition: { x: 100, y: 100 },
     scale: 1,
+    contentSize: { width, height },
   };
 }
 
@@ -33,10 +34,7 @@ export function createDefaultTransform(
  * - ソースビデオは常にコンテナに内接表示
  * - cropRectで指定された範囲がコンテナサイズに拡大/縮小される
  */
-export function calculateDisplayProperties(
-  contentSize: { width: number; height: number },
-  transform: FlexibleBoxTransform,
-) {
+export function calculateDisplayProperties(transform: FlexibleBoxTransform) {
   const { scale, screenPosition, crop } = transform;
 
   return {
@@ -49,8 +47,8 @@ export function calculateDisplayProperties(
     contentStyle: {
       left: -crop.x * scale,
       top: -crop.y * scale,
-      width: contentSize.width * scale,
-      height: contentSize.height * scale,
+      width: transform.contentSize.width * scale,
+      height: transform.contentSize.height * scale,
     },
   };
 }
@@ -120,7 +118,6 @@ export function handleDragOnResize(
 export function contentDragOnCrop(
   current: FlexibleBoxTransform,
   delta: MouseDelta,
-  contentSize: { width: number; height: number },
 ): FlexibleBoxTransform {
   return {
     ...current,
@@ -128,11 +125,11 @@ export function contentDragOnCrop(
       ...current.crop,
       x: adjust(current.crop.x - delta.x / current.scale, {
         min: 0,
-        max: contentSize.width - current.crop.width,
+        max: current.contentSize.width - current.crop.width,
       }),
       y: adjust(current.crop.y - delta.y / current.scale, {
         min: 0,
-        max: contentSize.height - current.crop.height,
+        max: current.contentSize.height - current.crop.height,
       }),
     },
   };
@@ -141,7 +138,6 @@ export function contentDragOnCrop(
 export function handleDragOnCrop(
   current: FlexibleBoxTransform,
   delta: MouseDelta,
-  contentSize: { width: number; height: number },
 ): FlexibleBoxTransform {
   if (!delta.handle) {
     return current;
@@ -161,7 +157,7 @@ export function handleDragOnCrop(
           x: current.crop.x,
           width: adjust(current.crop.width + deltaXScaled, {
             min: minCropSize,
-            max: contentSize.width - current.crop.x,
+            max: current.contentSize.width - current.crop.x,
           }),
         };
       }
@@ -201,7 +197,7 @@ export function handleDragOnCrop(
           y: current.crop.y,
           height: adjust(current.crop.height + deltaYScaled, {
             min: minCropSize,
-            max: contentSize.height - current.crop.y,
+            max: current.contentSize.height - current.crop.y,
           }),
         };
       }

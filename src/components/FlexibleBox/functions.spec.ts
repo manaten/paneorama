@@ -24,6 +24,7 @@ describe("functions", () => {
         },
         screenPosition: { x: 100, y: 100 },
         scale: 1,
+        contentSize: { width: 800, height: 600 },
       });
     });
 
@@ -39,14 +40,14 @@ describe("functions", () => {
 
   describe("calculateDisplayProperties", () => {
     it("should calculate display properties with scale 1", () => {
-      const contentSize = { width: 800, height: 600 };
       const transform: FlexibleBoxTransform = {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 100, y: 50 },
         scale: 1,
+        contentSize: { width: 800, height: 600 },
       };
 
-      const result = calculateDisplayProperties(contentSize, transform);
+      const result = calculateDisplayProperties(transform);
 
       expect(result.containerStyle).toEqual({
         left: 100,
@@ -63,14 +64,14 @@ describe("functions", () => {
     });
 
     it("should calculate display properties with scale 2", () => {
-      const contentSize = { width: 800, height: 600 };
       const transform: FlexibleBoxTransform = {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 2,
+        contentSize: { width: 800, height: 600 },
       };
 
-      const result = calculateDisplayProperties(contentSize, transform);
+      const result = calculateDisplayProperties(transform);
 
       expect(result.containerStyle).toEqual({
         left: 200,
@@ -87,14 +88,14 @@ describe("functions", () => {
     });
 
     it("should handle crop offset correctly", () => {
-      const contentSize = { width: 1000, height: 800 };
       const transform: FlexibleBoxTransform = {
         crop: { x: 200, y: 100, width: 500, height: 400 },
         screenPosition: { x: 0, y: 0 },
         scale: 1,
+        contentSize: { width: 1000, height: 800 },
       };
 
-      const result = calculateDisplayProperties(contentSize, transform);
+      const result = calculateDisplayProperties(transform);
 
       expect(result.contentStyle.left).toBe(-200);
       expect(result.contentStyle.top).toBe(-100);
@@ -107,6 +108,7 @@ describe("functions", () => {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 100, y: 50 },
         scale: 1,
+        contentSize: { width: 1000, height: 800 },
       };
       const delta = { x: 20, y: 15 };
 
@@ -122,6 +124,7 @@ describe("functions", () => {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 100, y: 50 },
         scale: 1,
+        contentSize: { width: 1000, height: 800 },
       };
       const delta = { x: -30, y: -25 };
 
@@ -136,6 +139,7 @@ describe("functions", () => {
       crop: { x: 0, y: 0, width: 400, height: 300 },
       screenPosition: { x: 100, y: 50 },
       scale: 1,
+      contentSize: { width: 1000, height: 800 },
     };
 
     it("should return unchanged data when no handle is provided", () => {
@@ -185,6 +189,7 @@ describe("functions", () => {
         crop: { x: 0, y: 0, width: 60, height: 60 },
         screenPosition: { x: 100, y: 50 },
         scale: 1,
+        contentSize: { width: 1000, height: 800 },
       };
       const delta = { x: -100, y: -100, handle: "se" as const }; // Try to shrink significantly
 
@@ -200,6 +205,7 @@ describe("functions", () => {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 200, y: 100 },
         scale: 0.5,
+        contentSize: { width: 1000, height: 800 },
       };
       const delta = { x: 40, y: 30, handle: "se" as const };
       const result = handleDragOnResize(scaledTransform, delta);
@@ -213,6 +219,7 @@ describe("functions", () => {
         crop: { x: 0, y: 0, width: 400, height: 300 },
         screenPosition: { x: 50, y: 25 },
         scale: 2,
+        contentSize: { width: 1000, height: 800 },
       };
       const delta = { x: -40, y: -30, handle: "nw" as const };
       const result = handleDragOnResize(scaledTransform, delta);
@@ -227,17 +234,16 @@ describe("functions", () => {
   });
 
   describe("contentDragOnCrop", () => {
-    const contentSize = { width: 800, height: 600 };
-
     it("should update crop position based on scaled delta", () => {
       const initialData: FlexibleBoxTransform = {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 2,
+        contentSize: { width: 800, height: 600 },
       };
       const delta = { x: 40, y: 20 };
 
-      const result = contentDragOnCrop(initialData, delta, contentSize);
+      const result = contentDragOnCrop(initialData, delta);
 
       expect(result.crop.x).toBe(80); // 100 - (40/2)
       expect(result.crop.y).toBe(40); // 50 - (20/2)
@@ -252,10 +258,11 @@ describe("functions", () => {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
+        contentSize: { width: 800, height: 600 },
       };
       const delta = { x: 30, y: 15 };
 
-      const result = contentDragOnCrop(initialData, delta, contentSize);
+      const result = contentDragOnCrop(initialData, delta);
 
       expect(result.crop.x).toBe(70); // 100 - 30
       expect(result.crop.y).toBe(35); // 50 - 15
@@ -266,10 +273,11 @@ describe("functions", () => {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
+        contentSize: { width: 800, height: 600 },
       };
       const delta = { x: -20, y: -10 };
 
-      const result = contentDragOnCrop(initialData, delta, contentSize);
+      const result = contentDragOnCrop(initialData, delta);
 
       expect(result.crop.x).toBe(120); // 100 - (-20)
       expect(result.crop.y).toBe(60); // 50 - (-10)
@@ -280,10 +288,11 @@ describe("functions", () => {
         crop: { x: 50, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
+        contentSize: { width: 800, height: 600 },
       };
       const delta = { x: 100, y: 100 }; // Try to move beyond bounds (positive delta moves crop left/up)
 
-      const result = contentDragOnCrop(initialData, delta, contentSize);
+      const result = contentDragOnCrop(initialData, delta);
 
       // 50 - 100 = -50, but clamped to 0
       expect(result.crop.x).toBe(0); // Clamped to 0
@@ -295,10 +304,11 @@ describe("functions", () => {
         crop: { x: 200, y: 200, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
+        contentSize: { width: 800, height: 600 },
       };
       const delta = { x: -300, y: -200 }; // Move opposite direction to test boundary
 
-      const result = contentDragOnCrop(initialData, delta, contentSize);
+      const result = contentDragOnCrop(initialData, delta);
 
       // 200 - (-300) = 500, but clamped to max 400 (800 - 400)
       // 200 - (-200) = 400, but clamped to max 300 (600 - 300)
@@ -308,23 +318,23 @@ describe("functions", () => {
   });
 
   describe("handleDragOnCrop", () => {
-    const contentSize = { width: 800, height: 600 };
     const baseTransform: FlexibleBoxTransform = {
       crop: { x: 100, y: 50, width: 400, height: 300 },
       screenPosition: { x: 200, y: 150 },
       scale: 1,
+      contentSize: { width: 800, height: 600 },
     };
 
     it("should return unchanged data when no handle is provided", () => {
       const delta = { x: 20, y: 15 };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       expect(result).toEqual(baseTransform);
     });
 
     it('should handle "se" (southeast) crop resize', () => {
       const delta = { x: 50, y: 40, handle: "se" as const };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       expect(result.crop.x).toBe(100); // unchanged
       expect(result.crop.y).toBe(50); // unchanged
@@ -335,7 +345,7 @@ describe("functions", () => {
 
     it('should handle "sw" (southwest) crop resize', () => {
       const delta = { x: -50, y: 40, handle: "sw" as const };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       expect(result.crop.width).toBe(450); // 400 - (-50)
       expect(result.crop.height).toBe(340); // 300 + 40
@@ -345,7 +355,7 @@ describe("functions", () => {
 
     it('should handle "ne" (northeast) crop resize', () => {
       const delta = { x: 50, y: -40, handle: "ne" as const };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       expect(result.crop.width).toBe(450); // 400 + 50
       expect(result.crop.height).toBe(340); // 300 - (-40)
@@ -355,7 +365,7 @@ describe("functions", () => {
 
     it('should handle "nw" (northwest) crop resize', () => {
       const delta = { x: -50, y: -40, handle: "nw" as const };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       expect(result.crop.width).toBe(450); // 400 - (-50)
       expect(result.crop.height).toBe(340); // 300 - (-40)
@@ -365,7 +375,7 @@ describe("functions", () => {
 
     it("should enforce minimum crop size", () => {
       const delta = { x: -500, y: -400, handle: "se" as const }; // Try to shrink below minimum
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       // Should enforce minimum size (100px at scale 1)
       expect(result.crop.width).toBeGreaterThanOrEqual(100);
@@ -374,7 +384,7 @@ describe("functions", () => {
 
     it("should adjust screen position when crop position changes", () => {
       const delta = { x: -50, y: -40, handle: "nw" as const };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       // Screen position should be adjusted based on crop position change
       const xDiff = result.crop.x - baseTransform.crop.x;
@@ -393,9 +403,10 @@ describe("functions", () => {
         crop: { x: 100, y: 50, width: 400, height: 300 },
         screenPosition: { x: 200, y: 150 },
         scale: 2,
+        contentSize: { width: 800, height: 600 },
       };
       const delta = { x: 100, y: 80, handle: "se" as const };
-      const result = handleDragOnCrop(scaledTransform, delta, contentSize);
+      const result = handleDragOnCrop(scaledTransform, delta);
 
       // Delta should be scaled down for crop calculations
       expect(result.crop.width).toBe(450); // 400 + (100/2)
@@ -407,10 +418,11 @@ describe("functions", () => {
         crop: { x: 700, y: 500, width: 50, height: 50 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
+        contentSize: { width: 800, height: 600 },
       };
       const delta = { x: 200, y: 200, handle: "se" as const }; // Try to extend beyond content
 
-      const result = handleDragOnCrop(transform, delta, contentSize);
+      const result = handleDragOnCrop(transform, delta);
 
       // Should be limited by content size
       expect(result.crop.width).toBe(100); // 800 - 700 = 100 max width
@@ -422,10 +434,11 @@ describe("functions", () => {
         crop: { x: 50, y: 50, width: 100, height: 100 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
+        contentSize: { width: 800, height: 600 },
       };
       const delta = { x: -100, y: -100, handle: "nw" as const }; // Try to extend beyond (0,0)
 
-      const result = handleDragOnCrop(transform, delta, contentSize);
+      const result = handleDragOnCrop(transform, delta);
 
       // Should be clamped to (0,0) and adjust size accordingly
       expect(result.crop.x).toBe(0);
@@ -436,7 +449,7 @@ describe("functions", () => {
 
     it('should handle "n" (north) edge crop resize - Y axis only', () => {
       const delta = { x: 50, y: -40, handle: "n" as const };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       expect(result.crop.x).toBe(100); // X unchanged
       expect(result.crop.width).toBe(400); // Width unchanged
@@ -446,7 +459,7 @@ describe("functions", () => {
 
     it('should handle "s" (south) edge crop resize - Y axis only', () => {
       const delta = { x: 50, y: 40, handle: "s" as const };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       expect(result.crop.x).toBe(100); // X unchanged
       expect(result.crop.width).toBe(400); // Width unchanged
@@ -456,7 +469,7 @@ describe("functions", () => {
 
     it('should handle "e" (east) edge crop resize - X axis only', () => {
       const delta = { x: 50, y: 40, handle: "e" as const };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       expect(result.crop.y).toBe(50); // Y unchanged
       expect(result.crop.height).toBe(300); // Height unchanged
@@ -466,7 +479,7 @@ describe("functions", () => {
 
     it('should handle "w" (west) edge crop resize - X axis only', () => {
       const delta = { x: -50, y: 40, handle: "w" as const };
-      const result = handleDragOnCrop(baseTransform, delta, contentSize);
+      const result = handleDragOnCrop(baseTransform, delta);
 
       expect(result.crop.y).toBe(50); // Y unchanged
       expect(result.crop.height).toBe(300); // Height unchanged
@@ -479,10 +492,11 @@ describe("functions", () => {
         crop: { x: 100, y: 50, width: 60, height: 60 },
         screenPosition: { x: 200, y: 150 },
         scale: 1,
+        contentSize: { width: 800, height: 600 },
       };
       const delta = { x: -100, y: 0, handle: "w" as const }; // Try to shrink below minimum
 
-      const result = handleDragOnCrop(transform, delta, contentSize);
+      const result = handleDragOnCrop(transform, delta);
 
       // Should enforce minimum size (100px at scale 1)
       expect(result.crop.width).toBeGreaterThanOrEqual(100);

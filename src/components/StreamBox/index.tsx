@@ -14,8 +14,6 @@ import { FlexibleBox } from "../FlexibleBox";
 
 interface Props {
   media: MediaStream;
-  contentWidth: number;
-  contentHeight: number;
   color: string;
   onClickClose?: () => void;
   onClickMoveUp?: () => void;
@@ -23,10 +21,26 @@ interface Props {
   onClickSwitchVideo?: () => void;
 }
 
+function detectContentSize(videoWidth: number, videoHeight: number) {
+  const aspectRatio = videoWidth / videoHeight;
+  const maxWidth = window.innerWidth * 0.8;
+  const maxHeight = window.innerHeight * 0.8;
+  const maxAspectRatio = maxWidth / maxHeight;
+
+  if (aspectRatio >= maxAspectRatio && videoWidth > maxWidth) {
+    // 横長すぎる場合は横幅を基準にする
+    return { width: maxWidth, height: maxWidth / aspectRatio };
+  }
+  if (aspectRatio < maxAspectRatio && videoHeight > maxHeight) {
+    // 縦長すぎる場合は高さを基準にする
+    return { width: maxHeight * aspectRatio, height: maxHeight };
+  }
+
+  return { width: videoWidth, height: videoHeight };
+}
+
 export const StreamBox: FC<Props> = ({
   media,
-  contentWidth,
-  contentHeight,
   color,
   onClickClose,
   onClickMoveUp,
@@ -37,11 +51,37 @@ export const StreamBox: FC<Props> = ({
   const [mode, setMode] =
     useState<ComponentProps<typeof FlexibleBox>["mode"]>("resize");
 
+  const [contentSize, setContentSize] = useState<{
+    width: number;
+    height: number;
+  }>({ width: 0, height: 0 });
+
   useEffect(() => {
     const videoElement = videoRef.current;
     if (videoElement && media) {
       // eslint-disable-next-line functional/immutable-data
       videoElement.srcObject = media;
+
+      (async () => {
+        // videoのサイズが即座に取得できないことがあるため、取得可能になるまで何回か繰り返す
+        for (const _ of Array.from({ length: 20 })) {
+          await new Promise((r) => setTimeout(r, 50));
+          if (videoElement.videoWidth && videoElement.videoHeight) {
+            setContentSize(
+              detectContentSize(
+                videoElement.videoWidth,
+                videoElement.videoHeight,
+              ),
+            );
+            return;
+          }
+        }
+        // サイズが取得できなかったらしょうがないのでウィンドウサイズベースで決める
+        setContentSize({
+          width: window.innerWidth * 0.8,
+          height: window.innerHeight * 0.8,
+        });
+      })();
     }
 
     return () => {
@@ -107,8 +147,8 @@ export const StreamBox: FC<Props> = ({
 
   return (
     <FlexibleBox
-      contentWidth={contentWidth}
-      contentHeight={contentHeight}
+      contentWidth={contentSize.width}
+      contentHeight={contentSize.height}
       mode={mode}
       borderColor={color}
       buttons={buttons}

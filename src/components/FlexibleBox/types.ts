@@ -15,6 +15,12 @@ export interface FlexibleBoxTransform {
     x: number;
     y: number;
   };
+
+  // contentの元のサイズ
+  contentSize: {
+    width: number;
+    height: number;
+  };
 }
 
 export type Mode = "resize" | "crop";
