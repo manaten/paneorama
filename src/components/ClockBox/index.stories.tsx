@@ -75,65 +75,6 @@ export const NewYear: Story = {
   },
 };
 
-export const AllTimes: Story = {
-  render: () => (
-    <div className='flex flex-col gap-4 p-4'>
-      <div className='text-sm font-bold'>Morning (9:15)</div>
-      <ClockBoxView
-        currentTime={new Date("2025-10-04T09:15:30")}
-        color='hsl(60, 60%, 80%)'
-      />
-
-      <div className='text-sm font-bold'>Noon (12:00)</div>
-      <ClockBoxView
-        currentTime={new Date("2025-10-04T12:00:00")}
-        color='hsl(120, 60%, 80%)'
-      />
-
-      <div className='text-sm font-bold'>Afternoon (14:30)</div>
-      <ClockBoxView
-        currentTime={new Date("2025-10-04T14:30:45")}
-        color='hsl(180, 60%, 80%)'
-      />
-
-      <div className='text-sm font-bold'>Evening (18:45)</div>
-      <ClockBoxView
-        currentTime={new Date("2025-10-04T18:45:10")}
-        color='hsl(240, 60%, 80%)'
-      />
-
-      <div className='text-sm font-bold'>Midnight (0:00)</div>
-      <ClockBoxView
-        currentTime={new Date("2025-10-05T00:00:00")}
-        color='hsl(0, 60%, 80%)'
-      />
-    </div>
-  ),
-};
-
-export const DifferentColors: Story = {
-  render: () => (
-    <div className='flex flex-col gap-4 p-4'>
-      <ClockBoxView
-        currentTime={new Date("2025-10-04T14:30:45")}
-        color='hsl(0, 60%, 80%)'
-      />
-      <ClockBoxView
-        currentTime={new Date("2025-10-04T14:30:45")}
-        color='hsl(120, 60%, 80%)'
-      />
-      <ClockBoxView
-        currentTime={new Date("2025-10-04T14:30:45")}
-        color='hsl(240, 60%, 80%)'
-      />
-      <ClockBoxView
-        currentTime={new Date("2025-10-04T14:30:45")}
-        color='hsl(300, 60%, 80%)'
-      />
-    </div>
-  ),
-};
-
 export const NullState: Story = {
   args: {
     currentTime: null,
