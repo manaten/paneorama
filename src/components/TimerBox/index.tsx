@@ -1,6 +1,6 @@
 import { FC, useState, useEffect, ReactNode } from "react";
 
-import { Button } from "../Button";
+import { BoxControlButtons } from "../BoxControlButtons";
 import { FlexibleBox } from "../FlexibleBox";
 
 const BOX_WIDTH = 280,
@@ -217,33 +217,12 @@ export const TimerBox: FC<Props> = ({
       transparent
       borderColor={color}
       buttons={
-        <div
-          className={`
-            pointer-events-none absolute top-0 right-0 flex flex-row gap-2 p-4
-          `}
-        >
-          <Button
-            className='pointer-events-auto'
-            iconType='move_up'
-            iconColor={color}
-            onClick={onClickMoveUp}
-            title='前面に移動'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='move_down'
-            iconColor={color}
-            onClick={onClickMoveDown}
-            title='背面に移動'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='close'
-            iconColor={color}
-            onClick={onClickClose}
-            title='閉じる'
-          />
-        </div>
+        <BoxControlButtons
+          color={color}
+          onClickMoveUp={onClickMoveUp}
+          onClickMoveDown={onClickMoveDown}
+          onClickClose={onClickClose}
+        />
       }
     >
       <TimerBoxView
