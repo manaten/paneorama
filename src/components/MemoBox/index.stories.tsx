@@ -7,13 +7,6 @@ const meta = {
   parameters: {
     layout: "fullscreen",
   },
-  decorators: [
-    (Story) => (
-      <div className='h-screen w-screen bg-gray-800'>
-        <Story />
-      </div>
-    ),
-  ],
 } satisfies Meta<typeof MemoBox>;
 
 export default meta;

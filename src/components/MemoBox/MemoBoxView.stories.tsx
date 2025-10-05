@@ -7,13 +7,6 @@ const meta = {
   parameters: {
     layout: "centered",
   },
-  decorators: [
-    (Story) => (
-      <div className='bg-gray-800 p-8'>
-        <Story />
-      </div>
-    ),
-  ],
 } satisfies Meta<typeof MemoBoxView>;
 
 export default meta;
