@@ -1,4 +1,4 @@
-import { FC, useState, useRef, useEffect } from "react";
+import { FC, useState } from "react";
 
 import { Button } from "../Button";
 import { FlexibleBox } from "../FlexibleBox";
@@ -17,40 +17,29 @@ type MemoBoxViewProps = {
   memo: string;
   color: string;
   onMemoChange: (value: string) => void;
-  width: number;
-  height: number;
 };
 
 export const MemoBoxView: FC<MemoBoxViewProps> = ({
   memo,
   color,
   onMemoChange,
-  width,
-  height,
 }) => {
   return (
-    <svg
-      viewBox={`0 0 ${width} ${height}`}
-      className={`pointer-events-auto h-full w-full`}
-    >
-      {/* Background */}
-      <rect width={width} height={height} rx={16} fill='#00000099' />
-
-      {/* Textarea */}
-      <foreignObject x='10' y='10' width={width - 20} height={height - 20}>
-        <textarea
-          value={memo}
-          onChange={(e) => onMemoChange(e.target.value)}
-          onMouseDown={(e) => e.stopPropagation()}
-          placeholder='メモを入力...'
-          className={`
-            h-full w-full resize-none rounded-lg border-2 bg-transparent p-3
-            font-sans text-lg text-white placeholder-gray-400 outline-none
-          `}
-          style={{ borderColor: color }}
-        />
-      </foreignObject>
-    </svg>
+    <div className={`
+      pointer-events-auto h-full w-full rounded-2xl bg-black/60 p-3
+    `}>
+      <textarea
+        value={memo}
+        onChange={(e) => onMemoChange(e.target.value)}
+        onMouseDown={(e) => e.stopPropagation()}
+        placeholder='メモを入力...'
+        className={`
+          h-full w-full resize-none rounded-lg border-2 bg-transparent p-3
+          font-sans text-lg text-white placeholder-gray-400 outline-none
+        `}
+        style={{ borderColor: color }}
+      />
+    </div>
   );
 };
 
@@ -61,29 +50,6 @@ export const MemoBox: FC<Props> = ({
   color,
 }) => {
   const [memo, setMemo] = useState("");
-  const [boxSize, setBoxSize] = useState({
-    width: DEFAULT_BOX_WIDTH,
-    height: DEFAULT_BOX_HEIGHT,
-  });
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // FlexibleBoxのサイズ変更を検知
-  useEffect(() => {
-    if (!containerRef.current) return;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const { width, height } = entry.contentRect;
-        setBoxSize({ width, height });
-      }
-    });
-
-    resizeObserver.observe(containerRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, []);
 
   return (
     <FlexibleBox
@@ -122,15 +88,7 @@ export const MemoBox: FC<Props> = ({
         </div>
       }
     >
-      <div ref={containerRef} className='h-full w-full'>
-        <MemoBoxView
-          memo={memo}
-          color={color}
-          onMemoChange={setMemo}
-          width={boxSize.width}
-          height={boxSize.height}
-        />
-      </div>
+      <MemoBoxView memo={memo} color={color} onMemoChange={setMemo} />
     </FlexibleBox>
   );
 };

@@ -24,8 +24,6 @@ export const Empty: Story = {
     memo: "",
     color: "#60a5fa",
     onMemoChange: () => {},
-    width: 400,
-    height: 300,
   },
 };
 
@@ -34,8 +32,6 @@ export const WithText: Story = {
     memo: "これはサンプルのメモです。\n複数行のテキストも入力できます。",
     color: "#34d399",
     onMemoChange: () => {},
-    width: 400,
-    height: 300,
   },
 };
 
@@ -53,27 +49,5 @@ export const LongText: Story = {
 サイズを変更することで、より多くのテキストを表示できます。`,
     color: "#f87171",
     onMemoChange: () => {},
-    width: 400,
-    height: 300,
-  },
-};
-
-export const LargeSize: Story = {
-  args: {
-    memo: "大きいサイズのメモボックスです。",
-    color: "#fbbf24",
-    onMemoChange: () => {},
-    width: 600,
-    height: 400,
-  },
-};
-
-export const SmallSize: Story = {
-  args: {
-    memo: "小さいメモ",
-    color: "#ec4899",
-    onMemoChange: () => {},
-    width: 250,
-    height: 150,
   },
 };
