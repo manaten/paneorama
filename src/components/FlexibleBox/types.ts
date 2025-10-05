@@ -23,4 +23,4 @@ export interface FlexibleBoxTransform {
   };
 }
 
-export type Mode = "resize" | "crop";
+export type Mode = "resize" | "crop" | "resize-content";

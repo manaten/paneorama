@@ -55,7 +55,7 @@ export const MemoBox: FC<Props> = ({
     <FlexibleBox
       contentWidth={DEFAULT_BOX_WIDTH}
       contentHeight={DEFAULT_BOX_HEIGHT}
-      mode='resize'
+      mode='resize-content'
       transparent
       borderColor={color}
       buttons={

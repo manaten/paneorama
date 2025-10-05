@@ -15,6 +15,7 @@ import {
   createDefaultTransform,
   handleDragOnCrop,
   handleDragOnResize,
+  handleDragOnResizeContent,
 } from "./functions";
 import { Mode, FlexibleBoxTransform } from "./types";
 import { t } from "../../i18n";
@@ -205,7 +206,7 @@ export const FlexibleBox: FC<Props> = ({
       } as const;
 
       if (dragStartData.dragOrResize === "drag") {
-        if (mode === "resize") {
+        if (mode === "resize" || mode === "resize-content") {
           setCurrentTransform(contentDragOnResize(initialTransform, delta));
         }
         if (mode === "crop") {
@@ -219,6 +220,11 @@ export const FlexibleBox: FC<Props> = ({
         }
         if (mode === "crop") {
           setCurrentTransform(handleDragOnCrop(initialTransform, delta));
+        }
+        if (mode === "resize-content") {
+          setCurrentTransform(
+            handleDragOnResizeContent(initialTransform, delta),
+          );
         }
       }
     },
@@ -322,8 +328,8 @@ export const FlexibleBox: FC<Props> = ({
           <ResizeHandle handle='sw' {...handleProps} />
           <ResizeHandle handle='se' {...handleProps} />
 
-          {/* エッジハンドル（クロップモード時のみ表示） */}
-          {mode === "crop" && (
+          {/* エッジハンドル（クロップモードまたはコンテンツリサイズモード時のみ表示） */}
+          {(mode === "crop" || mode === "resize-content") && (
             <>
               <ResizeHandle handle='n' {...handleProps} />
               <ResizeHandle handle='s' {...handleProps} />
