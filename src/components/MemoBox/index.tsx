@@ -1,6 +1,6 @@
 import { FC, useState } from "react";
 
-import { Button } from "../Button";
+import { BoxControlButtons } from "../BoxControlButtons";
 import { FlexibleBox } from "../FlexibleBox";
 
 const DEFAULT_BOX_WIDTH = 400;
@@ -25,9 +25,9 @@ export const MemoBoxView: FC<MemoBoxViewProps> = ({
   onMemoChange,
 }) => {
   return (
-    <div className={`
-      pointer-events-auto h-full w-full rounded-2xl bg-black/60 p-3
-    `}>
+    <div
+      className={`pointer-events-auto h-full w-full rounded-2xl bg-black/60 p-3`}
+    >
       <textarea
         value={memo}
         onChange={(e) => onMemoChange(e.target.value)}
@@ -59,33 +59,12 @@ export const MemoBox: FC<Props> = ({
       transparent
       borderColor={color}
       buttons={
-        <div
-          className={`
-            pointer-events-none absolute top-0 right-0 flex flex-row gap-2 p-4
-          `}
-        >
-          <Button
-            className='pointer-events-auto'
-            iconType='move_up'
-            iconColor={color}
-            onClick={onClickMoveUp}
-            title='前面に移動'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='move_down'
-            iconColor={color}
-            onClick={onClickMoveDown}
-            title='背面に移動'
-          />
-          <Button
-            className='pointer-events-auto'
-            iconType='close'
-            iconColor={color}
-            onClick={onClickClose}
-            title='閉じる'
-          />
-        </div>
+        <BoxControlButtons
+          color={color}
+          onClickMoveUp={onClickMoveUp}
+          onClickMoveDown={onClickMoveDown}
+          onClickClose={onClickClose}
+        />
       }
     >
       <MemoBoxView memo={memo} color={color} onMemoChange={setMemo} />
