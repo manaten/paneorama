@@ -2,6 +2,8 @@ import { FC } from "react";
 
 import { Button } from "../Button";
 
+import { t } from "@/i18n";
+
 type Props = {
   color: string;
   onClickMoveUp?: () => void;
@@ -26,21 +28,21 @@ export const BoxControlButtons: FC<Props> = ({
         iconType='move_up'
         iconColor={color}
         onClick={onClickMoveUp}
-        title='前面に移動'
+        title={t("streamBox.bringToFront")}
       />
       <Button
         className='pointer-events-auto'
         iconType='move_down'
         iconColor={color}
         onClick={onClickMoveDown}
-        title='背面に移動'
+        title={t("streamBox.sendToBack")}
       />
       <Button
         className='pointer-events-auto'
         iconType='close'
         iconColor={color}
         onClick={onClickClose}
-        title='閉じる'
+        title={t("streamBox.closeStream")}
       />
     </div>
   );
