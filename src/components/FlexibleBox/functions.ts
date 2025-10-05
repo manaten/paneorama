@@ -115,6 +115,69 @@ export function handleDragOnResize(
   };
 }
 
+export function handleDragOnResizeContent(
+  current: FlexibleBoxTransform,
+  delta: MouseDelta,
+): FlexibleBoxTransform {
+  if (!delta.handle) {
+    return current;
+  }
+
+  const isWest =
+    delta.handle === "nw" || delta.handle === "sw" || delta.handle === "w";
+  const isNorth =
+    delta.handle === "nw" || delta.handle === "ne" || delta.handle === "n";
+  const isEast =
+    delta.handle === "ne" || delta.handle === "se" || delta.handle === "e";
+  const isSouth =
+    delta.handle === "sw" || delta.handle === "se" || delta.handle === "s";
+
+  // 新しいcontentSize widthとheightを計算
+  const newWidth = (() => {
+    if (isEast) {
+      return Math.max(MIN_SIZE, current.contentSize.width + delta.x);
+    } else if (isWest) {
+      return Math.max(MIN_SIZE, current.contentSize.width - delta.x);
+    }
+    return current.contentSize.width;
+  })();
+
+  const newHeight = (() => {
+    if (isSouth) {
+      return Math.max(MIN_SIZE, current.contentSize.height + delta.y);
+    } else if (isNorth) {
+      return Math.max(MIN_SIZE, current.contentSize.height - delta.y);
+    }
+    return current.contentSize.height;
+  })();
+
+  // screen positionの調整（西・北側のハンドルの場合）
+  const widthDelta = newWidth - current.contentSize.width;
+  const heightDelta = newHeight - current.contentSize.height;
+
+  const x = isWest
+    ? current.screenPosition.x - widthDelta
+    : current.screenPosition.x;
+
+  const y = isNorth
+    ? current.screenPosition.y - heightDelta
+    : current.screenPosition.y;
+
+  return {
+    ...current,
+    contentSize: {
+      width: newWidth,
+      height: newHeight,
+    },
+    crop: {
+      ...current.crop,
+      width: newWidth,
+      height: newHeight,
+    },
+    screenPosition: { x, y },
+  };
+}
+
 export function contentDragOnCrop(
   current: FlexibleBoxTransform,
   delta: MouseDelta,
