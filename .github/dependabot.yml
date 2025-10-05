@@ -10,6 +10,8 @@ updates:
     directory: "/"
     schedule:
       interval: weekly
+    cooldown:
+      default-days: 5
     groups:
       all-dependencies:
         patterns:
@@ -23,14 +25,29 @@ updates:
     schedule:
       interval: weekly
     groups:
-      major-updates:
+      prod-major-updates:
         patterns:
           - "*"
+        dependency-type: "production"
         update-types:
           - "major"
-      minor-patch-updates:
+      dev-major-updates:
         patterns:
           - "*"
+        dependency-type: "development"
+        update-types:
+          - "major"
+      prod-minor-patch-updates:
+        patterns:
+          - "*"
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      dev-minor-patch-updates:
+        patterns:
+          - "*"
+        dependency-type: "development"
         update-types:
           - "minor"
           - "patch"
