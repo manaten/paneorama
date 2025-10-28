@@ -30,7 +30,6 @@ export default defineConfig(
   eslintConfigPrettier,
 
   storybook.configs["flat/recommended"],
-  // @ts-expect-error 型定義がおかしいため
   reactHooks.configs.flat.recommended,
 
   {

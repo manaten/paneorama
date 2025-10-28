@@ -168,19 +168,21 @@ export const FlexibleBox: FC<Props> = ({
 
   // contentWidthまたはcontentHeightが変わったら、currentTransformを更新
   useEffect(() => {
-    setCurrentTransform((currentTransform) => {
-      // 値に変化がなくともDOMの更新時にuseEffectが走ることがあるため、内容に変化がなければ更新は行わない
-      if (
-        contentWidth === currentTransform.contentSize.width &&
-        contentHeight === currentTransform.contentSize.height
-      ) {
-        return currentTransform;
-      }
+    setTimeout(() => {
+      setCurrentTransform((currentTransform) => {
+        // 値に変化がなくともDOMの更新時にuseEffectが走ることがあるため、内容に変化がなければ更新は行わない
+        if (
+          contentWidth === currentTransform.contentSize.width &&
+          contentHeight === currentTransform.contentSize.height
+        ) {
+          return currentTransform;
+        }
 
-      return {
-        ...createDefaultTransform(contentWidth, contentHeight),
-        screenPosition: currentTransform.screenPosition,
-      };
+        return {
+          ...createDefaultTransform(contentWidth, contentHeight),
+          screenPosition: currentTransform.screenPosition,
+        };
+      });
     });
   }, [contentWidth, contentHeight]);
 
