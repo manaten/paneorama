@@ -29,34 +29,19 @@ interface Props extends ComponentPropsWithoutRef<"button"> {
   iconColor?: string;
 }
 
-function getIcon(iconType: Props["iconType"]) {
-  switch (iconType) {
-    case "add":
-      return Add;
-    case "close":
-      return Close;
-    case "crop":
-      return Crop;
-    case "fullscreen_exit":
-      return FullscreenExit;
-    case "help":
-      return Help;
-    case "move_up":
-      return KeyboardArrowUp;
-    case "move_down":
-      return KeyboardArrowDown;
-    case "note":
-      return Note;
-    case "switch_video":
-      return SwitchVideo;
-    case "timer":
-      return Timer;
-    case "schedule":
-      return Schedule;
-    default:
-      return Add;
-  }
-}
+const ICON: Record<Props["iconType"], FC<React.SVGProps<SVGSVGElement>>> = {
+  add: Add,
+  close: Close,
+  crop: Crop,
+  fullscreen_exit: FullscreenExit,
+  help: Help,
+  move_up: KeyboardArrowUp,
+  move_down: KeyboardArrowDown,
+  note: Note,
+  switch_video: SwitchVideo,
+  timer: Timer,
+  schedule: Schedule,
+};
 
 export const Button: FC<Props> = memo(function Button({
   className,
@@ -64,7 +49,7 @@ export const Button: FC<Props> = memo(function Button({
   iconColor,
   ...props
 }) {
-  const Icon = getIcon(iconType);
+  const Icon = ICON[iconType];
 
   return (
     <button

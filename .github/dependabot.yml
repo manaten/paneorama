@@ -26,27 +26,30 @@ updates:
       interval: weekly
     groups:
       prod-major-updates:
-        patterns:
-          - "*"
+        # dependabot不具合のため、一時的にコメントアウト
+        # ref https://github.com/dependabot/dependabot-core/issues/13154
+        #
+        # patterns:
+        #   - "*"
         dependency-type: "production"
         update-types:
           - "major"
       dev-major-updates:
-        patterns:
-          - "*"
+        # patterns:
+        #   - "*"
         dependency-type: "development"
         update-types:
           - "major"
       prod-minor-patch-updates:
-        patterns:
-          - "*"
+        # patterns:
+        #   - "*"
         dependency-type: "production"
         update-types:
           - "minor"
           - "patch"
       dev-minor-patch-updates:
-        patterns:
-          - "*"
+        # patterns:
+        #   - "*"
         dependency-type: "development"
         update-types:
           - "minor"
