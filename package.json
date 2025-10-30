@@ -29,7 +29,7 @@
     "react": "^19",
     "react-dom": "^19",
     "react-rnd": "^10.4.12",
-    "tailwindcss": "^4.1.11"
+    "tailwindcss": "^4.1.16"
   },
   "devDependencies": {
     "@eslint/compat": "^1.4.0",
