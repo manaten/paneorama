@@ -11,6 +11,8 @@ type Props = {
   onClickMoveUp?: () => void;
   onClickMoveDown?: () => void;
   color: string;
+  /** 固定時刻を指定する場合に使用（VRT用） */
+  fixedTime?: Date;
 };
 
 type ClockBoxViewProps = {
@@ -83,9 +85,15 @@ export const ClockBox: FC<Props> = ({
   onClickMoveUp,
   onClickMoveDown,
   color,
+  fixedTime,
 }) => {
-  const [currentTime, setCurrentTime] = useState<Date | null>(null);
+  const [currentTime, setCurrentTime] = useState<Date | null>(
+    fixedTime ?? null
+  );
   useEffect(() => {
+    if (fixedTime) {
+      return;
+    }
     const intervalId = window.setInterval(() => {
       setCurrentTime(new Date());
     }, 100);
@@ -93,7 +101,7 @@ export const ClockBox: FC<Props> = ({
     return () => {
       window.clearInterval(intervalId);
     };
-  }, []);
+  }, [fixedTime]);
 
   return (
     <FlexibleBox
