@@ -34,5 +34,6 @@ type Story = StoryObj<typeof meta>;
 export const Default: Story = {
   args: {
     color: "hsl(180, 60%, 80%)",
+    fixedTime: new Date("2025-10-04T14:30:45"),
   },
 };
