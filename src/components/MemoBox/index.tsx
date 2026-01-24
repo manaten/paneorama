@@ -26,7 +26,7 @@ export const MemoBoxView: FC<MemoBoxViewProps> = ({
 }) => {
   return (
     <div
-      className={`pointer-events-auto h-full w-full rounded-2xl bg-black/60 p-3`}
+      className={`pointer-events-auto size-full rounded-2xl bg-black/60 p-3`}
     >
       <textarea
         value={memo}
@@ -34,8 +34,8 @@ export const MemoBoxView: FC<MemoBoxViewProps> = ({
         onMouseDown={(e) => e.stopPropagation()}
         placeholder='メモを入力...'
         className={`
-          h-full w-full resize-none rounded-lg border-2 bg-transparent p-3
-          font-sans text-lg text-white placeholder-gray-400 outline-none
+          size-full resize-none rounded-lg border-2 bg-transparent p-3 font-sans
+          text-lg text-white placeholder-gray-400 outline-none
         `}
         style={{ borderColor: color }}
       />
