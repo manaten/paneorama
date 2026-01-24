@@ -64,7 +64,7 @@ const TimerButton: FC<{
       onClick={onClick}
       onMouseDown={(e) => e.stopPropagation()}
       className={`
-        cursor-pointer rounded border-2 border-current px-3 py-2 text-sm
+        cursor-pointer rounded-sm border-2 border-current px-3 py-2 text-sm
         text-white
         hover:bg-gray-600
       `}
@@ -99,7 +99,7 @@ export const TimerBoxView: FC<TimerBoxViewProps> = ({
   return (
     <svg
       viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
-      className={`pointer-events-auto h-full w-full`}
+      className={`pointer-events-auto size-full`}
     >
       {/* Background */}
       <rect width={BOX_WIDTH} height={BOX_HEIGHT} rx={16} fill='#00000099' />

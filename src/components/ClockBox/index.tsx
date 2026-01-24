@@ -48,7 +48,7 @@ export const ClockBoxView: FC<ClockBoxViewProps> = ({ currentTime, color }) => {
   return (
     <svg
       viewBox={`0 0 ${BOX_WIDTH} ${BOX_HEIGHT}`}
-      className={`pointer-events-auto h-full w-full`}
+      className={`pointer-events-auto size-full`}
     >
       {/* Background */}
       <rect width={BOX_WIDTH} height={BOX_HEIGHT} fill='#00000099' rx={16} />
@@ -88,7 +88,7 @@ export const ClockBox: FC<Props> = ({
   fixedTime,
 }) => {
   const [currentTime, setCurrentTime] = useState<Date | null>(
-    fixedTime ?? null
+    fixedTime ?? null,
   );
   useEffect(() => {
     if (fixedTime) {
