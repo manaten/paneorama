@@ -70,28 +70,29 @@ export const MainCanvas: FC<Props> = ({
 
       <div className='relative size-full overflow-hidden'>{children}</div>
 
-      <footer
-        className={classNames(
-          "pointer-events-none fixed bottom-0 right-0 z-50 p-4",
-          "transition-all duration-300 ease-out",
-          isEmpty ? "opacity-100" : "opacity-0 group-hover/main:opacity-100",
-        )}
-      >
-        <span className='text-sm text-slate-500'>
-          Paneorama by{" "}
-          <a
-            href='https://manaten.net'
-            target='_blank'
-            rel='noopener noreferrer'
-            className='
-              pointer-events-auto text-violet-400 underline
-              hover:text-violet-300
-            '
-          >
-            manaten
-          </a>
-        </span>
-      </footer>
+      {isEmpty && (
+        <footer
+          className='
+            pointer-events-none fixed bottom-0 left-1/2 z-50 -translate-x-1/2
+            p-4
+          '
+        >
+          <span className='text-sm text-slate-500'>
+            Paneorama by{" "}
+            <a
+              href='https://manaten.net'
+              target='_blank'
+              rel='noopener noreferrer'
+              className='
+                pointer-events-auto text-violet-400 underline
+                hover:text-violet-300
+              '
+            >
+              manaten
+            </a>
+          </span>
+        </footer>
+      )}
     </div>
   );
 };
