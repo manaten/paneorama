@@ -88,7 +88,7 @@ export const ClockBox: FC<Props> = ({
   fixedTime,
 }) => {
   const [currentTime, setCurrentTime] = useState<Date | null>(
-    fixedTime ?? null
+    fixedTime ?? null,
   );
   useEffect(() => {
     if (fixedTime) {
