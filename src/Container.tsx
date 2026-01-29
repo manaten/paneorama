@@ -1,6 +1,7 @@
 import { FC, useCallback, useState } from "react";
 
 import { ClockBox } from "./components/ClockBox";
+import { ImageBox } from "./components/ImageBox";
 import { MainCanvas } from "./components/MainCanvas";
 import { MemoBox } from "./components/MemoBox";
 import { StreamBox } from "./components/StreamBox";
@@ -30,7 +31,14 @@ type OtherItem = BaseItem & {
   type: "timer" | "clock" | "memo";
 };
 
-type MediaItem = StreamItem | OtherItem;
+type ImageItem = BaseItem & {
+  type: "image";
+  src: string;
+  naturalWidth: number;
+  naturalHeight: number;
+};
+
+type MediaItem = StreamItem | OtherItem | ImageItem;
 
 async function captureNewStream() {
   try {
@@ -44,6 +52,54 @@ async function captureNewStream() {
   } catch (_) {
     return null;
   }
+}
+
+async function selectImageFile(): Promise<{
+  src: string;
+  naturalWidth: number;
+  naturalHeight: number;
+} | null> {
+  return new Promise((resolve) => {
+    const input = document.createElement("input");
+    // eslint-disable-next-line functional/immutable-data
+    input.type = "file";
+    // eslint-disable-next-line functional/immutable-data
+    input.accept = "image/*";
+
+    // eslint-disable-next-line functional/immutable-data
+    input.onchange = () => {
+      const file = input.files?.[0];
+      if (!file) {
+        resolve(null);
+        return;
+      }
+
+      const src = URL.createObjectURL(file);
+      const img = new Image();
+      // eslint-disable-next-line functional/immutable-data
+      img.onload = () => {
+        resolve({
+          src,
+          naturalWidth: img.naturalWidth,
+          naturalHeight: img.naturalHeight,
+        });
+      };
+      // eslint-disable-next-line functional/immutable-data
+      img.onerror = () => {
+        URL.revokeObjectURL(src);
+        resolve(null);
+      };
+      // eslint-disable-next-line functional/immutable-data
+      img.src = src;
+    };
+
+    // eslint-disable-next-line functional/immutable-data
+    input.oncancel = () => {
+      resolve(null);
+    };
+
+    input.click();
+  });
 }
 
 const ItemBox: FC<{
@@ -113,6 +169,15 @@ const ItemBox: FC<{
           onClickMoveDown={moveDownHandler}
         />
       );
+    case "image":
+      return (
+        <ImageBox
+          {...item}
+          onClickClose={closeHandler}
+          onClickMoveUp={moveUpHandler}
+          onClickMoveDown={moveDownHandler}
+        />
+      );
   }
 };
 
@@ -147,11 +212,31 @@ export const Container: FC = () => {
     ]);
   }, []);
 
+  const clickAddImageHandler = useCallback(async () => {
+    const imageData = await selectImageFile();
+    if (!imageData) {
+      return;
+    }
+
+    setMediaItems((prev) => [
+      ...prev,
+      {
+        type: "image",
+        ...imageData,
+        id: crypto.randomUUID(),
+        color: getPastelColor(prev.length),
+      },
+    ]);
+  }, []);
+
   const clickCloseHandler = useCallback((id: string) => {
     setMediaItems((prev) => {
       const item = prev.find((item) => item.id === id);
       if (item?.type === "stream") {
         item.media.getTracks().forEach((track) => track.stop());
+      }
+      if (item?.type === "image") {
+        URL.revokeObjectURL(item.src);
       }
 
       return prev.filter((item) => item.id !== id);
@@ -198,6 +283,7 @@ export const Container: FC = () => {
       onClickAddTimer={() => clickAddOtherItemHandler("timer")}
       onClickAddClock={() => clickAddOtherItemHandler("clock")}
       onClickAddMemo={() => clickAddOtherItemHandler("memo")}
+      onClickAddImage={clickAddImageHandler}
       isEmpty={mediaItems.length === 0}
     >
       {mediaItems.map((item) => (
