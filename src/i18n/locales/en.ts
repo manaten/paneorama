@@ -15,6 +15,7 @@ export const en = {
   "mainCanvas.addClock": "Add Clock",
   "mainCanvas.addTimer": "Add Timer",
   "mainCanvas.addMemo": "Add Memo",
+  "mainCanvas.addImage": "Add Image",
 
   // Stream Box
   "streamBox.resize": "Resize",
@@ -29,4 +30,11 @@ export const en = {
   "streamBox.bringToFront": "Bring to front",
   "streamBox.sendToBack": "Send to back",
   "streamBox.closeStream": "Close stream",
+
+  // Image Box
+  "imageBox.switchToCrop": "Switch to crop mode",
+  "imageBox.switchToResize": "Switch to resize mode",
+  "imageBox.bringToFront": "Bring to front",
+  "imageBox.sendToBack": "Send to back",
+  "imageBox.closeImage": "Close image",
 } as const;

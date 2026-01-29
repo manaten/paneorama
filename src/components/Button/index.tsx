@@ -3,6 +3,7 @@ import Close from "@material-design-icons/svg/filled/close.svg?react";
 import Crop from "@material-design-icons/svg/filled/crop.svg?react";
 import FullscreenExit from "@material-design-icons/svg/filled/fullscreen_exit.svg?react";
 import Help from "@material-design-icons/svg/filled/help.svg?react";
+import Image from "@material-design-icons/svg/filled/image.svg?react";
 import KeyboardArrowDown from "@material-design-icons/svg/filled/keyboard_arrow_down.svg?react";
 import KeyboardArrowUp from "@material-design-icons/svg/filled/keyboard_arrow_up.svg?react";
 import Note from "@material-design-icons/svg/filled/note.svg?react";
@@ -20,6 +21,7 @@ interface Props extends ComponentPropsWithoutRef<"button"> {
     | "crop"
     | "fullscreen_exit"
     | "help"
+    | "image"
     | "move_up"
     | "move_down"
     | "note"
@@ -35,6 +37,7 @@ const ICON: Record<Props["iconType"], FC<React.SVGProps<SVGSVGElement>>> = {
   crop: Crop,
   fullscreen_exit: FullscreenExit,
   help: Help,
+  image: Image,
   move_up: KeyboardArrowUp,
   move_down: KeyboardArrowDown,
   note: Note,

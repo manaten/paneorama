@@ -11,6 +11,7 @@ type Props = PropsWithChildren<{
   onClickAddTimer?: () => void;
   onClickAddClock?: () => void;
   onClickAddMemo?: () => void;
+  onClickAddImage?: () => void;
   isEmpty?: boolean;
 }>;
 
@@ -21,6 +22,7 @@ export const MainCanvas: FC<Props> = ({
   onClickAddTimer,
   onClickAddClock,
   onClickAddMemo,
+  onClickAddImage,
   isEmpty = false,
 }) => {
   return (
@@ -39,6 +41,12 @@ export const MainCanvas: FC<Props> = ({
           isEmpty ? "opacity-100" : "opacity-0 group-hover/main:opacity-100",
         )}
       >
+        <Button
+          className='pointer-events-auto'
+          iconType='image'
+          onClick={onClickAddImage}
+          title={t("mainCanvas.addImage")}
+        />
         <Button
           className='pointer-events-auto'
           iconType='note'
