@@ -1,4 +1,4 @@
-import { FC, useCallback, useRef, useState } from "react";
+import { FC, useCallback, useState } from "react";
 
 import { Button } from "../Button";
 
@@ -17,17 +17,14 @@ export const ImageFileChooser: FC<Props> = ({
   title,
   onImageChoose,
 }) => {
-  const inputRef = useRef<HTMLInputElement>(null);
   const [imageSrc, setImageSrc] = useState<string | null>(null);
-
-  const handleClick = useCallback(() => {
-    inputRef.current?.click();
-  }, []);
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     setImageSrc(URL.createObjectURL(file));
+    // eslint-disable-next-line functional/immutable-data
+    e.target.value = "";
   }, []);
 
   const handleLoad = useCallback(
@@ -51,15 +48,9 @@ export const ImageFileChooser: FC<Props> = ({
   }, [imageSrc]);
 
   return (
-    <>
-      <Button
-        className={className}
-        iconType='image'
-        title={title}
-        onClick={handleClick}
-      />
+    <label className={className} title={title}>
+      <Button as='span' iconType='image' />
       <input
-        ref={inputRef}
         type='file'
         accept='image/*'
         className='hidden'
@@ -74,6 +65,6 @@ export const ImageFileChooser: FC<Props> = ({
           alt=''
         />
       )}
-    </>
+    </label>
   );
 };

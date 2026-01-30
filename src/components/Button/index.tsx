@@ -11,27 +11,29 @@ import Schedule from "@material-design-icons/svg/filled/schedule.svg?react";
 import SwitchVideo from "@material-design-icons/svg/filled/switch_video.svg?react";
 import Timer from "@material-design-icons/svg/filled/timer.svg?react";
 import classNames from "classnames";
-import { ComponentPropsWithoutRef, FC, memo } from "react";
+import { FC, HTMLAttributes, memo } from "react";
 
-interface Props extends ComponentPropsWithoutRef<"button"> {
-  className?: string;
-  iconType:
-    | "add"
-    | "close"
-    | "crop"
-    | "fullscreen_exit"
-    | "help"
-    | "image"
-    | "move_up"
-    | "move_down"
-    | "note"
-    | "switch_video"
-    | "timer"
-    | "schedule";
+type IconType =
+  | "add"
+  | "close"
+  | "crop"
+  | "fullscreen_exit"
+  | "help"
+  | "image"
+  | "move_up"
+  | "move_down"
+  | "note"
+  | "switch_video"
+  | "timer"
+  | "schedule";
+
+interface Props extends HTMLAttributes<HTMLElement> {
+  as?: "button" | "span";
+  iconType: IconType;
   iconColor?: string;
 }
 
-const ICON: Record<Props["iconType"], FC<React.SVGProps<SVGSVGElement>>> = {
+const ICON: Record<IconType, FC<React.SVGProps<SVGSVGElement>>> = {
   add: Add,
   close: Close,
   crop: Crop,
@@ -47,6 +49,7 @@ const ICON: Record<Props["iconType"], FC<React.SVGProps<SVGSVGElement>>> = {
 };
 
 export const Button: FC<Props> = memo(function Button({
+  as: Component = "button",
   className,
   iconType,
   iconColor,
@@ -55,7 +58,7 @@ export const Button: FC<Props> = memo(function Button({
   const Icon = ICON[iconType];
 
   return (
-    <button
+    <Component
       className={classNames(
         className,
         "block rounded-full bg-slate-950/80 p-2 hover:bg-slate-950/50",
@@ -68,6 +71,6 @@ export const Button: FC<Props> = memo(function Button({
         style={{ fill: iconColor || "white" }}
         viewBox='0 0 24 24'
       />
-    </button>
+    </Component>
   );
 });
