@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { ComponentProps, FC, useCallback, useState } from "react";
+import { ComponentProps, FC, useCallback, useMemo, useState } from "react";
 
 import { t } from "../../i18n";
 import { Button } from "../Button";
@@ -43,7 +43,10 @@ export const ImageBox: FC<Props> = ({
   const [mode, setMode] =
     useState<ComponentProps<typeof FlexibleBox>["mode"]>("resize");
 
-  const contentSize = detectContentSize(naturalWidth, naturalHeight);
+  const contentSize = useMemo(
+    () => detectContentSize(naturalWidth, naturalHeight),
+    [naturalWidth, naturalHeight],
+  );
 
   const toggleMode = useCallback(() => {
     setMode((prev) => (prev === "resize" ? "crop" : "resize"));
@@ -98,6 +101,7 @@ export const ImageBox: FC<Props> = ({
       mode={mode}
       borderColor={color}
       buttons={buttons}
+      transparent
     >
       <img
         src={src}
