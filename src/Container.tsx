@@ -54,54 +54,6 @@ async function captureNewStream() {
   }
 }
 
-async function selectImageFile(): Promise<{
-  src: string;
-  naturalWidth: number;
-  naturalHeight: number;
-} | null> {
-  return new Promise((resolve) => {
-    const input = document.createElement("input");
-    // eslint-disable-next-line functional/immutable-data
-    input.type = "file";
-    // eslint-disable-next-line functional/immutable-data
-    input.accept = "image/*";
-
-    // eslint-disable-next-line functional/immutable-data
-    input.onchange = () => {
-      const file = input.files?.[0];
-      if (!file) {
-        resolve(null);
-        return;
-      }
-
-      const src = URL.createObjectURL(file);
-      const img = new Image();
-      // eslint-disable-next-line functional/immutable-data
-      img.onload = () => {
-        resolve({
-          src,
-          naturalWidth: img.naturalWidth,
-          naturalHeight: img.naturalHeight,
-        });
-      };
-      // eslint-disable-next-line functional/immutable-data
-      img.onerror = () => {
-        URL.revokeObjectURL(src);
-        resolve(null);
-      };
-      // eslint-disable-next-line functional/immutable-data
-      img.src = src;
-    };
-
-    // eslint-disable-next-line functional/immutable-data
-    input.oncancel = () => {
-      resolve(null);
-    };
-
-    input.click();
-  });
-}
-
 const ItemBox: FC<{
   item: MediaItem;
   onClickClose?: (id: string) => void;
@@ -212,22 +164,20 @@ export const Container: FC = () => {
     ]);
   }, []);
 
-  const clickAddImageHandler = useCallback(async () => {
-    const imageData = await selectImageFile();
-    if (!imageData) {
-      return;
-    }
-
-    setMediaItems((prev) => [
-      ...prev,
-      {
-        type: "image",
-        ...imageData,
-        id: crypto.randomUUID(),
-        color: getPastelColor(prev.length),
-      },
-    ]);
-  }, []);
+  const handleImageChoose = useCallback(
+    (data: { src: string; naturalWidth: number; naturalHeight: number }) => {
+      setMediaItems((prev) => [
+        ...prev,
+        {
+          type: "image",
+          ...data,
+          id: crypto.randomUUID(),
+          color: getPastelColor(prev.length),
+        },
+      ]);
+    },
+    [],
+  );
 
   const clickCloseHandler = useCallback((id: string) => {
     setMediaItems((prev) => {
@@ -283,7 +233,7 @@ export const Container: FC = () => {
       onClickAddTimer={() => clickAddOtherItemHandler("timer")}
       onClickAddClock={() => clickAddOtherItemHandler("clock")}
       onClickAddMemo={() => clickAddOtherItemHandler("memo")}
-      onClickAddImage={clickAddImageHandler}
+      onImageChoose={handleImageChoose}
       isEmpty={mediaItems.length === 0}
     >
       {mediaItems.map((item) => (
