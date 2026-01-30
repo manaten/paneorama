@@ -1,6 +1,7 @@
 import { FC, useCallback, useState } from "react";
 
 import { ClockBox } from "./components/ClockBox";
+import { ImageBox } from "./components/ImageBox";
 import { MainCanvas } from "./components/MainCanvas";
 import { MemoBox } from "./components/MemoBox";
 import { StreamBox } from "./components/StreamBox";
@@ -30,7 +31,14 @@ type OtherItem = BaseItem & {
   type: "timer" | "clock" | "memo";
 };
 
-type MediaItem = StreamItem | OtherItem;
+type ImageItem = BaseItem & {
+  type: "image";
+  src: string;
+  naturalWidth: number;
+  naturalHeight: number;
+};
+
+type MediaItem = StreamItem | OtherItem | ImageItem;
 
 async function captureNewStream() {
   try {
@@ -113,6 +121,15 @@ const ItemBox: FC<{
           onClickMoveDown={moveDownHandler}
         />
       );
+    case "image":
+      return (
+        <ImageBox
+          {...item}
+          onClickClose={closeHandler}
+          onClickMoveUp={moveUpHandler}
+          onClickMoveDown={moveDownHandler}
+        />
+      );
   }
 };
 
@@ -147,11 +164,29 @@ export const Container: FC = () => {
     ]);
   }, []);
 
+  const handleImageChoose = useCallback(
+    (data: { src: string; naturalWidth: number; naturalHeight: number }) => {
+      setMediaItems((prev) => [
+        ...prev,
+        {
+          type: "image",
+          ...data,
+          id: crypto.randomUUID(),
+          color: getPastelColor(prev.length),
+        },
+      ]);
+    },
+    [],
+  );
+
   const clickCloseHandler = useCallback((id: string) => {
     setMediaItems((prev) => {
       const item = prev.find((item) => item.id === id);
       if (item?.type === "stream") {
         item.media.getTracks().forEach((track) => track.stop());
+      }
+      if (item?.type === "image") {
+        URL.revokeObjectURL(item.src);
       }
 
       return prev.filter((item) => item.id !== id);
@@ -198,6 +233,7 @@ export const Container: FC = () => {
       onClickAddTimer={() => clickAddOtherItemHandler("timer")}
       onClickAddClock={() => clickAddOtherItemHandler("clock")}
       onClickAddMemo={() => clickAddOtherItemHandler("memo")}
+      onImageChoose={handleImageChoose}
       isEmpty={mediaItems.length === 0}
     >
       {mediaItems.map((item) => (

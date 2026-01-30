@@ -18,6 +18,7 @@ export const ja = {
   "mainCanvas.addClock": "時計を追加",
   "mainCanvas.addTimer": "タイマーを追加",
   "mainCanvas.addMemo": "メモを追加",
+  "mainCanvas.addImage": "画像を追加",
 
   // Stream Box
   "streamBox.resize": "リサイズ",
@@ -32,4 +33,11 @@ export const ja = {
   "streamBox.bringToFront": "前面に移動",
   "streamBox.sendToBack": "背面に移動",
   "streamBox.closeStream": "閉じる",
+
+  // Image Box
+  "imageBox.switchToCrop": "クロップモードに切り替え",
+  "imageBox.switchToResize": "リサイズモードに切り替え",
+  "imageBox.bringToFront": "前面に移動",
+  "imageBox.sendToBack": "背面に移動",
+  "imageBox.closeImage": "画像を閉じる",
 } as const satisfies Record<keyof typeof en, string>;
